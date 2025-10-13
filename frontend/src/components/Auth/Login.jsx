@@ -77,20 +77,21 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-cream-light to-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-2">NADRO MENTORÍA</h1>
-          <p className="text-gray-700 text-sm">Sistema de Consulta Integral - Acceso Administrativo</p>
+        {/* Header Premium */}
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold text-primary mb-3 tracking-tight">NADRO MENTORÍA</h1>
+          <div className="h-1 w-32 bg-gradient-to-r from-leaf to-primary mx-auto rounded-full mb-4"></div>
+          <p className="text-gray-600 text-sm font-medium">Sistema de Consulta Integral · Acceso Administrativo</p>
         </div>
 
-        {/* Card de Login */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+        {/* Card de Login Premium */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">
+              <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                 Correo Electrónico o Usuario
               </label>
               <input
@@ -99,18 +100,18 @@ const Login = ({ onLoginSuccess }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Ingresa tu email o usuario"
-                className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                  errors.email ? 'border-maple focus:border-maple' : ''
+                className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                  errors.email ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
                 }`}
               />
               {errors.email && (
-                <p className="text-maple text-sm mt-1">{errors.email}</p>
+                <p className="text-maple text-sm mt-1.5">{errors.email}</p>
               )}
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">
+              <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                 Contraseña
               </label>
               <div className="relative">
@@ -120,44 +121,47 @@ const Login = ({ onLoginSuccess }) => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
-                  className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                    errors.password ? 'border-maple focus:border-maple' : ''
+                  className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 pr-12 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                    errors.password ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-maple text-sm mt-1">{errors.password}</p>
+                <p className="text-maple text-sm mt-1.5">{errors.password}</p>
               )}
             </div>
 
             {/* Error Message */}
             {errorMessage && (
-              <div className="bg-maple/10 border-2 border-maple text-maple px-4 py-3 rounded-lg text-sm">
+              <div className="bg-gradient-to-r from-maple/10 to-maple-light/10 border-2 border-maple text-maple px-5 py-4 rounded-2xl text-sm font-medium shadow-lg">
                 {errorMessage}
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button Premium */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+              className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white font-bold py-4 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none shadow-xl relative overflow-hidden group"
             >
-              {loading ? 'INICIANDO SESIÓN...' : 'INICIAR SESIÓN'}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+              <span className="relative z-10 text-lg tracking-wide">
+                {loading ? 'INICIANDO SESIÓN...' : 'INICIAR SESIÓN'}
+              </span>
             </button>
 
             {/* Forgot Password */}
-            <div className="text-center">
+            <div className="text-center pt-2">
               <button
                 type="button"
-                className="text-primary hover:text-primary-light text-sm transition-colors"
+                className="text-primary hover:text-primary-light text-sm font-medium transition-colors underline decoration-primary/30 hover:decoration-primary"
               >
                 ¿Olvidaste tu contraseña?
               </button>

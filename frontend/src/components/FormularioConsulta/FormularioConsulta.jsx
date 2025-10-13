@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { consultasService, authService } from '../../services/api';
 import motivosConsultaData from '../../data/motivosConsulta.json';
 import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
@@ -141,146 +141,197 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 border border-leaf/10 text-center">
-          <div className="mb-6 inline-flex items-center justify-center w-20 h-20 bg-leaf/10 rounded-full">
-            <Check size={40} className="text-leaf" />
+      <div className="min-h-screen bg-gradient-to-br from-cream via-cream-light to-white flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 md:p-16 border border-gray-100 text-center max-w-md transform animate-in">
+          <div className="mb-8 inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-leaf/20 to-primary/20 rounded-full relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-leaf to-primary rounded-full animate-pulse opacity-20"></div>
+            <Check size={48} className="text-primary relative z-10" strokeWidth={3} />
           </div>
-          <h2 className="text-3xl font-bold text-primary mb-2">¡Consulta Guardada!</h2>
-          <p className="text-gray-600">La información se ha registrado correctamente</p>
+          <h2 className="text-4xl font-bold text-gray-800 mb-3">¡Consulta Guardada!</h2>
+          <div className="h-1 w-24 bg-gradient-to-r from-leaf to-primary mx-auto rounded-full mb-4"></div>
+          <p className="text-gray-600 text-lg">La información se ha registrado correctamente en el sistema</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-cream py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <div className="flex-1"></div>
-            <div className="flex-1 text-center">
-              <h1 className="text-4xl font-bold text-primary mb-2">NADRO MENTORÍA</h1>
-              <p className="text-gray-700">Reporte de Consulta Integral</p>
-            </div>
-            <div className="flex-1 flex justify-end">
-              {userMode !== 'publico' && (
+    <div className="min-h-screen bg-gradient-to-br from-cream via-cream-light to-white py-12 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Header Premium */}
+        <div className="text-center mb-10">
+          <div className="relative">
+            {userMode !== 'publico' && (
+              <div className="absolute right-0 top-0">
                 <button
                   onClick={() => {
                     authService.logout();
                     window.location.reload();
                   }}
-                  className="bg-maple/10 hover:bg-maple/20 text-maple px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+                  className="bg-white/80 backdrop-blur-sm hover:bg-white text-maple px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
                   title="Cerrar sesión"
                 >
-                  <LogOut size={20} />
-                  <span className="hidden sm:inline">Salir</span>
+                  <LogOut size={18} />
+                  <span className="hidden sm:inline font-medium">Salir</span>
                 </button>
-              )}
+              </div>
+            )}
+            
+            <div className="inline-block">
+              <h1 className="text-5xl md:text-6xl font-bold text-primary mb-3 tracking-tight">
+                NADRO MENTORÍA
+              </h1>
+              <div className="h-1 w-32 bg-gradient-to-r from-leaf to-primary mx-auto rounded-full mb-4"></div>
+              <p className="text-gray-600 text-lg font-medium">Reporte de Consulta Integral</p>
             </div>
           </div>
         </div>
 
-        {/* Formulario */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+        {/* Formulario Premium */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Sección 1: Datos del Mentor */}
-            <div>
-              <h2 className="text-2xl font-semibold text-primary mb-6 pb-2 border-b border-gray-200">
-                Datos del Mentor
-              </h2>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-leaf/10 rounded-xl">
+                  <User className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Datos del Mentor</h2>
+                  <p className="text-sm text-gray-500">Información personal del mentor</p>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Nombre Completo <span className="text-maple">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="nombreMentor"
-                    value={formData.nombreMentor}
-                    onChange={handleChange}
-                    placeholder="Ingresa tu nombre completo"
-                    className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.nombreMentor ? 'border-maple focus:border-maple' : ''
-                    }`}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="nombreMentor"
+                      value={formData.nombreMentor}
+                      onChange={handleChange}
+                      placeholder="Ingresa tu nombre completo"
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.nombreMentor ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                      }`}
+                    />
+                  </div>
                   {errors.nombreMentor && (
-                    <p className="text-maple text-sm mt-1">{errors.nombreMentor}</p>
+                    <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.nombreMentor}
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Correo Electrónico <span className="text-maple">*</span>
                   </label>
-                  <input
-                    type="email"
-                    name="correoMentor"
-                    value={formData.correoMentor}
-                    onChange={handleChange}
-                    placeholder="correo@ejemplo.com"
-                    className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.correoMentor ? 'border-maple focus:border-maple' : ''
-                    }`}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      name="correoMentor"
+                      value={formData.correoMentor}
+                      onChange={handleChange}
+                      placeholder="correo@ejemplo.com"
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.correoMentor ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                      }`}
+                    />
+                  </div>
                   {errors.correoMentor && (
-                    <p className="text-maple text-sm mt-1">{errors.correoMentor}</p>
+                    <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.correoMentor}
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Fecha de Consulta <span className="text-maple">*</span>
                   </label>
-                  <input
-                    type="date"
-                    name="fecha"
-                    value={formData.fecha}
-                    onChange={handleChange}
-                    className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.fecha ? 'border-maple focus:border-maple' : ''
-                    }`}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="date"
+                      name="fecha"
+                      value={formData.fecha}
+                      onChange={handleChange}
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.fecha ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                      }`}
+                    />
+                  </div>
                   {errors.fecha && (
-                    <p className="text-maple text-sm mt-1">{errors.fecha}</p>
+                    <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.fecha}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Sección 2: Información Laboral */}
-            <div>
-              <h2 className="text-2xl font-semibold text-primary mb-6 pb-2 border-b border-gray-200">
-                Información Laboral
-              </h2>
+            <div className="space-y-6 pt-6 border-t-2 border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-leaf/10 rounded-xl">
+                  <Briefcase className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Información Laboral</h2>
+                  <p className="text-sm text-gray-500">Detalles del lugar y área de trabajo</p>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Lugar de Trabajo <span className="text-maple">*</span>
                   </label>
-                  <select
-                    name="lugarTrabajo"
-                    value={formData.lugarTrabajo}
-                    onChange={handleChange}
-                    className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.lugarTrabajo ? 'border-maple focus:border-maple' : ''
-                    }`}
-                  >
-                    <option value="">Selecciona un lugar</option>
-                    {lugaresTrabajoData.map((lugar) => (
-                      <option key={lugar} value={lugar}>
-                        {lugar}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Building2 className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      name="lugarTrabajo"
+                      value={formData.lugarTrabajo}
+                      onChange={handleChange}
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md appearance-none cursor-pointer ${
+                        errors.lugarTrabajo ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                      }`}
+                    >
+                      <option value="">Selecciona un lugar</option>
+                      {lugaresTrabajoData.map((lugar) => (
+                        <option key={lugar} value={lugar}>
+                          {lugar}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   {errors.lugarTrabajo && (
-                    <p className="text-maple text-sm mt-1">{errors.lugarTrabajo}</p>
+                    <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.lugarTrabajo}
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Área <span className="text-maple">*</span>
                   </label>
                   <input
@@ -289,15 +340,15 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                     value={searchArea}
                     onChange={(e) => setSearchArea(e.target.value)}
                     onFocus={() => setSearchArea(formData.area)}
-                    className="w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all mb-2"
+                    className="w-full bg-white border-2 border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md mb-2"
                   />
                   <select
                     name="area"
                     value={formData.area}
                     onChange={handleChange}
                     size="5"
-                    className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.area ? 'border-maple focus:border-maple' : ''
+                    className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-2 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                      errors.area ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
                     }`}
                   >
                     <option value="">Selecciona un área</option>
@@ -308,68 +359,90 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                     ))}
                   </select>
                   {errors.area && (
-                    <p className="text-maple text-sm mt-1">{errors.area}</p>
+                    <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.area}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Sección 3: Detalles de la Consulta */}
-            <div>
-              <h2 className="text-2xl font-semibold text-primary mb-6 pb-2 border-b border-gray-200">
-                Detalles de la Consulta
-              </h2>
+            <div className="space-y-6 pt-6 border-t-2 border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-leaf/10 rounded-xl">
+                  <MessageSquare className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta</h2>
+                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta</p>
+                </div>
+              </div>
               
               <div className="mb-6">
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                   Lugar de Consulta <span className="text-maple">*</span>
                 </label>
-                <select
-                  name="lugarConsulta"
-                  value={formData.lugarConsulta}
-                  onChange={handleChange}
-                  className={`w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all ${
-                    errors.lugarConsulta ? 'border-maple focus:border-maple' : ''
-                  }`}
-                >
-                  <option value="">Selecciona un lugar</option>
-                  {lugaresConsultaData.map((lugar) => (
-                    <option key={lugar} value={lugar}>
-                      {lugar}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MapPin className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <select
+                    name="lugarConsulta"
+                    value={formData.lugarConsulta}
+                    onChange={handleChange}
+                    className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md appearance-none cursor-pointer ${
+                      errors.lugarConsulta ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                    }`}
+                  >
+                    <option value="">Selecciona un lugar</option>
+                    {lugaresConsultaData.map((lugar) => (
+                      <option key={lugar} value={lugar}>
+                        {lugar}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 {errors.lugarConsulta && (
-                  <p className="text-maple text-sm mt-1">{errors.lugarConsulta}</p>
+                  <p className="text-maple text-sm mt-1.5 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.lugarConsulta}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-3">
+                <label className="block text-gray-700 text-sm font-semibold mb-4">
                   Motivo(s) de Consulta <span className="text-maple">*</span>
+                  <span className="text-gray-500 font-normal ml-2 text-xs">(Puedes seleccionar varios)</span>
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto bg-cream/50 p-4 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-gradient-to-br from-gray-50 to-cream rounded-2xl border-2 border-gray-100">
                   {motivosConsultaData.map((motivo) => (
                     <label
                       key={motivo}
-                      className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-start space-x-3 p-4 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-105 ${
                         formData.motivosConsulta.includes(motivo)
-                          ? 'bg-primary/10 border-2 border-primary'
-                          : 'bg-white border-2 border-gray-300 hover:border-leaf'
+                          ? 'bg-gradient-to-br from-primary/10 to-leaf/10 border-2 border-primary shadow-md'
+                          : 'bg-white border-2 border-gray-200 hover:border-primary/50 hover:shadow'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={formData.motivosConsulta.includes(motivo)}
                         onChange={() => handleMotivoToggle(motivo)}
-                        className="w-4 h-4 accent-primary rounded"
+                        className="w-5 h-5 accent-primary rounded-md mt-0.5 cursor-pointer"
                       />
-                      <span className="text-gray-800 text-sm">{motivo}</span>
+                      <span className={`text-sm leading-tight ${
+                        formData.motivosConsulta.includes(motivo) ? 'text-primary font-semibold' : 'text-gray-700'
+                      }`}>
+                        {motivo}
+                      </span>
                     </label>
                   ))}
                 </div>
                 {errors.motivosConsulta && (
-                  <p className="text-maple text-sm mt-2 flex items-center gap-1">
+                  <p className="text-maple text-sm mt-3 flex items-center gap-1.5 bg-maple/5 p-3 rounded-xl">
                     <AlertCircle size={16} />
                     {errors.motivosConsulta}
                   </p>
@@ -378,44 +451,55 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
             </div>
 
             {/* Sección 4: Observaciones */}
-            <div>
-              <h2 className="text-2xl font-semibold text-primary mb-6 pb-2 border-b border-gray-200">
-                Observaciones
-              </h2>
+            <div className="space-y-4 pt-6 border-t-2 border-gray-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-leaf/10 rounded-xl">
+                  <FileText className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Observaciones</h2>
+                  <p className="text-sm text-gray-500">Comentarios o detalles adicionales (opcional)</p>
+                </div>
+              </div>
               <textarea
                 name="observaciones"
                 value={formData.observaciones}
                 onChange={handleChange}
-                placeholder="Agrega comentarios o detalles adicionales sobre la consulta..."
+                placeholder="Agrega comentarios, observaciones o detalles adicionales sobre la consulta..."
                 rows="6"
-                className="w-full bg-cream border-2 border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                className="w-full bg-white border-2 border-gray-200 text-gray-900 rounded-xl px-5 py-4 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none shadow-sm hover:shadow-md"
               />
             </div>
 
             {/* Error de envío */}
             {errors.submit && (
-              <div className="bg-maple/10 border-2 border-maple text-maple px-4 py-3 rounded-lg flex items-center gap-2">
-                <AlertCircle size={20} />
-                {errors.submit}
+              <div className="bg-gradient-to-r from-maple/10 to-maple-light/10 border-2 border-maple text-maple px-6 py-4 rounded-2xl flex items-center gap-3 shadow-lg">
+                <div className="p-2 bg-maple/20 rounded-full">
+                  <AlertCircle size={20} />
+                </div>
+                <span className="font-medium">{errors.submit}</span>
               </div>
             )}
 
-            {/* Botones */}
-            <div className="flex gap-4">
+            {/* Botones Premium */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-primary hover:bg-primary-light text-white font-semibold py-4 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 shadow-lg"
+                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white font-bold py-5 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 shadow-xl relative overflow-hidden group"
               >
-                <Save size={20} />
-                {loading ? 'GUARDANDO...' : 'GUARDAR CONSULTA'}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                <Save size={22} className="relative z-10" />
+                <span className="relative z-10 text-lg tracking-wide">
+                  {loading ? 'GUARDANDO...' : 'GUARDAR CONSULTA'}
+                </span>
               </button>
               
               {onCancel && (
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="px-8 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-4 rounded-lg transition-all"
+                  className="px-10 bg-white border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-semibold py-5 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   CANCELAR
                 </button>
