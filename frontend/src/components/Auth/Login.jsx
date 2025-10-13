@@ -77,17 +77,17 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream via-cream-light to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-mesh flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header Premium */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-primary mb-3 tracking-tight">NADRO MENTORÍA</h1>
-          <div className="h-1 w-32 bg-gradient-to-r from-leaf to-primary mx-auto rounded-full mb-4"></div>
+          <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3 tracking-tight">NADRO MENTORÍA</h1>
+          <div className="h-1 w-32 bg-gradient-primary mx-auto rounded-full mb-4"></div>
           <p className="text-gray-600 text-sm font-medium">Sistema de Consulta Integral · Acceso Administrativo</p>
         </div>
 
         {/* Card de Login Premium */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100 backdrop-blur-sm">
+        <div className="bg-white rounded-3xl shadow-soft p-8 md:p-10 border border-gray-300/50">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
@@ -101,11 +101,11 @@ const Login = ({ onLoginSuccess }) => {
                 onChange={handleChange}
                 placeholder="Ingresa tu email o usuario"
                 className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                  errors.email ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                  errors.email ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
                 }`}
               />
               {errors.email && (
-                <p className="text-maple text-sm mt-1.5">{errors.email}</p>
+                <p className="text-rose text-sm mt-1.5">{errors.email}</p>
               )}
             </div>
 
@@ -122,7 +122,7 @@ const Login = ({ onLoginSuccess }) => {
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
                   className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 pr-12 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                    errors.password ? 'border-maple focus:border-maple focus:ring-maple/10' : 'border-gray-200'
+                    errors.password ? 'border-rose focus:border-rose focus:ring-maple/10' : 'border-gray-300'
                   }`}
                 />
                 <button
@@ -134,13 +134,13 @@ const Login = ({ onLoginSuccess }) => {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-maple text-sm mt-1.5">{errors.password}</p>
+                <p className="text-rose text-sm mt-1.5">{errors.password}</p>
               )}
             </div>
 
             {/* Error Message */}
             {errorMessage && (
-              <div className="bg-gradient-to-r from-maple/10 to-maple-light/10 border-2 border-maple text-maple px-5 py-4 rounded-2xl text-sm font-medium shadow-lg">
+              <div className="bg-gradient-to-r from-maple/10 to-maple-light/10 border-2 border-rose text-rose px-5 py-4 rounded-2xl text-sm font-medium shadow-lg">
                 {errorMessage}
               </div>
             )}

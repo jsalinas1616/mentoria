@@ -6,45 +6,48 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Verde oscuro principal (botones, headers)
+        // Índigo moderno - Primary
         primary: {
-          DEFAULT: '#2D5016',
-          light: '#3D6B22',
-          dark: '#1F3A0F',
+          DEFAULT: '#6366F1',
+          light: '#818CF8',
+          dark: '#4F46E5',
+          50: '#EEF2FF',
+          100: '#E0E7FF',
         },
-        // Verde hoja Nadro
-        leaf: {
-          DEFAULT: '#6B8E23',
-          light: '#7A9B3C',
-          dark: '#5A7A1F',
-        },
-        // Acentos
+        // Violeta - Accent
         accent: {
-          DEFAULT: '#2D5016',
-          hover: '#3D6B22',
+          DEFAULT: '#8B5CF6',
+          light: '#A78BFA',
+          dark: '#7C3AED',
         },
-        // Rojo maple (opcional para detalles)
-        maple: {
-          DEFAULT: '#B83A3A',
-          light: '#C85050',
+        // Esmeralda - Success
+        success: {
+          DEFAULT: '#10B981',
+          light: '#34D399',
+          dark: '#059669',
         },
-        // Fondos beige/crema
-        cream: {
-          DEFAULT: '#F5F1E8',
-          light: '#FAF8F3',
-          dark: '#E8E4DB',
+        // Rosa - Alerts
+        rose: {
+          DEFAULT: '#F43F5E',
+          light: '#FB7185',
+          dark: '#E11D48',
         },
-        // Cards y contenedores
-        card: {
-          DEFAULT: '#FFFFFF',
-          hover: '#F5F1E8',
+        // Fondos modernos
+        background: {
+          DEFAULT: '#F9FAFB',
+          dark: '#F3F4F6',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-leaf': 'linear-gradient(135deg, #6B8E23 0%, #2D5016 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+        'gradient-mesh': 'radial-gradient(at 40% 20%, #EEF2FF 0px, transparent 50%), radial-gradient(at 80% 0%, #E0E7FF 0px, transparent 50%), radial-gradient(at 0% 50%, #F3F4F6 0px, transparent 50%)',
+      },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(99, 102, 241, 0.1), 0 10px 20px -2px rgba(99, 102, 241, 0.04)',
+        'glow': '0 0 20px rgba(139, 92, 246, 0.3)',
       }
     },
   },
