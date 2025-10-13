@@ -8,8 +8,17 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Middleware CORS configurado para S3
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://nadro-mentoria-frontend-1760378806.s3.us-east-1.amazonaws.com',
+    'http://nadro-mentoria-frontend-1760378806.s3-website-us-east-1.amazonaws.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

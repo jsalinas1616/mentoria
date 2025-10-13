@@ -10,8 +10,13 @@ import { validarEmail, validarRequerido, validarArray } from '../../utils/valida
 const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
+    // Datos del Mentor
     nombreMentor: '',
     correoMentor: '',
+    // Datos del Mentee
+    nombreMentee: '',
+    correoMentee: '',
+    // Datos de la Consulta
     fecha: new Date().toISOString().split('T')[0],
     lugarTrabajo: '',
     area: '',
@@ -72,6 +77,18 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     } else if (!validarEmail(formData.correoMentor)) {
       newErrors.correoMentor = 'Ingresa un correo electrónico válido';
     }
+
+    // Validar datos del mentee
+    if (!validarRequerido(formData.nombreMentee)) {
+      newErrors.nombreMentee = 'El nombre del mentee es requerido';
+    }
+
+    if (!validarRequerido(formData.correoMentee)) {
+      newErrors.correoMentee = 'El correo del mentee es requerido';
+    } else if (!validarEmail(formData.correoMentee)) {
+      newErrors.correoMentee = 'Ingresa un correo electrónico válido';
+    }
+
 
     if (!validarRequerido(formData.fecha)) {
       newErrors.fecha = 'La fecha es requerida';
@@ -283,15 +300,81 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             </div>
 
-            {/* Sección 2: Información Laboral */}
+            {/* Sección 2: Datos del Mentee */}
+            <div className="space-y-6 pt-6 border-t-2 border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-accent/10 to-accent-light/10 rounded-xl">
+                  <User className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Datos del Mentee</h2>
+                  <p className="text-sm text-gray-600">Información de la persona que recibe la mentoría</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Nombre del Mentee */}
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                    Nombre Completo del Mentee *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="nombreMentee"
+                      value={formData.nombreMentee}
+                      onChange={handleChange}
+                      placeholder="Ingresa el nombre completo del mentee"
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.nombreMentee ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                      }`}
+                    />
+                  </div>
+                  {errors.nombreMentee && (
+                    <p className="text-rose text-sm mt-1.5">{errors.nombreMentee}</p>
+                  )}
+                </div>
+
+                {/* Correo del Mentee */}
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                    Correo Electrónico del Mentee *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      name="correoMentee"
+                      value={formData.correoMentee}
+                      onChange={handleChange}
+                      placeholder="correo@ejemplo.com"
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.correoMentee ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                      }`}
+                    />
+                  </div>
+                  {errors.correoMentee && (
+                    <p className="text-rose text-sm mt-1.5">{errors.correoMentee}</p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
+            {/* Sección 3: Información Laboral */}
             <div className="space-y-6 pt-6 border-t-2 border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
                   <Briefcase className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Información Laboral</h2>
-                  <p className="text-sm text-gray-500">Detalles del lugar y área de trabajo</p>
+                  <h2 className="text-2xl font-bold text-gray-800">Información Laboral del Mentee</h2>
+                  <p className="text-sm text-gray-500">Detalles del lugar y área de trabajo del mentee</p>
                 </div>
               </div>
               
@@ -366,15 +449,15 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             </div>
 
-            {/* Sección 3: Detalles de la Consulta */}
+            {/* Sección 4: Detalles de la Consulta */}
             <div className="space-y-6 pt-6 border-t-2 border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
                   <MessageSquare className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta</h2>
-                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta</p>
+                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta del Mentee</h2>
+                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta del mentee</p>
                 </div>
               </div>
               
@@ -448,7 +531,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             </div>
 
-            {/* Sección 4: Observaciones */}
+            {/* Sección 5: Observaciones */}
             <div className="space-y-4 pt-6 border-t-2 border-gray-100">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">

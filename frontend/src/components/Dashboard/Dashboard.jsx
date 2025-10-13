@@ -5,12 +5,13 @@ import {
 } from 'recharts';
 import {
   Users, FileText, Calendar, TrendingUp, Download, Filter,
-  Plus, LogOut, Menu,
+  Plus, LogOut, Menu, Sparkles, BarChart3, PieChart as PieChartIcon, Activity,
+  Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare,
 } from 'lucide-react';
 import { dashboardService, consultasService, authService } from '../../services/api';
 import { formatearFecha } from '../../utils/validation';
 
-const COLORS = ['#8FB339', '#7A9B3C', '#6B8E23', '#5A7A1F', '#4A6A15'];
+const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399'];
 
 const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [stats, setStats] = useState({
@@ -30,6 +31,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   });
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
+  
+  // Nuevos estados para funcionalidades
+  const [consultaSeleccionada, setConsultaSeleccionada] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [consultasPorPagina] = useState(10);
   const user = authService.getCurrentUser();
 
   useEffect(() => {
@@ -85,53 +93,92 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     });
   };
 
+  // Funciones para el modal
+  const abrirModal = (consulta) => {
+    setConsultaSeleccionada(consulta);
+    setMostrarModal(true);
+  };
+
+  const cerrarModal = () => {
+    setMostrarModal(false);
+    setConsultaSeleccionada(null);
+  };
+
+  // Función para filtrar consultas por búsqueda
+  const consultasFiltradas = consultas.filter(consulta => {
+    if (!busqueda) return true;
+    
+    const terminoBusqueda = busqueda.toLowerCase();
+    return (
+      consulta.nombreMentor?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.correoMentor?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.nombreMentee?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.correoMentee?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.area?.toLowerCase().includes(terminoBusqueda)
+    );
+  });
+
+  // Paginación
+  const indiceUltimaConsulta = paginaActual * consultasPorPagina;
+  const indicePrimeraConsulta = indiceUltimaConsulta - consultasPorPagina;
+  const consultasPaginaActual = consultasFiltradas.slice(indicePrimeraConsulta, indiceUltimaConsulta);
+  const totalPaginas = Math.ceil(consultasFiltradas.length / consultasPorPagina);
+
+  const cambiarPagina = (numeroPagina) => {
+    setPaginaActual(numeroPagina);
+  };
+
+  // Resetear página cuando cambia la búsqueda
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [busqueda]);
+
   if (loading && consultas.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-primary-light to-primary-dark flex items-center justify-center">
-        <div className="text-white text-xl">Cargando datos...</div>
+      <div className="min-h-screen bg-gradient-mesh flex items-center justify-center">
+        <div className="text-gray-600 text-xl">Cargando datos...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary-light to-primary-dark">
-      {/* Header */}
-      <header className="bg-dark-card border-b border-white/10 sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-mesh">
+      {/* Header Moderno */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-50 shadow-soft">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setMenuAbierto(!menuAbierto)}
-                className="lg:hidden text-white hover:text-accent"
-              >
-                <Menu size={24} />
-              </button>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+              </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">NADRO MENTORÍA</h1>
-                <p className="text-white/60 text-sm">Dashboard de Consultas</p>
+                <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
+                <p className="text-xs text-gray-500">Dashboard de consultas</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="hidden md:block text-right mr-4">
-                <p className="text-white text-sm font-medium">{user?.nombre || 'Usuario'}</p>
-                <p className="text-white/60 text-xs">{user?.email || ''}</p>
+                <p className="text-gray-900 text-sm font-medium">{user?.nombre || 'Usuario'}</p>
+                <p className="text-gray-500 text-xs">{user?.email || ''}</p>
               </div>
               
-              <button
+              {/* <button
                 onClick={onNuevaConsulta}
-                className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
+                className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
               >
-                <Plus size={20} />
+                <Plus size={18} />
                 <span className="hidden sm:inline">Nueva Consulta</span>
-              </button>
+              </button> */}
               
               <button
                 onClick={onLogout}
-                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg transition-all"
+                className="bg-white hover:bg-gray-50 text-rose px-3 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md border border-gray-300"
                 title="Cerrar sesión"
               >
-                <LogOut size={20} />
+                <LogOut size={18} />
+                <span className="hidden sm:inline text-sm font-medium">Salir</span>
               </button>
             </div>
           </div>
@@ -139,54 +186,54 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Filtros */}
-        <div className="mb-6">
+        {/* Filtros Modernos */}
+        <div className="mb-8">
           <button
             onClick={() => setMostrarFiltros(!mostrarFiltros)}
-            className="bg-dark-card text-white px-4 py-2 rounded-lg hover:bg-dark-input transition-all flex items-center gap-2 mb-4"
+            className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 mb-4 shadow-sm hover:shadow-md border border-gray-300"
           >
-            <Filter size={20} />
+            <Filter size={18} />
             {mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros'}
           </button>
 
           {mostrarFiltros && (
-            <div className="bg-dark-card rounded-xl p-6 border border-white/10">
+            <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-white text-sm mb-2">Fecha Inicio</label>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Inicio</label>
                   <input
                     type="date"
                     name="fechaInicio"
                     value={filtros.fechaInicio}
                     onChange={handleFiltroChange}
-                    className="w-full bg-dark-input text-white rounded-lg px-3 py-2"
+                    className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
                   />
                 </div>
                 <div>
-                  <label className="block text-white text-sm mb-2">Fecha Fin</label>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Fin</label>
                   <input
                     type="date"
                     name="fechaFin"
                     value={filtros.fechaFin}
                     onChange={handleFiltroChange}
-                    className="w-full bg-dark-input text-white rounded-lg px-3 py-2"
+                    className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
                   />
                 </div>
                 <div>
-                  <label className="block text-white text-sm mb-2">Lugar de Trabajo</label>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2">Lugar de Trabajo</label>
                   <input
                     type="text"
                     name="lugarTrabajo"
                     value={filtros.lugarTrabajo}
                     onChange={handleFiltroChange}
                     placeholder="Filtrar..."
-                    className="w-full bg-dark-input text-white rounded-lg px-3 py-2"
+                    className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
                     onClick={limpiarFiltros}
-                    className="w-full bg-accent hover:bg-accent-hover text-white py-2 rounded-lg transition-all"
+                    className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl font-semibold shadow-lg"
                   >
                     Limpiar Filtros
                   </button>
@@ -196,79 +243,98 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
           )}
         </div>
 
-        {/* KPIs */}
+        {/* KPIs Modernos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="p-3 bg-accent/20 rounded-lg">
-                <FileText className="text-accent" size={24} />
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                <FileText className="text-primary" size={24} />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-white mb-1">{stats.totalConsultas}</h3>
-            <p className="text-white/60 text-sm">Total de Consultas</p>
+            <h3 className="text-3xl font-bold text-gray-900 mb-2">{stats.totalConsultas}</h3>
+            <p className="text-gray-600 text-sm font-medium">Total de Consultas</p>
           </div>
 
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="p-3 bg-green-500/20 rounded-lg">
-                <Calendar className="text-green-400" size={24} />
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-success/10 to-success-light/10 rounded-xl">
+                <Calendar className="text-success" size={24} />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-white mb-1">{stats.consultasMes}</h3>
-            <p className="text-white/60 text-sm">Consultas Este Mes</p>
+            <h3 className="text-3xl font-bold text-gray-900 mb-2">{stats.consultasMes}</h3>
+            <p className="text-gray-600 text-sm font-medium">Consultas Este Mes</p>
           </div>
 
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="p-3 bg-blue-500/20 rounded-lg">
-                <Users className="text-blue-400" size={24} />
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-accent/10 to-accent-light/10 rounded-xl">
+                <Users className="text-accent" size={24} />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-white mb-1">
+            <h3 className="text-3xl font-bold text-gray-900 mb-2">
               {stats.motivosMasFrecuentes[0]?.count || 0}
             </h3>
-            <p className="text-white/60 text-sm">
+            <p className="text-gray-600 text-sm font-medium">
               {stats.motivosMasFrecuentes[0]?.motivo || 'Motivo Principal'}
             </p>
           </div>
 
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="p-3 bg-purple-500/20 rounded-lg">
-                <TrendingUp className="text-purple-400" size={24} />
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-br from-primary/10 to-primary-light/10 rounded-xl">
+                <TrendingUp className="text-primary-light" size={24} />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-white mb-1">
+            <h3 className="text-3xl font-bold text-gray-900 mb-2">
               {stats.lugaresTrabajo.length}
             </h3>
-            <p className="text-white/60 text-sm">Lugares de Trabajo Activos</p>
+            <p className="text-gray-600 text-sm font-medium">Lugares de Trabajo Activos</p>
           </div>
         </div>
 
-        {/* Gráficos */}
+        {/* Gráficos Modernos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Gráfico de Barras: Motivos más frecuentes */}
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">Motivos Más Frecuentes</h2>
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                <BarChart3 className="text-primary" size={24} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Motivos Más Frecuentes</h2>
+                <p className="text-sm text-gray-600">Distribución de motivos de consulta</p>
+              </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats.motivosMasFrecuentes.slice(0, 10)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3A3A3A" />
-                <XAxis dataKey="motivo" stroke="#B0B0B0" angle={-45} textAnchor="end" height={100} />
-                <YAxis stroke="#B0B0B0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="motivo" stroke="#6B7280" angle={-45} textAnchor="end" height={100} />
+                <YAxis stroke="#6B7280" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#2C2C2C', border: '1px solid #3A3A3A' }}
-                  labelStyle={{ color: '#fff' }}
+                  contentStyle={{ 
+                    backgroundColor: '#FFFFFF', 
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                  }}
+                  labelStyle={{ color: '#374151', fontWeight: '600' }}
                 />
-                <Bar dataKey="count" fill="#8FB339" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" fill="#059669" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* Gráfico de Pastel: Lugares de trabajo */}
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10">
-            <h2 className="text-xl font-semibold text-white mb-4">Distribución por Lugar</h2>
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-br from-accent/10 to-accent-light/10 rounded-xl">
+                <PieChartIcon className="text-accent" size={24} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Distribución por Lugar</h2>
+                <p className="text-sm text-gray-600">Consultas por lugar de trabajo</p>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -285,7 +351,12 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#2C2C2C', border: '1px solid #3A3A3A' }}
+                  contentStyle={{ 
+                    backgroundColor: '#FFFFFF', 
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                  }}
                 />
                 <Legend />
               </PieChart>
@@ -293,88 +364,144 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
           </div>
 
           {/* Gráfico de Línea: Consultas por fecha */}
-          <div className="bg-dark-card rounded-xl p-6 border border-white/10 lg:col-span-2">
-            <h2 className="text-xl font-semibold text-white mb-4">Tendencia de Consultas</h2>
+          <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft lg:col-span-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-br from-success/10 to-success-light/10 rounded-xl">
+                <Activity className="text-success" size={24} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Tendencia de Consultas</h2>
+                <p className="text-sm text-gray-600">Evolución de consultas en el tiempo</p>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats.consultasPorFecha}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3A3A3A" />
-                <XAxis dataKey="fecha" stroke="#B0B0B0" />
-                <YAxis stroke="#B0B0B0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="fecha" stroke="#6B7280" />
+                <YAxis stroke="#6B7280" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#2C2C2C', border: '1px solid #3A3A3A' }}
-                  labelStyle={{ color: '#fff' }}
+                  contentStyle={{ 
+                    backgroundColor: '#FFFFFF', 
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                  }}
+                  labelStyle={{ color: '#374151', fontWeight: '600' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="count"
-                  stroke="#8FB339"
+                  stroke="#059669"
                   strokeWidth={3}
-                  dot={{ fill: '#8FB339', r: 5 }}
+                  dot={{ fill: '#059669', r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Tabla de Consultas Recientes */}
-        <div className="bg-dark-card rounded-xl p-6 border border-white/10">
+        {/* Tabla de Consultas Recientes Moderna */}
+        <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">Consultas Recientes</h2>
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                <FileText className="text-primary" size={24} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Consultas Recientes</h2>
+                <p className="text-sm text-gray-600">
+                  {consultasFiltradas.length} de {consultas.length} consultas
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => handleExportar('excel')}
-              className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+              className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 font-semibold shadow-lg"
             >
               <Download size={18} />
               Exportar Excel
             </button>
           </div>
 
+          {/* Buscador */}
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar por nombre, correo, lugar de trabajo..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
+              />
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left text-white/80 font-medium pb-3 px-4">Fecha</th>
-                  <th className="text-left text-white/80 font-medium pb-3 px-4">Mentor</th>
-                  <th className="text-left text-white/80 font-medium pb-3 px-4">Lugar Trabajo</th>
-                  <th className="text-left text-white/80 font-medium pb-3 px-4">Área</th>
-                  <th className="text-left text-white/80 font-medium pb-3 px-4">Motivos</th>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Fecha</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Mentor</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Mentee</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Lugar Trabajo</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Área</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Motivos</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {consultas.slice(0, 10).map((consulta) => (
+                {consultasPaginaActual.map((consulta) => (
                   <tr
                     key={consulta.id}
-                    className="border-b border-white/5 hover:bg-dark-input/50 transition-colors"
+                    className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="py-3 px-4 text-white text-sm">
+                    <td className="py-4 px-4 text-gray-900 text-sm font-medium">
                       {formatearFecha(consulta.fecha)}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <div>
-                        <p className="text-white text-sm font-medium">{consulta.nombreMentor}</p>
-                        <p className="text-white/60 text-xs">{consulta.correoMentor}</p>
+                        <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentor}</p>
+                        <p className="text-gray-500 text-xs">{consulta.correoMentor}</p>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-white text-sm">{consulta.lugarTrabajo}</td>
-                    <td className="py-3 px-4 text-white/80 text-sm truncate max-w-xs">
+                    <td className="py-4 px-4">
+                      <div>
+                        <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentee || 'N/A'}</p>
+                        <p className="text-gray-500 text-xs">{consulta.correoMentee || 'N/A'}</p>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.lugarTrabajo}</td>
+                    <td className="py-4 px-4 text-gray-600 text-sm truncate max-w-xs">
                       {consulta.area}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex flex-wrap gap-1">
                         {consulta.motivosConsulta.slice(0, 2).map((motivo, idx) => (
                           <span
                             key={idx}
-                            className="bg-accent/20 text-accent px-2 py-1 rounded text-xs"
+                            className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20"
                           >
                             {motivo}
                           </span>
                         ))}
                         {consulta.motivosConsulta.length > 2 && (
-                          <span className="text-white/60 text-xs px-2 py-1">
+                          <span className="text-gray-500 text-xs px-3 py-1">
                             +{consulta.motivosConsulta.length - 2}
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <button
+                        onClick={() => abrirModal(consulta)}
+                        className="bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 text-primary px-3 py-2 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium border border-primary/20 hover:border-primary/40"
+                      >
+                        <Eye size={16} />
+                        Ver
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -382,13 +509,208 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
             </table>
           </div>
 
+          {/* Paginador */}
+          {totalPaginas > 1 && (
+            <div className="flex items-center justify-between mt-6">
+              <div className="text-sm text-gray-600">
+                Mostrando {indicePrimeraConsulta + 1} a {Math.min(indiceUltimaConsulta, consultasFiltradas.length)} de {consultasFiltradas.length} consultas
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => cambiarPagina(paginaActual - 1)}
+                  disabled={paginaActual === 1}
+                  className="p-2 rounded-xl border border-gray-300 hover:border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                
+                {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                  let numeroPagina;
+                  if (totalPaginas <= 5) {
+                    numeroPagina = i + 1;
+                  } else if (paginaActual <= 3) {
+                    numeroPagina = i + 1;
+                  } else if (paginaActual >= totalPaginas - 2) {
+                    numeroPagina = totalPaginas - 4 + i;
+                  } else {
+                    numeroPagina = paginaActual - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={numeroPagina}
+                      onClick={() => cambiarPagina(numeroPagina)}
+                      className={`px-3 py-2 rounded-xl font-medium transition-all ${
+                        paginaActual === numeroPagina
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'border border-gray-300 hover:border-primary hover:bg-primary/10 text-gray-700'
+                      }`}
+                    >
+                      {numeroPagina}
+                    </button>
+                  );
+                })}
+                
+                <button
+                  onClick={() => cambiarPagina(paginaActual + 1)}
+                  disabled={paginaActual === totalPaginas}
+                  className="p-2 rounded-xl border border-gray-300 hover:border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {consultas.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-white/60">No hay consultas registradas</p>
+              <div className="p-4 bg-gray-50 rounded-2xl inline-block">
+                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500 font-medium">No hay consultas registradas</p>
+                <p className="text-gray-400 text-sm">Las consultas aparecerán aquí cuando se registren</p>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal de Detalles de Consulta */}
+      {mostrarModal && consultaSeleccionada && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Header del Modal */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                  <FileText className="text-primary" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Detalles de la Consulta</h2>
+                  <p className="text-sm text-gray-600">Información completa de la consulta</p>
+                </div>
+              </div>
+              <button
+                onClick={cerrarModal}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                <X size={24} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Contenido del Modal */}
+            <div className="p-6 space-y-6">
+              {/* Información del Mentor */}
+              <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-6 border border-primary/10">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Users className="text-primary" size={20} />
+                  </div>
+                  Datos del Mentor
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Nombre Completo</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.nombreMentor}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Correo Electrónico</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.correoMentor}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Información del Mentee */}
+              <div className="bg-gradient-to-r from-accent/5 to-accent-light/5 rounded-2xl p-6 border border-accent/10">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-accent/10 rounded-lg">
+                    <Users className="text-accent" size={20} />
+                  </div>
+                  Datos del Mentee
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Nombre Completo</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.nombreMentee || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Correo Electrónico</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.correoMentee || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Información de la Consulta */}
+              <div className="bg-gradient-to-r from-success/5 to-success-light/5 rounded-2xl p-6 border border-success/10">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <Calendar className="text-success" size={20} />
+                  </div>
+                  Información de la Consulta
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Fecha de Consulta</label>
+                    <p className="text-gray-900 font-medium">{formatearFecha(consultaSeleccionada.fecha)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Lugar de Trabajo</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.lugarTrabajo}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Área</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.area}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Lugar de Consulta</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.lugarConsulta}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Motivos de Consulta */}
+              <div className="bg-gradient-to-r from-primary/5 to-primary-light/5 rounded-2xl p-6 border border-primary/10">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <MessageSquare className="text-primary" size={20} />
+                  </div>
+                  Motivos de Consulta
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {consultaSeleccionada.motivosConsulta?.map((motivo, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20"
+                    >
+                      {motivo}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Observaciones */}
+              {consultaSeleccionada.observaciones && (
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div className="p-2 bg-gray-200 rounded-lg">
+                      <FileText className="text-gray-600" size={20} />
+                    </div>
+                    Observaciones
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">{consultaSeleccionada.observaciones}</p>
+                </div>
+              )}
+
+              {/* Fechas de Creación */}
+              <div className="text-center text-sm text-gray-500 border-t border-gray-200 pt-4">
+                <p>Consulta creada el {formatearFecha(consultaSeleccionada.createdAt)}</p>
+                {consultaSeleccionada.updatedAt !== consultaSeleccionada.createdAt && (
+                  <p>Última actualización: {formatearFecha(consultaSeleccionada.updatedAt)}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
