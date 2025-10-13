@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock } from 'lucide-react';
+import { Eye, EyeOff, Lock, Sparkles } from 'lucide-react';
 import { authService } from '../../services/api';
 import { validarEmail, validarRequerido } from '../../utils/validation';
 
@@ -79,11 +79,15 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <div className="min-h-screen bg-gradient-mesh flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header Premium */}
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3 tracking-tight">NADRO MENTORÍA</h1>
-          <div className="h-1 w-32 bg-gradient-primary mx-auto rounded-full mb-4"></div>
-          <p className="text-gray-600 text-sm font-medium">Sistema de Consulta Integral · Acceso Administrativo</p>
+        {/* Header Minimalista */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
+            <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
+            <p className="text-xs text-gray-500">Acceso administrativo</p>
+          </div>
         </div>
 
         {/* Card de Login Premium */}

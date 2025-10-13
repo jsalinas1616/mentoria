@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles } from 'lucide-react';
 import { consultasService, authService } from '../../services/api';
 import motivosConsultaData from '../../data/motivosConsulta.json';
 import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
@@ -8,7 +8,7 @@ import lugaresConsultaData from '../../data/lugaresConsulta.json';
 import { validarEmail, validarRequerido, validarArray } from '../../utils/validation';
 
 const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
-  const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
+  // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
     nombreMentor: '',
     correoMentor: '',
@@ -156,35 +156,33 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-mesh py-12 px-4">
+    <div className="min-h-screen bg-gradient-mesh py-8 px-4">
       <div className="max-w-5xl mx-auto">
-        {/* Header Premium */}
-        <div className="text-center mb-10">
-          <div className="relative">
-            {userMode !== 'publico' && (
-              <div className="absolute right-0 top-0">
-                <button
-                  onClick={() => {
-                    authService.logout();
-                    window.location.reload();
-                  }}
-                  className="bg-white hover:bg-gray-50 text-rose px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-soft hover:shadow-lg border border-gray-300"
-                  title="Cerrar sesión"
-                >
-                  <LogOut size={18} />
-                  <span className="hidden sm:inline font-semibold">Salir</span>
-                </button>
-              </div>
-            )}
-            
-            <div className="inline-block">
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3 tracking-tight">
-                NADRO MENTORÍA
-              </h1>
-              <div className="h-1 w-32 bg-gradient-primary mx-auto rounded-full mb-4"></div>
-              <p className="text-gray-600 text-lg font-medium">Reporte de Consulta Integral</p>
+        {/* Header Minimalista */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
+              <p className="text-xs text-gray-500">Reporte de consulta</p>
             </div>
           </div>
+          
+          {userMode !== 'publico' && (
+            <button
+              onClick={() => {
+                authService.logout();
+                window.location.reload();
+              }}
+              className="bg-white hover:bg-gray-50 text-rose px-3 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md border border-gray-300"
+              title="Cerrar sesión"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline text-sm font-medium">Salir</span>
+            </button>
+          )}
         </div>
 
         {/* Formulario Premium */}
