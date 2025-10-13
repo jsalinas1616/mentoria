@@ -2,6 +2,51 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.1.0] - 2024-10-13
+
+### 🎉 Características Nuevas
+
+#### Acceso Público al Formulario
+- ✅ **Formulario público sin login** - Los usuarios pueden acceder directamente sin autenticación
+- ✅ Sistema de rutas mejorado con React Router
+  - Ruta pública `/` para el formulario de mentoría
+  - Rutas administrativas protegidas bajo `/admin/*`
+- ✅ Endpoint público `POST /api/consultas` para registrar consultas
+- ✅ Endpoints protegidos para gestión administrativa (GET, PUT, DELETE)
+
+#### Arquitectura del Proyecto
+- ✅ **Monorepo unificado** - Frontend, backend e infrastructure en un solo repositorio
+- ✅ Eliminación de submódulos Git complejos
+- ✅ Gestión simplificada de versiones
+
+### 📝 Documentación
+- ✅ Nuevo documento `ACCESO-PUBLICO.md` con guía completa de acceso
+- ✅ Actualización de `README.md` con información de acceso público
+- ✅ Actualización de `GUIA-RAPIDA.md` con URLs diferenciadas
+
+### 🔒 Seguridad
+- ✅ Separación clara entre rutas públicas y protegidas
+- ✅ Autenticación JWT solo para funciones administrativas
+- ✅ Validación de permisos por ruta
+
+### 🎯 Mejoras de UX
+- ✅ Acceso instantáneo al formulario (sin barreras)
+- ✅ Experiencia simplificada para mentores
+- ✅ Panel administrativo protegido y completo
+
+### 🔧 Cambios Técnicos
+
+#### Frontend
+- Modificado `App.jsx` con sistema de rutas público/privado
+- Actualizado `FormularioConsulta.jsx` para soportar modo público
+- Eliminado botón "Salir" en modo público
+
+#### Backend
+- Modificado `consultasRoutes.js` para permitir POST público
+- Mantenimiento de protección en rutas administrativas
+
+---
+
 ## [1.0.0] - 2024-10-10
 
 ### ✨ Características Iniciales
