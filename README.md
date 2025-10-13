@@ -23,19 +23,21 @@ Sistema completo para gestionar reportes de consultas de mentoría integral en N
 - ✅ Listo para desplegar en AWS Lambda
 
 ### Características del Sistema
+- 🔓 **Acceso público al formulario** - Los mentores pueden registrar consultas sin login
 - 📝 Registro completo de consultas con:
   - Datos del mentor (nombre, correo)
   - Información laboral (lugar de trabajo, área)
   - Detalles de consulta (lugar, motivos múltiples)
   - Observaciones adicionales
-- 📊 Dashboard con:
+- 📊 Dashboard administrativo con:
   - KPIs principales
   - Gráficos de barras, pastel y líneas
   - Filtros avanzados
-  - Exportación de datos
+  - Exportación de datos a Excel
   - Tabla de consultas recientes
-- 🔐 Sistema de autenticación robusto
-- 📱 Interfaz responsive
+- 🔐 Sistema de autenticación robusto para administradores
+- 📱 Interfaz responsive y moderna
+- 🎯 Monorepo unificado (frontend + backend + infrastructure)
 
 ## 🚀 Inicio Rápido
 
@@ -111,14 +113,25 @@ El sistema estará disponible en:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3001
 
-### 5. Credenciales iniciales
+### 5. Acceso al sistema
 
-```
-Email: admin@nadro.com
-Password: admin123
-```
+#### 👥 **Usuarios/Mentores (Acceso Público)**
+- URL: `http://localhost:3000/`
+- **No necesitan login** - Formulario disponible inmediatamente
+- Pueden registrar sus consultas de mentoría
 
-⚠️ **IMPORTANTE:** Cambia estas credenciales después del primer login.
+#### 👨‍💼 **Administradores**
+- URL: `http://localhost:3000/admin/login`
+- Credenciales por defecto:
+  ```
+  Email: admin@nadro.com
+  Password: admin123
+  ```
+- Acceso completo al dashboard, estadísticas y gestión de consultas
+
+⚠️ **IMPORTANTE:** Cambia las credenciales de admin después del primer login.
+
+> 📖 Para más información sobre el acceso público, consulta [ACCESO-PUBLICO.md](./ACCESO-PUBLICO.md)
 
 ## 📁 Estructura del Proyecto
 

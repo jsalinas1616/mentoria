@@ -1,5 +1,21 @@
 # 🚀 Guía Rápida - Nadro Mentoría
 
+## 🌐 Acceso a la Aplicación
+
+### 👥 **Para Usuarios/Mentores (Acceso Público)**
+- URL: `http://localhost:3000/` (desarrollo) o tu dominio en producción
+- **No necesitan login** - Acceso directo al formulario
+- Pueden registrar consultas inmediatamente
+
+### 👨‍💼 **Para Administradores (Requiere Login)**
+- URL: `http://localhost:3000/admin/login`
+- Credenciales por defecto: `admin@nadro.com` / `Admin123`
+- Acceso al dashboard con todas las consultas y estadísticas
+
+> 📖 Para más detalles sobre el acceso público, consulta [ACCESO-PUBLICO.md](./ACCESO-PUBLICO.md)
+
+---
+
 ## ⚡ Inicio Rápido (5 minutos)
 
 ### 1️⃣ Instalar dependencias
