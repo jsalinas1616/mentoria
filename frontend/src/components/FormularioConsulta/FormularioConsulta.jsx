@@ -36,6 +36,12 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
       ...prev,
       [name]: value,
     }));
+    
+    // Sincronizar searchArea con el área seleccionada
+    if (name === 'area') {
+      setSearchArea(value);
+    }
+    
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
