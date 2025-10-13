@@ -7,8 +7,8 @@ import areasData from '../../data/areas.json';
 import lugaresConsultaData from '../../data/lugaresConsulta.json';
 import { validarEmail, validarRequerido, validarArray } from '../../utils/validation';
 
-const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'admin' }) => {
-  const user = authService.getCurrentUser();
+const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
+  const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
     nombreMentor: '',
     correoMentor: '',
@@ -165,7 +165,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'admin' }) => {
               <p className="text-white/80">Reporte de Consulta Integral</p>
             </div>
             <div className="flex-1 flex justify-end">
-              {userMode === 'empleado' && (
+              {userMode !== 'publico' && (
                 <button
                   onClick={() => {
                     authService.logout();

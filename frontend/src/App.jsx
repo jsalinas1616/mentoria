@@ -42,52 +42,70 @@ function App() {
     );
   }
 
-  // Si no está autenticado, mostrar login
-  if (!isAuthenticated) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
+  return (
+    <Router>
+      <Routes>
+        {/* Ruta pública - Formulario sin login */}
+        <Route 
+          path="/" 
+          element={
+            <FormularioConsulta
+              onSuccess={() => {
+                // Recargar para limpiar el formulario
+                window.location.reload();
+              }}
+              userMode="publico"
+            />
+          } 
+        />
 
-  // Si es admin, mostrar dashboard con opción de formulario
-  if (user?.rol === 'admin') {
-    return (
-      <Router>
-        <Routes>
-          <Route 
-            path="/" 
-            element={
+        {/* Ruta de login para administradores */}
+        <Route 
+          path="/admin/login" 
+          element={
+            isAuthenticated && user?.rol === 'admin' ? (
+              <Navigate to="/admin/dashboard" />
+            ) : (
+              <Login onLoginSuccess={handleLoginSuccess} />
+            )
+          } 
+        />
+
+        {/* Ruta protegida - Dashboard para admins */}
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            isAuthenticated && user?.rol === 'admin' ? (
               <Dashboard 
-                onNuevaConsulta={() => window.location.href = '/nueva-consulta'}
+                onNuevaConsulta={() => window.location.href = '/admin/nueva-consulta'}
                 onLogout={handleLogout}
               />
-            } 
-          />
-          <Route 
-            path="/nueva-consulta" 
-            element={
-              <FormularioConsulta
-                onSuccess={() => window.location.href = '/'}
-                onCancel={() => window.location.href = '/'}
-              />
-            } 
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
-    );
-  }
+            ) : (
+              <Navigate to="/admin/login" />
+            )
+          } 
+        />
 
-  // Si es mentor/empleado, solo mostrar formulario
-  return (
-    <div>
-      <FormularioConsulta
-        onSuccess={() => {
-          alert('¡Consulta guardada exitosamente!');
-          window.location.reload();
-        }}
-        onCancel={handleLogout}
-        userMode="empleado"
-      />
-    </div>
+        {/* Ruta protegida - Formulario desde admin */}
+        <Route 
+          path="/admin/nueva-consulta" 
+          element={
+            isAuthenticated && user?.rol === 'admin' ? (
+              <FormularioConsulta
+                onSuccess={() => window.location.href = '/admin/dashboard'}
+                onCancel={() => window.location.href = '/admin/dashboard'}
+                userMode="admin"
+              />
+            ) : (
+              <Navigate to="/admin/login" />
+            )
+          } 
+        />
+
+        {/* Redirigir cualquier otra ruta al formulario público */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 

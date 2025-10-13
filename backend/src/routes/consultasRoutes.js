@@ -3,16 +3,15 @@ const router = express.Router();
 const consultasController = require('../controllers/consultasController');
 const { authenticateToken } = require('../middleware/auth');
 
-// Todas las rutas requieren autenticación
-router.use(authenticateToken);
-
-// CRUD de consultas
+// Ruta pública - Crear consulta (sin autenticación)
 router.post('/', consultasController.crear);
-router.get('/', consultasController.listar);
-router.get('/export', consultasController.exportar);
-router.get('/:id', consultasController.obtener);
-router.put('/:id', consultasController.actualizar);
-router.delete('/:id', consultasController.eliminar);
+
+// Rutas protegidas - Requieren autenticación
+router.get('/', authenticateToken, consultasController.listar);
+router.get('/export', authenticateToken, consultasController.exportar);
+router.get('/:id', authenticateToken, consultasController.obtener);
+router.put('/:id', authenticateToken, consultasController.actualizar);
+router.delete('/:id', authenticateToken, consultasController.eliminar);
 
 module.exports = router;
 
