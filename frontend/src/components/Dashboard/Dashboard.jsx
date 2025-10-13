@@ -66,7 +66,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `consultas_${new Date().toISOString().split('T')[0]}.${formato}`;
+      a.download = `consultas_${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -305,11 +305,19 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <p className="text-sm text-gray-600">Distribución de motivos de consulta</p>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats.motivosMasFrecuentes.slice(0, 10)}>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={stats.motivosMasFrecuentes.slice(0, 5)} margin={{ bottom: 80 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                <XAxis dataKey="motivo" stroke="#6B7280" angle={-45} textAnchor="end" height={100} />
-                <YAxis stroke="#6B7280" />
+                <XAxis 
+                  dataKey="motivo" 
+                  stroke="#6B7280" 
+                  angle={-45} 
+                  textAnchor="end" 
+                  height={100}
+                  interval={0}
+                  tick={{ fontSize: 13 }}
+                />
+                <YAxis stroke="#6B7280" domain={[0, 'dataMax + 2']} />
                 <Tooltip
                   contentStyle={{ 
                     backgroundColor: '#FFFFFF', 
@@ -335,18 +343,18 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <p className="text-sm text-gray-600">Consultas por lugar de trabajo</p>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
-                  data={stats.lugaresTrabajo.slice(0, 5)}
+                  data={stats.lugaresTrabajo.slice(0, 6)}
                   dataKey="count"
                   nameKey="lugar"
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label
+                  label={false}
                 >
-                  {stats.lugaresTrabajo.slice(0, 5).map((entry, index) => (
+                  {stats.lugaresTrabajo.slice(0, 6).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -357,8 +365,21 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                     borderRadius: '12px',
                     boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
                   }}
+                  formatter={(value, name) => [`${value} consultas`, name]}
                 />
-                <Legend />
+                <Legend 
+                  wrapperStyle={{ 
+                    paddingTop: '20px',
+                    fontSize: '11px',
+                    lineHeight: '1.4'
+                  }}
+                  formatter={(value) => {
+                    if (value.length > 15) {
+                      return value.substring(0, 15) + '...';
+                    }
+                    return value;
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
