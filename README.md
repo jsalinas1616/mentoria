@@ -188,16 +188,33 @@ Mentorias/
 ### Health Check
 - `GET /api/health` - Verificar estado del API
 
-## 🎨 Paleta de Colores
+## 🎨 Paleta de Colores (Actualizada v1.1.0)
 
 ```css
-Verde Principal: #6B8E23, #7A9B3C
-Verde Botones: #8FB339
-Fondo Oscuro (Cards): #2C2C2C
-Inputs Oscuros: #3A3A3A
-Texto Principal: #FFFFFF
-Texto Secundario: #B0B0B0
+/* Verde Oscuro - Botones y Títulos */
+Verde Principal: #2D5016
+Verde Claro: #3D6B22
+Verde Hoja (Acentos): #6B8E23
+
+/* Fondos Cálidos */
+Beige/Crema: #F5F1E8
+Beige Claro: #FAF8F3
+Beige Oscuro: #E8E4DB
+
+/* Cards y Contenedores */
+Blanco: #FFFFFF
+Gris Claro: #F3F4F6
+
+/* Alertas y Errores */
+Rojo Maple: #B83A3A
+Rojo Maple Claro: #C85050
+
+/* Textos */
+Texto Oscuro: #1F2937
+Texto Secundario: #6B7280
 ```
+
+> 🎨 **Diseño:** Paleta cálida y natural inspirada en hojas de maple, alineada con el branding de Nadro Mentoría.
 
 ## 📦 Deployment a AWS
 
