@@ -1,0 +1,23 @@
+{
+  "name": "nadro-mentoria-infrastructure",
+  "version": "1.0.0",
+  "description": "Scripts de infraestructura para Nadro Mentoría",
+  "scripts": {
+    "setup": "node create-dynamodb-tables.js && node create-initial-user.js",
+    "create-tables": "node create-dynamodb-tables.js",
+    "create-user": "node create-initial-user.js",
+    "create-empleado": "node create-empleado.js",
+    "create-empleados-prueba": "node create-empleados-prueba.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.14"
+  }
+}

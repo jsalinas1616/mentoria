@@ -1,0 +1,20 @@
+const AWS = require('aws-sdk');
+
+// Configuración de AWS
+AWS.config.update({
+  region: process.env.AWS_REGION || 'us-east-1',
+});
+
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+
+const TABLES = {
+  CONSULTAS: process.env.CONSULTAS_TABLE || 'NadroMentoria-Consultas',
+  USUARIOS: process.env.USUARIOS_TABLE || 'NadroMentoria-Usuarios',
+};
+
+module.exports = {
+  dynamodb,
+  TABLES,
+};
+
+
