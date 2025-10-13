@@ -1,0 +1,14 @@
+# URLs de Producción - Nadro Mentoría
+# Generado el: Mon Oct 13 12:06:50 CST 2025
+
+## Frontend
+Formulario público: http://nadro-mentoria-frontend-1760378806.s3-website-us-east-1.amazonaws.com
+Login Admin:        http://nadro-mentoria-frontend-1760378806.s3-website-us-east-1.amazonaws.com/admin/login
+
+## Backend
+API URL:            https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com
+
+## AWS Resources
+S3 Bucket:          nadro-mentoria-frontend-1760378806
+Lambda Function:    nadro-mentoria-api-dev (o similar)
+Region:             us-east-1
