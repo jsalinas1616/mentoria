@@ -19,6 +19,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor para manejar respuestas y tokens expirados
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si el token expiró o es inválido
+    if (error.response?.status === 401) {
+      // Limpiar datos de autenticación
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      
+      // Redirigir al login si no estamos ya ahí
+      if (window.location.pathname !== '/#/login' && window.location.pathname !== '/') {
+        window.location.href = '/#/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Servicios de autenticación
 export const authService = {
   login: async (email, password) => {
@@ -38,6 +57,22 @@ export const authService = {
   getCurrentUser: () => {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
+  },
+  
+  isTokenValid: () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    
+    try {
+      // Decodificar el token JWT (solo la parte del payload)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      // Verificar si el token no ha expirado
+      return payload.exp > currentTime;
+    } catch (error) {
+      return false;
+    }
   },
 };
 

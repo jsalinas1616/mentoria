@@ -181,15 +181,17 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   return (
     <div className="min-h-screen bg-gradient-mesh py-8 px-4">
       <div className="max-w-5xl mx-auto">
-        {/* Header Minimalista */}
+        {/* Header con Logo */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
-              <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
-            </div>
+            <img 
+              src="/LOGO_Blanco.png" 
+              alt="Nadro Mentoría" 
+              className="h-12 w-auto filter brightness-0"
+            />
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
-              <p className="text-xs text-gray-500">Reporte de consulta</p>
+              <h1 className="text-lg font-bold text-gray-900">Formulario de Consulta</h1>
+              <p className="text-xs text-gray-500">Reporte de mentoría</p>
             </div>
           </div>
           

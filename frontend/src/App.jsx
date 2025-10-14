@@ -11,13 +11,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar si hay sesión activa
+    // Verificar si hay sesión activa y válida
     const token = localStorage.getItem('authToken');
     const userData = authService.getCurrentUser();
     
-    if (token && userData) {
+    if (token && userData && authService.isTokenValid()) {
       setIsAuthenticated(true);
       setUser(userData);
+    } else {
+      // Si el token expiró, limpiar datos
+      authService.logout();
+      setIsAuthenticated(false);
+      setUser(null);
     }
     
     setLoading(false);

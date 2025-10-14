@@ -79,14 +79,18 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <div className="min-h-screen bg-gradient-mesh flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header Minimalista */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
-            <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+        {/* Header con Logo */}
+        <div className="flex flex-col items-center justify-center mb-8">
+          <div className="mb-4">
+            <img 
+              src="/LOGO_Blanco.png" 
+              alt="Nadro Mentoría" 
+              className="h-16 w-auto filter brightness-0"
+            />
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
-            <p className="text-xs text-gray-500">Acceso administrativo</p>
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-gray-900">Acceso Administrativo</h1>
+            <p className="text-xs text-gray-500">Panel de control</p>
           </div>
         </div>
 

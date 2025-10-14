@@ -149,12 +149,16 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg">
-                <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">Nadro Mentoría</h1>
-                <p className="text-xs text-gray-500">Dashboard de consultas</p>
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/LOGO_Blanco.png" 
+                  alt="Nadro Mentoría" 
+                  className="h-10 w-auto filter brightness-0"
+                />
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">Dashboard</h1>
+                  <p className="text-xs text-gray-500">Panel de consultas</p>
+                </div>
               </div>
             </div>
 
