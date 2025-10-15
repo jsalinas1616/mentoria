@@ -30,6 +30,50 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   const [success, setSuccess] = useState(false);
   const [searchArea, setSearchArea] = useState('');
 
+  // Función para mostrar toast
+  const showToast = (message, type = 'error') => {
+    // Crear toast
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 -translate-y-full ${
+      type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+    }`;
+    toast.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0">
+          ${type === 'error' ? '⚠️' : '✅'}
+        </div>
+        <div class="flex-1">
+          <p class="font-medium">${message}</p>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animar entrada
+    setTimeout(() => toast.classList.remove('-translate-y-full'), 100);
+    
+    // Auto-remove
+    setTimeout(() => {
+      toast.classList.add('-translate-y-full');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  };
+
+  // Función para scroll automático al primer error
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      const firstError = document.querySelector('.border-rose');
+      if (firstError) {
+        firstError.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+    }, 500);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -124,6 +168,10 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      // Mostrar toast y scroll al primer error
+      const errorCount = Object.keys(errors).length;
+      showToast(`Por favor, corrige ${errorCount} error${errorCount > 1 ? 'es' : ''} en el formulario`);
+      scrollToFirstError();
       return;
     }
 
@@ -132,6 +180,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     try {
       await consultasService.crear(formData);
       setSuccess(true);
+      showToast('¡Consulta guardada exitosamente!', 'success');
       
       // Limpiar formulario después de 2 segundos
       setTimeout(() => {
