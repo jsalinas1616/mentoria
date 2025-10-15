@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // URL base de la API - se configurará según el ambiente
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = 'https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com/api';
+
+console.log('API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +15,12 @@ const api = axios.create({
 // Interceptor para agregar token de autenticación
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
-  if (token) {
+  
+  // No enviar token para rutas públicas
+  const publicRoutes = ['/consultas'];
+  const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+  
+  if (token && !isPublicRoute) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -23,15 +30,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Si el token expiró o es inválido
-    if (error.response?.status === 401) {
+    // Si el token expiró o es inválido (pero NO es un error de login)
+    if (error.response?.status === 401 && error.config.url !== '/auth/login') {
       // Limpiar datos de autenticación
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       
       // Redirigir al login si no estamos ya ahí
-      if (window.location.pathname !== '/#/login' && window.location.pathname !== '/') {
-        window.location.href = '/#/login';
+      if (!window.location.hash.includes('/admin/login') && window.location.hash !== '#/') {
+        window.location.href = '#/admin/login';
       }
     }
     return Promise.reject(error);

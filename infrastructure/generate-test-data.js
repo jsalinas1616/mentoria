@@ -1,160 +1,179 @@
 const AWS = require('aws-sdk');
-const { v4: uuidv4 } = require('uuid');
 
 // Configurar AWS
-AWS.config.update({ region: 'us-east-1' });
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+AWS.config.update({
+  region: 'us-east-1'
+});
 
-// Datos de prueba
-const nombresMentores = [
-  'Juan Carlos Pérez', 'María Elena González', 'Roberto Silva', 'Ana Lucía Martínez',
-  'Carlos Alberto Ruiz', 'Patricia Fernández', 'Miguel Ángel López', 'Carmen Rosa Vega',
-  'Diego Alejandro Torres', 'Sofía Isabel Morales', 'Andrés Felipe Castro', 'Valentina Esperanza'
-];
+const dynamodb = new AWS.DynamoDB();
 
-const nombresMentees = [
-  'Luis Fernando Ramírez', 'Diana Carolina Herrera', 'Jorge Eduardo Mendoza', 'Laura Beatriz Jiménez',
-  'Ricardo Antonio Vargas', 'Mónica Patricia Sánchez', 'Fernando José Rojas', 'Claudia Marcela Peña',
-  'Alejandro David Moreno', 'Natalia Esperanza Guzmán', 'Sebastián Andrés Ospina', 'Camila Alejandra Restrepo'
-];
-
-const correosMentores = [
-  'juan.perez@nadro.com', 'maria.gonzalez@nadro.com', 'roberto.silva@nadro.com', 'ana.martinez@nadro.com',
-  'carlos.ruiz@nadro.com', 'patricia.fernandez@nadro.com', 'miguel.lopez@nadro.com', 'carmen.vega@nadro.com',
-  'diego.torres@nadro.com', 'sofia.morales@nadro.com', 'andres.castro@nadro.com', 'valentina.esperanza@nadro.com'
-];
-
-const correosMentees = [
-  'luis.ramirez@nadro.com', 'diana.herrera@nadro.com', 'jorge.mendoza@nadro.com', 'laura.jimenez@nadro.com',
-  'ricardo.vargas@nadro.com', 'monica.sanchez@nadro.com', 'fernando.rojas@nadro.com', 'claudia.pena@nadro.com',
-  'alejandro.moreno@nadro.com', 'natalia.guzman@nadro.com', 'sebastian.ospina@nadro.com', 'camila.restrepo@nadro.com'
-];
-
+// Datos de prueba para los nuevos campos
+const rangosEdad = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-80', '80+'];
+const sexos = ['Hombre', 'Mujer'];
 const lugaresTrabajo = [
-  'CDR SUCURSAL MÉXICO SUR', 'CORPORATIVO', 'CDR SUCURSAL NORTE', 'PLANTA INDUSTRIAL',
-  'CENTRO DE DISTRIBUCIÓN', 'OFICINAS ADMINISTRATIVAS', 'SUCURSAL CENTRO', 'ALMACÉN PRINCIPAL'
+  'Oficina Central', 'Sucursal Norte', 'Sucursal Sur', 'Sucursal Este', 'Sucursal Oeste',
+  'Planta Industrial', 'Centro de Distribución', 'Oficina Regional', 'Sede Corporativa'
 ];
-
 const areas = [
-  'Almacén Diurno', 'Almacén Nocturno', 'Recursos Humanos', 'Contabilidad',
-  'Ventas', 'Marketing', 'Operaciones', 'Logística', 'Calidad', 'Seguridad'
+  'Recursos Humanos', 'Finanzas', 'Ventas', 'Marketing', 'Operaciones',
+  'Tecnología', 'Logística', 'Producción', 'Calidad', 'Administración',
+  'Comercial', 'Desarrollo', 'Investigación', 'Servicio al Cliente'
 ];
-
 const lugaresConsulta = [
-  'Lugar de trabajo', 'Oficina privada', 'Sala de juntas', 'Área común',
-  'Consultorio', 'Espacio abierto', 'Remoto', 'Presencial'
+  'Oficina del Mentor', 'Sala de Juntas', 'Espacio Colaborativo', 'Oficina Privada',
+  'Área de Descanso', 'Sala de Capacitación', 'Espacio Virtual', 'Cafetería'
 ];
-
 const motivosConsulta = [
-  'Ansiedad', 'Estrés', 'Relación de pareja', 'Identidad de género', 'Enojo',
-  'Finanzas', 'Familia', 'Restructura de rutas', 'Liquidaciones lentas', 'Cumpleaños',
-  'Duelo', 'Seguridad en carretera', 'Alcoholismo', 'Depresión', 'Motivación laboral'
+  'Desarrollo de Liderazgo', 'Gestión del Tiempo', 'Comunicación Efectiva', 'Toma de Decisiones',
+  'Manejo de Conflictos', 'Planificación Estratégica', 'Motivación de Equipos', 'Presentaciones',
+  'Networking', 'Crecimiento Profesional', 'Balance Vida-Trabajo', 'Innovación',
+  'Negociación', 'Pensamiento Crítico', 'Adaptabilidad', 'Resolución de Problemas'
+];
+const nombresMentores = [
+  'Ana García', 'Carlos Rodríguez', 'María López', 'José Martínez', 'Laura Sánchez',
+  'Miguel González', 'Carmen Pérez', 'Antonio Ruiz', 'Isabel Torres', 'Francisco Díaz',
+  'Elena Moreno', 'Roberto Jiménez', 'Patricia Herrera', 'Fernando Ramos', 'Sofía Castro',
+  'Diego Morales', 'Valentina Vega', 'Sebastián Herrera', 'Camila Rojas', 'Nicolás Silva'
 ];
 
-const observaciones = [
-  'Consulta inicial de seguimiento', 'Seguimiento mensual', 'Consulta urgente',
-  'Sesión de apoyo emocional', 'Consulta de orientación', 'Seguimiento post-tratamiento',
-  'Consulta de emergencia', 'Sesión regular', 'Consulta de evaluación', 'Seguimiento personalizado'
-];
-
-// Función para generar fecha aleatoria en los últimos 6 meses
 function generarFechaAleatoria() {
-  const ahora = new Date();
-  const hace6Meses = new Date();
-  hace6Meses.setMonth(ahora.getMonth() - 6);
-  
-  const tiempoAleatorio = Math.random() * (ahora.getTime() - hace6Meses.getTime());
-  const fechaAleatoria = new Date(hace6Meses.getTime() + tiempoAleatorio);
-  
-  return fechaAleatoria.toISOString().split('T')[0];
+  const inicio = new Date('2024-01-01');
+  const fin = new Date();
+  const fecha = new Date(inicio.getTime() + Math.random() * (fin.getTime() - inicio.getTime()));
+  return fecha.toISOString().split('T')[0];
 }
 
-// Función para seleccionar elementos aleatorios
-function seleccionarAleatorio(array) {
-  return array[Math.floor(Math.random() * array.length)];
+function generarObservaciones() {
+  const observaciones = [
+    'Sesión muy productiva, el mentee mostró gran interés.',
+    'Se identificaron áreas de mejora específicas.',
+    'Excelente progreso en los objetivos planteados.',
+    'Se requiere seguimiento adicional en próximas sesiones.',
+    'El mentee demostró buena receptividad a los consejos.',
+    'Sesión enfocada en desarrollo de habilidades blandas.',
+    'Se establecieron metas claras para el próximo mes.',
+    'Conversación fluida y constructiva.',
+    'Se abordaron temas de liderazgo y comunicación.',
+    'Sesión de seguimiento con resultados positivos.'
+  ];
+  return observaciones[Math.floor(Math.random() * observaciones.length)];
 }
 
-function seleccionarMultiples(array, min = 1, max = 3) {
-  const cantidad = Math.floor(Math.random() * (max - min + 1)) + min;
-  const resultado = [];
-  const copia = [...array];
+function generarMotivosAleatorios() {
+  const cantidad = Math.floor(Math.random() * 3) + 1; // 1-3 motivos
+  const motivosSeleccionados = [];
+  const motivosDisponibles = [...motivosConsulta];
   
-  for (let i = 0; i < cantidad && copia.length > 0; i++) {
-    const indice = Math.floor(Math.random() * copia.length);
-    resultado.push(copia.splice(indice, 1)[0]);
+  for (let i = 0; i < cantidad; i++) {
+    const indice = Math.floor(Math.random() * motivosDisponibles.length);
+    motivosSeleccionados.push(motivosDisponibles[indice]);
+    motivosDisponibles.splice(indice, 1); // Evitar duplicados
   }
   
-  return resultado;
+  return motivosSeleccionados;
 }
 
-// Función para generar una consulta aleatoria
-function generarConsulta() {
-  const id = uuidv4();
-  const timestamp = new Date().toISOString();
-  
-  return {
-    id,
-    nombreMentor: seleccionarAleatorio(nombresMentores),
-    correoMentor: seleccionarAleatorio(correosMentores),
-    nombreMentee: seleccionarAleatorio(nombresMentees),
-    correoMentee: seleccionarAleatorio(correosMentees),
-    fecha: generarFechaAleatoria(),
-    lugarTrabajo: seleccionarAleatorio(lugaresTrabajo),
-    area: seleccionarAleatorio(areas),
-    lugarConsulta: seleccionarAleatorio(lugaresConsulta),
-    motivosConsulta: seleccionarMultiples(motivosConsulta, 1, 4),
-    observaciones: seleccionarAleatorio(observaciones),
-    createdAt: timestamp,
-    updatedAt: timestamp
+function generarCorreoMentor(nombreMentor) {
+  const timestamp = Date.now();
+  const nombreLimpio = nombreMentor.toLowerCase().replace(/\s+/g, '.');
+  return `${nombreLimpio}.${timestamp}@temp-nadro.com`;
+}
+
+async function insertarConsulta(consulta) {
+  const params = {
+    TableName: 'NadroMentoria-Consultas',
+    Item: {
+      'id': { S: consulta.id },
+      'nombreMentor': { S: consulta.nombreMentor },
+      'correoMentor': { S: consulta.correoMentor },
+      'fecha': { S: consulta.fecha },
+      'rangoEdad': { S: consulta.rangoEdad },
+      'sexo': { S: consulta.sexo },
+      'numeroSesion': { N: consulta.numeroSesion.toString() },
+      'lugarTrabajo': { S: consulta.lugarTrabajo },
+      'area': { S: consulta.area },
+      'lugarConsulta': { S: consulta.lugarConsulta },
+      'motivosConsulta': { SS: consulta.motivosConsulta },
+      'observaciones': { S: consulta.observaciones },
+      'createdAt': { S: new Date().toISOString() }
+    }
   };
+
+  try {
+    await dynamodb.putItem(params).promise();
+    console.log(`✅ Insertado: ${consulta.nombreMentor} - Sesión ${consulta.numeroSesion}`);
+  } catch (error) {
+    console.error(`❌ Error insertando ${consulta.id}:`, error.message);
+  }
 }
 
-// Función principal
-async function generarDatosPrueba(cantidad = 50) {
-  console.log(`🚀 Generando ${cantidad} consultas de prueba...`);
+async function generarDatosPrueba(cantidad = 500) {
+  console.log(`🚀 Generando ${cantidad} registros de prueba...`);
   
   const consultas = [];
   
   for (let i = 0; i < cantidad; i++) {
-    consultas.push(generarConsulta());
+    const nombreMentor = nombresMentores[Math.floor(Math.random() * nombresMentores.length)];
+    const correoMentor = generarCorreoMentor(nombreMentor);
+    
+    const consulta = {
+      id: `test-${Date.now()}-${i}`,
+      nombreMentor: nombreMentor,
+      correoMentor: correoMentor,
+      fecha: generarFechaAleatoria(),
+      rangoEdad: rangosEdad[Math.floor(Math.random() * rangosEdad.length)],
+      sexo: sexos[Math.floor(Math.random() * sexos.length)],
+      numeroSesion: Math.floor(Math.random() * 10) + 1, // 1-10 sesiones
+      lugarTrabajo: lugaresTrabajo[Math.floor(Math.random() * lugaresTrabajo.length)],
+      area: areas[Math.floor(Math.random() * areas.length)],
+      lugarConsulta: lugaresConsulta[Math.floor(Math.random() * lugaresConsulta.length)],
+      motivosConsulta: generarMotivosAleatorios(),
+      observaciones: generarObservaciones()
+    };
+    
+    consultas.push(consulta);
   }
   
-  console.log('📝 Consultas generadas, insertando en DynamoDB...');
+  console.log(`📊 Datos generados. Insertando en DynamoDB...`);
   
-  let exitosas = 0;
-  let errores = 0;
-  
-  for (const consulta of consultas) {
-    try {
-      const params = {
-        TableName: 'NadroMentoria-Consultas',
-        Item: consulta
-      };
-      
-      await dynamodb.put(params).promise();
-      exitosas++;
-      
-      if (exitosas % 10 === 0) {
-        console.log(`✅ ${exitosas} consultas insertadas...`);
-      }
-    } catch (error) {
-      console.error(`❌ Error insertando consulta ${consulta.id}:`, error.message);
-      errores++;
-    }
+  // Insertar en lotes de 25 (límite de DynamoDB)
+  const lotes = [];
+  for (let i = 0; i < consultas.length; i += 25) {
+    lotes.push(consultas.slice(i, i + 25));
   }
   
-  console.log('\n🎉 Proceso completado!');
-  console.log(`✅ Consultas exitosas: ${exitosas}`);
-  console.log(`❌ Errores: ${errores}`);
-  console.log(`📊 Total: ${exitosas + errores}`);
-  
-  if (exitosas > 0) {
-    console.log('\n🌐 Ahora puedes verificar el dashboard en:');
-    console.log('   Local: http://localhost:3000/index.html#/admin/dashboard');
-    console.log('   Producción: https://nadro-mentoria-frontend-1760378806.s3.us-east-1.amazonaws.com/index.html#/admin/dashboard');
+  let insertados = 0;
+  for (const lote of lotes) {
+    const promesas = lote.map(consulta => insertarConsulta(consulta));
+    await Promise.all(promesas);
+    insertados += lote.length;
+    console.log(`📈 Progreso: ${insertados}/${cantidad} registros insertados`);
+    
+    // Pequeña pausa para no sobrecargar DynamoDB
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
+  
+  console.log(`🎉 ¡Completado! Se insertaron ${insertados} registros de prueba.`);
+  console.log(`📋 Resumen de datos generados:`);
+  console.log(`   - Rangos de edad: ${rangosEdad.join(', ')}`);
+  console.log(`   - Sexos: ${sexos.join(', ')}`);
+  console.log(`   - Número de sesiones: 1-10`);
+  console.log(`   - Motivos de consulta: ${motivosConsulta.length} opciones`);
+  console.log(`   - Áreas: ${areas.length} opciones`);
+  console.log(`   - Lugares de trabajo: ${lugaresTrabajo.length} opciones`);
 }
 
-// Ejecutar
-const cantidad = process.argv[2] ? parseInt(process.argv[2]) : 50;
-generarDatosPrueba(cantidad).catch(console.error);
+// Ejecutar si se llama directamente
+if (require.main === module) {
+  generarDatosPrueba(500)
+    .then(() => {
+      console.log('✅ Script completado exitosamente');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('❌ Error en el script:', error);
+      process.exit(1);
+    });
+}
+
+module.exports = { generarDatosPrueba };

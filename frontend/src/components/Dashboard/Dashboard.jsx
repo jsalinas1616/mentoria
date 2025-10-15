@@ -8,6 +8,8 @@ import {
   Plus, LogOut, Menu, Sparkles, BarChart3, PieChart as PieChartIcon, Activity,
   Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare,
 } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { dashboardService, consultasService, authService } from '../../services/api';
 import { formatearFecha } from '../../utils/validation';
 
@@ -112,8 +114,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     return (
       consulta.nombreMentor?.toLowerCase().includes(terminoBusqueda) ||
       consulta.correoMentor?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.nombreMentee?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.correoMentee?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.sexo?.toLowerCase().includes(terminoBusqueda) ||
       consulta.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
       consulta.area?.toLowerCase().includes(terminoBusqueda)
     );
@@ -205,22 +207,32 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Inicio</label>
-                  <input
-                    type="date"
-                    name="fechaInicio"
-                    value={filtros.fechaInicio}
-                    onChange={handleFiltroChange}
+                  <DatePicker
+                    selected={filtros.fechaInicio ? new Date(filtros.fechaInicio) : null}
+                    onChange={(date) => {
+                      const fechaISO = date ? date.toISOString().split('T')[0] : '';
+                      setFiltros(prev => ({ ...prev, fechaInicio: fechaISO }));
+                    }}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="DD/MM/AAAA"
+                    isClearable
                     className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
+                    wrapperClassName="w-full"
                   />
                 </div>
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Fin</label>
-                  <input
-                    type="date"
-                    name="fechaFin"
-                    value={filtros.fechaFin}
-                    onChange={handleFiltroChange}
+                  <DatePicker
+                    selected={filtros.fechaFin ? new Date(filtros.fechaFin) : null}
+                    onChange={(date) => {
+                      const fechaISO = date ? date.toISOString().split('T')[0] : '';
+                      setFiltros(prev => ({ ...prev, fechaFin: fechaISO }));
+                    }}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="DD/MM/AAAA"
+                    isClearable
                     className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
+                    wrapperClassName="w-full"
                   />
                 </div>
                 <div>
@@ -470,8 +482,10 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <tr className="border-b border-gray-200">
                   <th className="text-left text-gray-700 font-semibold pb-4 px-4">Fecha</th>
                   <th className="text-left text-gray-700 font-semibold pb-4 px-4">Mentor</th>
-                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Mentee</th>
-                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Lugar Trabajo</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Sesión #</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Edad</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Sexo</th>
+                  <th className="text-left text-gray-700 font-semibold pb-4 px-4">Lugar</th>
                   <th className="text-left text-gray-700 font-semibold pb-4 px-4">Área</th>
                   <th className="text-left text-gray-700 font-semibold pb-4 px-4">Motivos</th>
                   <th className="text-left text-gray-700 font-semibold pb-4 px-4">Acciones</th>
@@ -487,17 +501,15 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                       {formatearFecha(consulta.fecha)}
                     </td>
                     <td className="py-4 px-4">
-                      <div>
-                        <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentor}</p>
-                        <p className="text-gray-500 text-xs">{consulta.correoMentor}</p>
-                      </div>
+                      <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentor}</p>
                     </td>
                     <td className="py-4 px-4">
-                      <div>
-                        <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentee || 'N/A'}</p>
-                        <p className="text-gray-500 text-xs">{consulta.correoMentee || 'N/A'}</p>
-                      </div>
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-primary/10 to-accent/10 text-primary font-bold rounded-full">
+                        {consulta.numeroSesion || '-'}
+                      </span>
                     </td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.rangoEdad || 'N/A'}</td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.sexo || 'N/A'}</td>
                     <td className="py-4 px-4 text-gray-700 text-sm">{consulta.lugarTrabajo}</td>
                     <td className="py-4 px-4 text-gray-600 text-sm truncate max-w-xs">
                       {consulta.area}
@@ -650,16 +662,20 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                   <div className="p-2 bg-accent/10 rounded-lg">
                     <Users className="text-accent" size={20} />
                   </div>
-                  Datos del Mentee
+                  Datos Demográficos (Confidencial)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Nombre Completo</label>
-                    <p className="text-gray-900 font-medium">{consultaSeleccionada.nombreMentee || 'N/A'}</p>
+                    <label className="text-sm font-semibold text-gray-600">Rango de Edad</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.rangoEdad || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Correo Electrónico</label>
-                    <p className="text-gray-900 font-medium">{consultaSeleccionada.correoMentee || 'N/A'}</p>
+                    <label className="text-sm font-semibold text-gray-600">Sexo</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.sexo || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Número de Sesión</label>
+                    <p className="text-gray-900 font-medium">{consultaSeleccionada.numeroSesion || 'N/A'}</p>
                   </div>
                 </div>
               </div>

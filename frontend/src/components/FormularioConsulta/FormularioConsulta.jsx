@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { consultasService, authService } from '../../services/api';
 import motivosConsultaData from '../../data/motivosConsulta.json';
 import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
@@ -13,11 +15,12 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     // Datos del Mentor
     nombreMentor: '',
     correoMentor: '',
-    // Datos del Mentee
-    nombreMentee: '',
-    correoMentee: '',
     // Datos de la Consulta
     fecha: new Date().toISOString().split('T')[0],
+    // Datos Demográficos (Anónimos)
+    rangoEdad: '',
+    sexo: '',
+    numeroSesion: '',
     lugarTrabajo: '',
     area: '',
     lugarConsulta: '',
@@ -122,26 +125,28 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
       newErrors.nombreMentor = 'El nombre completo es requerido';
     }
 
-    if (!validarRequerido(formData.correoMentor)) {
-      newErrors.correoMentor = 'El correo electrónico es requerido';
-    } else if (!validarEmail(formData.correoMentor)) {
-      newErrors.correoMentor = 'Ingresa un correo electrónico válido';
-    }
-
-    // Validar datos del mentee
-    if (!validarRequerido(formData.nombreMentee)) {
-      newErrors.nombreMentee = 'El nombre del mentee es requerido';
-    }
-
-    if (!validarRequerido(formData.correoMentee)) {
-      newErrors.correoMentee = 'El correo del mentee es requerido';
-    } else if (!validarEmail(formData.correoMentee)) {
-      newErrors.correoMentee = 'Ingresa un correo electrónico válido';
-    }
-
+    // Correo del mentor - NO se valida porque se genera automáticamente
+    // if (!validarRequerido(formData.correoMentor)) {
+    //   newErrors.correoMentor = 'El correo electrónico es requerido';
+    // } else if (!validarEmail(formData.correoMentor)) {
+    //   newErrors.correoMentor = 'Ingresa un correo electrónico válido';
+    // }
 
     if (!validarRequerido(formData.fecha)) {
       newErrors.fecha = 'La fecha es requerida';
+    }
+
+    // Validaciones de datos demográficos
+    if (!validarRequerido(formData.rangoEdad)) {
+      newErrors.rangoEdad = 'El rango de edad es requerido';
+    }
+
+    if (!validarRequerido(formData.sexo)) {
+      newErrors.sexo = 'El sexo es requerido';
+    }
+
+    if (!validarRequerido(formData.numeroSesion)) {
+      newErrors.numeroSesion = 'El número de sesión es requerido';
     }
 
     if (!validarRequerido(formData.lugarTrabajo)) {
@@ -178,7 +183,19 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     setLoading(true);
 
     try {
-      await consultasService.crear(formData);
+      // Generar correo del mentor automáticamente basado en nombre + timestamp para hacerlo único
+      const timestamp = Date.now();
+      const correoMentorGenerado = formData.nombreMentor 
+        ? `${formData.nombreMentor.toLowerCase().replace(/\s+/g, '.')}.${timestamp}@temp-nadro.com`
+        : `mentor.${timestamp}@temp-nadro.com`;
+
+      // Crear objeto con correo generado (sin datos de mentee por confidencialidad)
+      const dataToSend = {
+        ...formData,
+        correoMentor: correoMentorGenerado,
+      };
+
+      await consultasService.crear(dataToSend);
       setSuccess(true);
       showToast('¡Consulta guardada exitosamente!', 'success');
       
@@ -188,6 +205,9 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
           nombreMentor: '',
           correoMentor: '',
           fecha: new Date().toISOString().split('T')[0],
+          rangoEdad: '',
+          sexo: '',
+          numeroSesion: '',
           lugarTrabajo: '',
           area: '',
           lugarConsulta: '',
@@ -239,7 +259,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               className="h-12 w-auto"
             />
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Formulario de Consulta</h1>
+              <h1 className="text-lg font-bold text-gray-900">Mentoria Integral</h1>
               <p className="text-xs text-gray-500">Reporte de mentoría</p>
             </div>
           </div>
@@ -275,7 +295,8 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
+                {/* Nombre del Mentor */}
+                <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Nombre Completo <span className="text-rose">*</span>
                   </label>
@@ -302,7 +323,8 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                   )}
                 </div>
 
-                <div>
+                {/* Campo de correo del mentor - OCULTO - Se genera automáticamente */}
+                {/* <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Correo Electrónico <span className="text-rose">*</span>
                   </label>
@@ -327,24 +349,33 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                       {errors.correoMentor}
                     </p>
                   )}
-                </div>
+                </div> */}
 
+                {/* Fecha de Consulta */}
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Fecha de Consulta <span className="text-rose">*</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                       <Calendar className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
-                      type="date"
-                      name="fecha"
-                      value={formData.fecha}
-                      onChange={handleChange}
+                    <DatePicker
+                      selected={formData.fecha ? new Date(formData.fecha) : null}
+                      onChange={(date) => {
+                        const fechaISO = date ? date.toISOString().split('T')[0] : '';
+                        setFormData(prev => ({ ...prev, fecha: fechaISO }));
+                        if (errors.fecha) {
+                          setErrors(prev => ({ ...prev, fecha: '' }));
+                        }
+                      }}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="DD/MM/AAAA"
                       className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
                         errors.fecha ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
                       }`}
+                      wrapperClassName="w-full"
+                      calendarClassName="bg-white shadow-lg rounded-xl border border-gray-200"
                     />
                   </div>
                   {errors.fecha && (
@@ -357,85 +388,106 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             </div>
 
-            {/* Sección 2: Datos del Mentee */}
-            <div className="space-y-6 pt-6 border-t-2 border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-accent/10 to-accent-light/10 rounded-xl">
-                  <User className="w-6 h-6 text-accent" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Datos del Mentee</h2>
-                  <p className="text-sm text-gray-600">Información de la persona que recibe la mentoría</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Nombre del Mentee */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                    Nombre Completo del Mentee *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="nombreMentee"
-                      value={formData.nombreMentee}
-                      onChange={handleChange}
-                      placeholder="Ingresa el nombre completo del mentee"
-                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.nombreMentee ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
-                      }`}
-                    />
-                  </div>
-                  {errors.nombreMentee && (
-                    <p className="text-rose text-sm mt-1.5">{errors.nombreMentee}</p>
-                  )}
-                </div>
-
-                {/* Correo del Mentee */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                    Correo Electrónico del Mentee *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      name="correoMentee"
-                      value={formData.correoMentee}
-                      onChange={handleChange}
-                      placeholder="correo@ejemplo.com"
-                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.correoMentee ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
-                      }`}
-                    />
-                  </div>
-                  {errors.correoMentee && (
-                    <p className="text-rose text-sm mt-1.5">{errors.correoMentee}</p>
-                  )}
-                </div>
-
-              </div>
-            </div>
-
-            {/* Sección 3: Información Laboral */}
+            {/* Sección 2: Datos Demográficos (Anónimos) */}
             <div className="space-y-6 pt-6 border-t-2 border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
-                  <Briefcase className="w-6 h-6 text-primary" />
+                  <Users className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Información Laboral del Mentee</h2>
-                  <p className="text-sm text-gray-500">Detalles del lugar y área de trabajo del mentee</p>
+                  <h2 className="text-2xl font-bold text-gray-800">Datos Estadísticos</h2>
+                  {/* <p className="text-sm text-gray-500">Información anónima del empleado que recibe mentoría</p> */}
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Rango de Edad */}
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                    Rango de Edad <span className="text-rose">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="rangoEdad"
+                      value={formData.rangoEdad}
+                      onChange={handleChange}
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.rangoEdad ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">Selecciona un rango</option>
+                      <option value="18-25">18 - 25 años</option>
+                      <option value="26-35">26 - 35 años</option>
+                      <option value="36-45">36 - 45 años</option>
+                      <option value="46-55">46 - 55 años</option>
+                      <option value="56-65">56 - 65 años</option>
+                      <option value="66-75">66 - 75 años</option>
+                      <option value="76-80">76 - 80 años</option>
+                      <option value="80+">80+ años</option>
+                    </select>
+                  </div>
+                  {errors.rangoEdad && (
+                    <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.rangoEdad}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sexo */}
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                    Sexo <span className="text-rose">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="sexo"
+                      value={formData.sexo}
+                      onChange={handleChange}
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.sexo ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">Selecciona una opción</option>
+                      <option value="Hombre">Hombre</option>
+                      <option value="Mujer">Mujer</option>
+                    </select>
+                  </div>
+                  {errors.sexo && (
+                    <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.sexo}
+                    </p>
+                  )}
+                </div>
+
+                {/* Número de Sesión */}
+                <div>
+                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                    Número de Sesión <span className="text-rose">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="numeroSesion"
+                      value={formData.numeroSesion}
+                      onChange={handleChange}
+                      placeholder="Ej: 1, 2, 3..."
+                      min="1"
+                      className={`w-full bg-white border-2 text-gray-900 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
+                        errors.numeroSesion ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                      }`}
+                    />
+                  </div>
+                  {errors.numeroSesion && (
+                    <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {errors.numeroSesion}
+                    </p>
+                  )}
+                </div>
+
+                {/* Lugar de Trabajo */}
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
                     Lugar de Trabajo <span className="text-rose">*</span>
@@ -506,15 +558,15 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             </div>
 
-            {/* Sección 4: Detalles de la Consulta */}
+            {/* Sección 3: Detalles de la Consulta */}
             <div className="space-y-6 pt-6 border-t-2 border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
                   <MessageSquare className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta del Mentee</h2>
-                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta del mentee</p>
+                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta</h2>
+                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta (confidencial)</p>
                 </div>
               </div>
               

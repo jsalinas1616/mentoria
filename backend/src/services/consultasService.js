@@ -30,6 +30,45 @@ class ConsultasService {
     const result = await dynamodb.scan(params).promise();
     let items = result.Items || [];
 
+    // Convertir datos de DynamoDB a formato normal
+    items = items.map(item => {
+      const convertedItem = {};
+      
+      // Convertir cada campo de DynamoDB a formato normal
+      Object.keys(item).forEach(key => {
+        const value = item[key];
+        
+        if (value.S) {
+          // String
+          convertedItem[key] = value.S;
+        } else if (value.N) {
+          // Number
+          convertedItem[key] = Number(value.N);
+        } else if (value.SS) {
+          // String Set (Array)
+          convertedItem[key] = value.SS;
+        } else if (value.L) {
+          // List (Array) - convertir cada elemento
+          convertedItem[key] = value.L.map(item => {
+            if (item.S) return item.S;
+            if (item.N) return Number(item.N);
+            return item;
+          });
+        } else if (value.NS) {
+          // Number Set (Array)
+          convertedItem[key] = value.NS.map(n => Number(n));
+        } else if (value.BOOL !== undefined) {
+          // Boolean
+          convertedItem[key] = value.BOOL;
+        } else {
+          // Mantener como está si no es un tipo conocido
+          convertedItem[key] = value;
+        }
+      });
+      
+      return convertedItem;
+    });
+
     // Aplicar filtros
     if (filtros.fechaInicio) {
       items = items.filter(item => item.fecha >= filtros.fechaInicio);
@@ -61,7 +100,38 @@ class ConsultasService {
     };
 
     const result = await dynamodb.get(params).promise();
-    return result.Item;
+    if (!result.Item) return null;
+
+    // Convertir datos de DynamoDB a formato normal
+    const item = result.Item;
+    const convertedItem = {};
+    
+    Object.keys(item).forEach(key => {
+      const value = item[key];
+      
+      if (value.S) {
+        convertedItem[key] = value.S;
+      } else if (value.N) {
+        convertedItem[key] = Number(value.N);
+      } else if (value.SS) {
+        convertedItem[key] = value.SS;
+      } else if (value.L) {
+        // List (Array) - convertir cada elemento
+        convertedItem[key] = value.L.map(item => {
+          if (item.S) return item.S;
+          if (item.N) return Number(item.N);
+          return item;
+        });
+      } else if (value.NS) {
+        convertedItem[key] = value.NS.map(n => Number(n));
+      } else if (value.BOOL !== undefined) {
+        convertedItem[key] = value.BOOL;
+      } else {
+        convertedItem[key] = value;
+      }
+    });
+
+    return convertedItem;
   }
 
   async actualizar(id, consulta) {
@@ -121,7 +191,9 @@ class ConsultasService {
     // Motivos más frecuentes
     const motivosMap = {};
     consultas.forEach(c => {
-      c.motivosConsulta.forEach(motivo => {
+      // Asegurar que motivosConsulta sea un array
+      const motivos = Array.isArray(c.motivosConsulta) ? c.motivosConsulta : [];
+      motivos.forEach(motivo => {
         motivosMap[motivo] = (motivosMap[motivo] || 0) + 1;
       });
     });
