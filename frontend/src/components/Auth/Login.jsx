@@ -85,7 +85,7 @@ const Login = ({ onLoginSuccess }) => {
             <img 
               src="/LOGO_Blanco.png" 
               alt="Nadro Mentoría" 
-              className="h-16 w-auto filter brightness-0"
+              className="h-16 w-auto"
             />
           </div>
           <div className="text-center">

@@ -104,8 +104,7 @@ class ConsultasController {
       // Generar buffer del archivo Excel
       const excelBuffer = XLSX.write(workbook, { 
         type: 'buffer', 
-        bookType: 'xlsx',
-        compression: true
+        bookType: 'xlsx'
       });
       
       // Configurar headers para descarga
@@ -115,8 +114,8 @@ class ConsultasController {
       res.setHeader('Content-Length', excelBuffer.length);
       res.setHeader('Cache-Control', 'no-cache');
       
-      // Enviar archivo
-      res.end(excelBuffer);
+      // Enviar archivo usando send en lugar de end
+      res.send(excelBuffer);
     } catch (error) {
       next(error);
     }

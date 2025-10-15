@@ -187,7 +187,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
             <img 
               src="/LOGO_Blanco.png" 
               alt="Nadro Mentoría" 
-              className="h-12 w-auto filter brightness-0"
+              className="h-12 w-auto"
             />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Formulario de Consulta</h1>

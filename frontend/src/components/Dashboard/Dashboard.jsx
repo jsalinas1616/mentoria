@@ -153,7 +153,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <img 
                   src="/LOGO_Blanco.png" 
                   alt="Nadro Mentoría" 
-                  className="h-10 w-auto filter brightness-0"
+                  className="h-10 w-auto"
                 />
                 <div>
                   <h1 className="text-lg font-bold text-gray-900">Dashboard</h1>
