@@ -451,13 +451,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 </p>
               </div>
             </div>
-            <button
+            {/* <button
               onClick={() => handleExportar('excel')}
               className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 font-semibold shadow-lg"
             >
               <Download size={18} />
               Exportar Excel
-            </button>
+            </button> */}
           </div>
 
           {/* Buscador */}

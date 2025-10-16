@@ -260,7 +260,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
             />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Mentoria Integral</h1>
-              <p className="text-xs text-gray-500">Reporte de mentoría</p>
+              {/* <p className="text-xs text-gray-500">Reporte de mentoría</p> */}
             </div>
           </div>
           
@@ -395,8 +395,8 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                   <Users className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Datos Estadísticos</h2>
-                  {/* <p className="text-sm text-gray-500">Información anónima del empleado que recibe mentoría</p> */}
+                  <h2 className="text-2xl font-bold text-gray-800">Datos Demográficos</h2>
+                  <p className="text-sm text-gray-500">Información con fin estadístico</p>
                 </div>
               </div>
               

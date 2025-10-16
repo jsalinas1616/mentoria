@@ -16,11 +16,10 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
   
-  // No enviar token para rutas públicas
-  const publicRoutes = ['/consultas'];
-  const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+  // No enviar token para rutas públicas (solo POST /consultas)
+  const isPublicConsulta = config.url?.includes('/consultas') && config.method === 'post';
   
-  if (token && !isPublicRoute) {
+  if (token && !isPublicConsulta) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -30,16 +29,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Si el token expiró o es inválido (pero NO es un error de login)
-    if (error.response?.status === 401 && error.config.url !== '/auth/login') {
+    // Solo manejar 401 si NO estamos en login y NO es una petición de login
+    const isLoginRequest = error.config?.url?.includes('/auth/login');
+    const isOnLoginPage = window.location.hash.includes('/admin/login');
+    
+    if (error.response?.status === 401 && !isLoginRequest && !isOnLoginPage) {
       // Limpiar datos de autenticación
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       
-      // Redirigir al login si no estamos ya ahí
-      if (!window.location.hash.includes('/admin/login') && window.location.hash !== '#/') {
-        window.location.href = '#/admin/login';
-      }
+      // Redirigir al login
+      window.location.href = '#/admin/login';
     }
     return Promise.reject(error);
   }
