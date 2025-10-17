@@ -1,8 +1,14 @@
 // Configuración de variables de entorno
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const JWT_SECRET = process.env.JWT_SECRET || 'nadro-mentoria-secret-key-2024';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
+
+// Validar variables críticas de seguridad
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET es requerido para la seguridad de la aplicación');
+}
+
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const CONSULTAS_TABLE = process.env.CONSULTAS_TABLE || 'NadroMentoria-Consultas';
 const USUARIOS_TABLE = process.env.USUARIOS_TABLE || 'NadroMentoria-Usuarios';
 

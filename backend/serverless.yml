@@ -7,9 +7,11 @@ provider:
   runtime: nodejs18.x
   region: us-east-1
   stage: ${opt:stage, 'dev'}
+  timeout: 30
+  memorySize: 512
   environment:
     NODE_ENV: ${self:provider.stage}
-    JWT_SECRET: nadro-mentoria-secret-key-2024
+    JWT_SECRET: ${env:JWT_SECRET}
     CONSULTAS_TABLE: NadroMentoria-Consultas
     USUARIOS_TABLE: NadroMentoria-Usuarios
   
@@ -33,11 +35,14 @@ functions:
     handler: src/lambda.handler
     events:
       - httpApi:
-          path: /{proxy+}
+          path: /api/{proxy+}
+          method: ANY
+      - httpApi:
+          path: /api
           method: ANY
       - httpApi:
           path: /
-          method: ANY
+          method: GET
 
 plugins:
   - serverless-offline
@@ -45,4 +50,16 @@ plugins:
 custom:
   serverless-offline:
     httpPort: 3001
+
+# Configuración de seguridad adicional
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${self:service}-${self:provider.stage}
+        Description: API segura para Nadro Mentoría
+        EndpointConfiguration:
+          Types:
+            - REGIONAL
 
