@@ -82,7 +82,6 @@ function App() {
           element={
             isAuthenticated && user?.rol === 'admin' ? (
               <Dashboard 
-                onNuevaConsulta={() => window.location.href = '/admin/nueva-consulta'}
                 onLogout={handleLogout}
               />
             ) : (
@@ -91,9 +90,9 @@ function App() {
           } 
         />
 
-        {/* Ruta protegida - Formulario desde admin */}
+        {/* Ruta protegida - Formulario desde admin (integrado en dashboard) */}
         <Route 
-          path="/admin/nueva-consulta" 
+          path="/admin/dashboard/consultas/nueva" 
           element={
             isAuthenticated && user?.rol === 'admin' ? (
               <FormularioConsulta

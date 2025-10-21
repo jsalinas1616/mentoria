@@ -252,7 +252,7 @@ Costo estimado: ~$1.70/mes (o GRATIS con capa gratuita AWS)
 
 ═══════════════════════════════════════════════════════════════════════
 
-                     🎊 ¡TODO ESTÁ LISTO! 🎊
+                
 
               El sistema está 100% funcional y documentado.
                    Solo ejecuta: ./start-dev.sh
@@ -260,9 +260,7 @@ Costo estimado: ~$1.70/mes (o GRATIS con capa gratuita AWS)
 ═══════════════════════════════════════════════════════════════════════
 
 
-Desarrollado con ❤️ para Nadro
-Sistema de Consulta Integral de Mentoría v1.0.0
-Octubre 2024
+
 
 
 

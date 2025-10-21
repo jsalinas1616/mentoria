@@ -85,28 +85,30 @@ export const authService = {
 
 // Servicios de consultas
 export const consultasService = {
+  // Crear consulta pública (sin autenticación)
   crear: async (consulta) => {
     const response = await api.post('/consultas', consulta);
     return response.data;
   },
   
+  // Consultas protegidas (requieren autenticación) - ahora en dashboard
   listar: async (filtros = {}) => {
-    const response = await api.get('/consultas', { params: filtros });
+    const response = await api.get('/dashboard/consultas', { params: filtros });
     return response.data;
   },
   
   obtener: async (id) => {
-    const response = await api.get(`/consultas/${id}`);
+    const response = await api.get(`/dashboard/consultas/${id}`);
     return response.data;
   },
   
   actualizar: async (id, consulta) => {
-    const response = await api.put(`/consultas/${id}`, consulta);
+    const response = await api.put(`/dashboard/consultas/${id}`, consulta);
     return response.data;
   },
   
   eliminar: async (id) => {
-    const response = await api.delete(`/consultas/${id}`);
+    const response = await api.delete(`/dashboard/consultas/${id}`);
     return response.data;
   },
 };
@@ -119,7 +121,7 @@ export const dashboardService = {
   },
   
   exportar: async (formato = 'excel', filtros = {}) => {
-    const response = await api.get('/consultas/export', {
+    const response = await api.get('/dashboard/consultas/export', {
       params: { formato, ...filtros },
       responseType: 'blob',
     });

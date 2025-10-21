@@ -170,13 +170,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <p className="text-gray-500 text-xs">{user?.email || ''}</p>
               </div>
               
-              {/* <button
-                onClick={onNuevaConsulta}
+              <button
+                onClick={() => window.location.href = '/admin/dashboard/consultas/nueva'}
                 className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
               >
                 <Plus size={18} />
                 <span className="hidden sm:inline">Nueva Consulta</span>
-              </button> */}
+              </button>
               
               <button
                 onClick={onLogout}
@@ -451,13 +451,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 </p>
               </div>
             </div>
-            {/* <button
+            <button
               onClick={() => handleExportar('excel')}
               className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 font-semibold shadow-lg"
             >
               <Download size={18} />
               Exportar Excel
-            </button> */}
+            </button>
           </div>
 
           {/* Buscador */}

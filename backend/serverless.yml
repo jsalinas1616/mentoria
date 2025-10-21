@@ -5,15 +5,17 @@ frameworkVersion: '4'
 provider:
   name: aws
   runtime: nodejs18.x
-  region: us-east-1
+  region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
-  timeout: 30
-  memorySize: 512
+  profile: ${opt:profile, 'default'}
+  timeout: ${self:custom.timeout.${self:provider.stage}, 30}
+  memorySize: ${self:custom.memorySize.${self:provider.stage}, 512}
   environment:
     NODE_ENV: ${self:provider.stage}
     JWT_SECRET: ${env:JWT_SECRET}
-    CONSULTAS_TABLE: NadroMentoria-Consultas
-    USUARIOS_TABLE: NadroMentoria-Usuarios
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN, '7d'}
+    CONSULTAS_TABLE: NadroMentoria-Consultas-${self:provider.stage}
+    USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
   
   iam:
     role:
@@ -27,8 +29,8 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas"
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
 
 functions:
   api:
@@ -50,6 +52,17 @@ plugins:
 custom:
   serverless-offline:
     httpPort: 3001
+  
+  # Configuración específica por ambiente
+  timeout:
+    dev: 30        # QA (actual)
+    'dev-jul': 30   # DEV-JUL (ajustado para HTTP API)
+    prod: 30        # PRODUCCIÓN (ajustado para HTTP API)
+  
+  memorySize:
+    dev: 512       # QA (actual)
+    'dev-jul': 1024 # DEV-JUL (nuevo)
+    prod: 2048     # PRODUCCIÓN (nuevo)
 
 # Configuración de seguridad adicional
 resources:
