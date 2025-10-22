@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users, ArrowLeft, RotateCcw } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { consultasService, authService } from '../../services/api';
@@ -227,6 +227,30 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     }
   };
 
+  const limpiarFormulario = () => {
+    // Confirmar antes de limpiar
+    if (window.confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderán todos los datos ingresados.')) {
+      setFormData({
+        nombreMentor: '',
+        correoMentor: '',
+        fecha: new Date().toISOString().split('T')[0],
+        rangoEdad: '',
+        sexo: '',
+        numeroSesion: '',
+        lugarTrabajo: '',
+        area: '',
+        lugarConsulta: '',
+        motivosConsulta: [],
+        observaciones: '',
+      });
+      setErrors({});
+      setSearchArea('');
+      showToast('Formulario limpiado correctamente', 'success');
+      // Scroll al inicio del formulario
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const areasFiltradas = areasData.filter((area) =>
     area.toLowerCase().includes(searchArea.toLowerCase())
   );
@@ -264,18 +288,31 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
             </div>
           </div>
           
-          {userMode !== 'publico' && (
-            <button
-              onClick={() => {
-                authService.logout();
-                window.location.reload();
-              }}
-              className="bg-white hover:bg-gray-50 text-rose px-3 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md border border-gray-300"
-              title="Cerrar sesión"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline text-sm font-medium">Salir</span>
-            </button>
+          {userMode === 'admin' && (
+            <div className="flex items-center gap-3">
+              {onCancel && (
+                <button
+                  onClick={onCancel}
+                  className="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md border border-gray-300"
+                  title="Regresar al dashboard"
+                >
+                  <ArrowLeft size={16} />
+                  <span className="hidden sm:inline text-sm font-medium">Regresar</span>
+                </button>
+              )}
+              
+              <button
+                onClick={() => {
+                  authService.logout();
+                  window.location.reload();
+                }}
+                className="bg-white hover:bg-gray-50 text-rose px-3 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:shadow-md border border-gray-300"
+                title="Cerrar sesión"
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline text-sm font-medium">Salir</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -671,12 +708,24 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
               </div>
             )}
 
-            {/* Botones Premium */}
+            {/* Botones de Acción */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <button
+                type="button"
+                onClick={limpiarFormulario}
+                disabled={loading}
+                className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-md border-2 border-gray-300"
+              >
+                <RotateCcw size={22} />
+                <span className="text-lg tracking-wide">
+                  LIMPIAR FORMULARIO
+                </span>
+              </button>
+              
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white font-bold py-5 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 shadow-xl relative overflow-hidden group"
+                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white font-bold py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 shadow-xl relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                 <Save size={22} className="relative z-10" />
@@ -684,16 +733,6 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                   {loading ? 'GUARDANDO...' : 'GUARDAR CONSULTA'}
                 </span>
               </button>
-              
-              {onCancel && (
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="px-10 bg-white border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-semibold py-5 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg"
-                >
-                  CANCELAR
-                </button>
-              )}
             </div>
           </form>
         </div>

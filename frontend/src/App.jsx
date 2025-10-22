@@ -50,64 +50,56 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Ruta pública - Formulario sin login */}
+        {/* Ruta raíz - Redirigir al login */}
         <Route 
           path="/" 
-          element={
-            <FormularioConsulta
-              onSuccess={() => {
-                // Recargar para limpiar el formulario
-                window.location.reload();
-              }}
-              userMode="publico"
-            />
-          } 
+          element={<Navigate to="/login" />} 
         />
 
-        {/* Ruta de login para administradores */}
+        {/* Ruta de login */}
         <Route 
-          path="/admin/login" 
+          path="/login" 
           element={
             isAuthenticated && user?.rol === 'admin' ? (
-              <Navigate to="/admin/dashboard" />
+              <Navigate to="/dashboard" />
             ) : (
               <Login onLoginSuccess={handleLoginSuccess} />
             )
           } 
         />
 
-        {/* Ruta protegida - Dashboard para admins */}
+        {/* Ruta protegida - Dashboard */}
         <Route 
-          path="/admin/dashboard" 
+          path="/dashboard" 
           element={
             isAuthenticated && user?.rol === 'admin' ? (
               <Dashboard 
                 onLogout={handleLogout}
               />
             ) : (
-              <Navigate to="/admin/login" />
+              <Navigate to="/login" />
             )
           } 
         />
 
-        {/* Ruta protegida - Formulario desde admin (integrado en dashboard) */}
+        {/* Ruta protegida - Nueva Consulta */}
         <Route 
-          path="/admin/dashboard/consultas/nueva" 
+          path="/dashboard/consultas/nueva" 
           element={
             isAuthenticated && user?.rol === 'admin' ? (
               <FormularioConsulta
-                onSuccess={() => window.location.href = '/admin/dashboard'}
-                onCancel={() => window.location.href = '/admin/dashboard'}
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
                 userMode="admin"
               />
             ) : (
-              <Navigate to="/admin/login" />
+              <Navigate to="/login" />
             )
           } 
         />
 
-        {/* Redirigir cualquier otra ruta al formulario público */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* Redirigir cualquier otra ruta al login */}
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
   );

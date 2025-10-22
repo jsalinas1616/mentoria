@@ -171,7 +171,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               </div>
               
               <button
-                onClick={() => window.location.href = '/admin/dashboard/consultas/nueva'}
+                onClick={() => window.location.href = '/#/dashboard/consultas/nueva'}
                 className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
               >
                 <Plus size={18} />
