@@ -7,15 +7,15 @@ provider:
   runtime: nodejs18.x
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
-  profile: ${opt:profile, 'default'}
+  profile: default
   timeout: ${self:custom.timeout.${self:provider.stage}, 30}
   memorySize: ${self:custom.memorySize.${self:provider.stage}, 512}
   environment:
     NODE_ENV: ${self:provider.stage}
     COGNITO_USER_POOL_ID: !Ref CognitoUserPool
     COGNITO_CLIENT_ID: !Ref CognitoUserPoolClient
-    CONSULTAS_TABLE: NadroMentoria-Consultas-${self:provider.stage}
-    USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
+    CONSULTAS_TABLE: NadroMentoria-Consultas
+    USUARIOS_TABLE: NadroMentoria-Usuarios
   
   iam:
     role:
@@ -29,8 +29,8 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas-${self:provider.stage}"
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -48,6 +48,22 @@ provider:
   
   # Configuración del HTTP API con Cognito Authorizer
   httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: false
     authorizers:
       cognitoAuthorizer:
         type: jwt
@@ -68,6 +84,13 @@ functions:
       - httpApi:
           path: /api/health
           method: GET
+      # Rutas públicas - OPTIONS (Preflight CORS - requerido por el navegador)
+      - httpApi:
+          path: /api/{proxy+}
+          method: OPTIONS
+      - httpApi:
+          path: /api
+          method: OPTIONS
       # Rutas protegidas con Cognito (TODO lo demás requiere autenticación)
       - httpApi:
           path: /api/{proxy+}

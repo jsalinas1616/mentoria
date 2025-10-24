@@ -31,42 +31,31 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting general
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requests por IP por ventana
-  message: {
-    error: true,
-    message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// Rate limiting deshabilitado en Lambda (API Gateway maneja el rate limiting)
+// En desarrollo local, se puede habilitar si es necesario
+const isLambda = !!process.env.LAMBDA_TASK_ROOT;
 
-// Rate limiting estricto para autenticación
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // máximo 5 intentos de login por IP por ventana
-  message: {
-    error: true,
-    message: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+if (!isLambda) {
+  const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: {
+      error: true,
+      message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  
+  app.use(generalLimiter);
+}
 
-app.use(generalLimiter);
-
-// Middleware CORS configurado para S3
+// Middleware CORS - Permitir todos los origins para facilitar desarrollo
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://nadro-mentoria-frontend-1760378806.s3.us-east-1.amazonaws.com',
-    'http://nadro-mentoria-frontend-1760378806.s3-website-us-east-1.amazonaws.com'
-  ],
-  credentials: true,
+  origin: '*',  // Permitir cualquier origen
+  credentials: false,  // No se necesitan credenciales con origin: '*'
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Amz-Date', 'X-Api-Key', 'X-Amz-Security-Token']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -117,6 +106,13 @@ app.get('/', (req, res) => {
       dashboard: '/api/dashboard',
     },
   });
+});
+
+// Catch 404 - debe estar ANTES del error handler
+app.use((req, res, next) => {
+  const error = new Error(`Ruta no encontrada: ${req.method} ${req.path}`);
+  error.statusCode = 404;
+  next(error);
 });
 
 // Manejo de errores

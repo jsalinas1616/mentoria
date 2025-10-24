@@ -60,7 +60,7 @@ function App() {
         <Route 
           path="/login" 
           element={
-            isAuthenticated && user?.rol === 'admin' ? (
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <Navigate to="/dashboard" />
             ) : (
               <Login onLoginSuccess={handleLoginSuccess} />
@@ -68,11 +68,11 @@ function App() {
           } 
         />
 
-        {/* Ruta protegida - Dashboard */}
+        {/* Ruta protegida - Dashboard (Admin y Mentor) */}
         <Route 
           path="/dashboard" 
           element={
-            isAuthenticated && user?.rol === 'admin' ? (
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <Dashboard 
                 onLogout={handleLogout}
               />
@@ -82,15 +82,15 @@ function App() {
           } 
         />
 
-        {/* Ruta protegida - Nueva Consulta */}
+        {/* Ruta protegida - Nueva Consulta (Admin y Mentor) */}
         <Route 
           path="/dashboard/consultas/nueva" 
           element={
-            isAuthenticated && user?.rol === 'admin' ? (
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <FormularioConsulta
                 onSuccess={() => window.location.href = '/#/dashboard'}
                 onCancel={() => window.location.href = '/#/dashboard'}
-                userMode="admin"
+                userMode={user?.rol}
               />
             ) : (
               <Navigate to="/login" />

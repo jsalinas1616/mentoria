@@ -64,10 +64,10 @@ class ConsultasController {
       // Preparar datos para Excel
       const datosExcel = consultas.map(consulta => ({
         'Fecha': consulta.fecha,
-        'Mentor': consulta.nombreMentor,
-        'Correo Mentor': consulta.correoMentor,
-        'Mentee': consulta.nombreMentee || 'N/A',
-        'Correo Mentee': consulta.correoMentee || 'N/A',
+        'Mentores': consulta.mentores?.join(', ') || 'N/A',
+        'Sexo': consulta.sexo || 'N/A',
+        'Rango de Edad': consulta.rangoEdad || 'N/A',
+        'Número de Sesión': consulta.numeroSesion || 'N/A',
         'Lugar de Trabajo': consulta.lugarTrabajo,
         'Área': consulta.area,
         'Lugar de Consulta': consulta.lugarConsulta,
@@ -84,14 +84,14 @@ class ConsultasController {
       // Ajustar ancho de columnas
       const columnWidths = [
         { wch: 12 }, // Fecha
-        { wch: 20 }, // Mentor
-        { wch: 25 }, // Correo Mentor
-        { wch: 20 }, // Mentee
-        { wch: 25 }, // Correo Mentee
+        { wch: 30 }, // Mentores (puede ser varios)
+        { wch: 15 }, // Sexo
+        { wch: 15 }, // Rango de Edad
+        { wch: 18 }, // Número de Sesión
         { wch: 25 }, // Lugar de Trabajo
         { wch: 20 }, // Área
-        { wch: 20 }, // Lugar de Consulta
-        { wch: 30 }, // Motivos de Consulta
+        { wch: 22 }, // Lugar de Consulta
+        { wch: 35 }, // Motivos de Consulta
         { wch: 40 }, // Observaciones
         { wch: 20 }, // Fecha de Creación
         { wch: 20 }  // Última Actualización

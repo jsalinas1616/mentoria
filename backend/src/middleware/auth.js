@@ -3,9 +3,11 @@ const jwt = require('jsonwebtoken');
 /**
  * Middleware para autenticar con Cognito JWT
  * El token JWT ya fue validado por API Gateway Authorizer
+ * La información del usuario viene en el contexto de API Gateway
  */
 const authenticateCognito = async (req, res, next) => {
   try {
+    // Obtener el token del header
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -20,22 +22,37 @@ const authenticateCognito = async (req, res, next) => {
       return res.status(403).json({ message: 'Token inválido' });
     }
 
-    // Extraer información del usuario del token de Cognito
-    const userInfo = {
-      id: decoded.sub, // Cognito user ID
+    // Extraer grupos - pueden venir como array o string JSON
+    let groups = [];
+    const cognitoGroups = decoded['cognito:groups'];
+    
+    if (cognitoGroups) {
+      if (Array.isArray(cognitoGroups)) {
+        groups = cognitoGroups;
+      } else if (typeof cognitoGroups === 'string') {
+        // Puede venir como JSON string: "[admin]" o "[admin,mentor]"
+        try {
+          const parsed = JSON.parse(cognitoGroups);
+          groups = Array.isArray(parsed) ? parsed : [parsed];
+        } catch {
+          // Si no es JSON válido, tratarlo como string simple
+          groups = [cognitoGroups];
+        }
+      }
+    }
+
+    // Crear objeto de usuario
+    req.user = {
+      id: decoded.sub,
       email: decoded.email,
-      username: decoded['cognito:username'],
-      groups: decoded['cognito:groups'] || [], // Roles del usuario
+      username: decoded['cognito:username'] || decoded.email,
+      groups: groups,
       tokenUse: decoded.token_use,
     };
 
-    // Agregar al request
-    req.user = userInfo;
-    req.cognitoToken = decoded;
-
     next();
   } catch (error) {
-    console.error('Error en autenticación:', error);
+    console.error('❌ Error en autenticación:', error);
     return res.status(403).json({ message: 'Error al autenticar' });
   }
 };

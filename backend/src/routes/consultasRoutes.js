@@ -4,7 +4,7 @@ const consultasController = require('../controllers/consultasController');
 const { authenticateCognito, requireMentorOrAdmin, requireAdmin } = require('../middleware/auth');
 const { validateConsulta, sanitizeInput } = require('../middleware/validation');
 
-// TODAS las rutas requieren autenticación
+// TODAS las rutas requieren autenticación con Cognito
 // Mentores y Admins pueden crear y gestionar consultas
 router.post('/', authenticateCognito, requireMentorOrAdmin, sanitizeInput, validateConsulta, consultasController.crear);
 router.get('/', authenticateCognito, requireMentorOrAdmin, consultasController.listar);

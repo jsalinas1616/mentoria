@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users, ArrowLeft, RotateCcw, Plus, X } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { consultasService, authService } from '../../services/api';
@@ -12,9 +12,8 @@ import { validarEmail, validarRequerido, validarArray } from '../../utils/valida
 const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
-    // Datos del Mentor
-    nombreMentor: '',
-    correoMentor: '',
+    // Datos del Mentor (ahora es array)
+    mentores: [],
     // Datos de la Consulta
     fecha: new Date().toISOString().split('T')[0],
     // Datos Demográficos (Anónimos)
@@ -32,6 +31,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [searchArea, setSearchArea] = useState('');
+  const [newMentor, setNewMentor] = useState('');
 
   // Función para mostrar toast
   const showToast = (message, type = 'error') => {
@@ -118,19 +118,55 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     }
   };
 
+  // Funciones para manejar múltiples mentores
+  const handleAddMentor = () => {
+    if (newMentor.trim() === '') {
+      return;
+    }
+    
+    // Verificar que no esté duplicado
+    if (formData.mentores.includes(newMentor.trim())) {
+      showToast('Este mentor ya fue agregado', 'error');
+      return;
+    }
+    
+    setFormData((prev) => ({
+      ...prev,
+      mentores: [...prev.mentores, newMentor.trim()],
+    }));
+    
+    setNewMentor('');
+    
+    // Limpiar error si existía
+    if (errors.mentores) {
+      setErrors((prev) => ({
+        ...prev,
+        mentores: '',
+      }));
+    }
+  };
+
+  const handleRemoveMentor = (mentorToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      mentores: prev.mentores.filter(m => m !== mentorToRemove),
+    }));
+  };
+
+  const handleNewMentorKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddMentor();
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
-    if (!validarRequerido(formData.nombreMentor)) {
-      newErrors.nombreMentor = 'El nombre completo es requerido';
+    // Validar que haya al menos un mentor
+    if (!formData.mentores || formData.mentores.length === 0) {
+      newErrors.mentores = 'Debes agregar al menos un mentor';
     }
-
-    // Correo del mentor - NO se valida porque se genera automáticamente
-    // if (!validarRequerido(formData.correoMentor)) {
-    //   newErrors.correoMentor = 'El correo electrónico es requerido';
-    // } else if (!validarEmail(formData.correoMentor)) {
-    //   newErrors.correoMentor = 'Ingresa un correo electrónico válido';
-    // }
 
     if (!validarRequerido(formData.fecha)) {
       newErrors.fecha = 'La fecha es requerida';
@@ -183,16 +219,9 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     setLoading(true);
 
     try {
-      // Generar correo del mentor automáticamente basado en nombre + timestamp para hacerlo único
-      const timestamp = Date.now();
-      const correoMentorGenerado = formData.nombreMentor 
-        ? `${formData.nombreMentor.toLowerCase().replace(/\s+/g, '.')}.${timestamp}@temp-nadro.com`
-        : `mentor.${timestamp}@temp-nadro.com`;
-
-      // Crear objeto con correo generado (sin datos de mentee por confidencialidad)
+      // Enviar datos con el array de mentores directamente
       const dataToSend = {
         ...formData,
-        correoMentor: correoMentorGenerado,
       };
 
       await consultasService.crear(dataToSend);
@@ -202,8 +231,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
       // Limpiar formulario después de 2 segundos
       setTimeout(() => {
         setFormData({
-          nombreMentor: '',
-          correoMentor: '',
+          mentores: [],
           fecha: new Date().toISOString().split('T')[0],
           rangoEdad: '',
           sexo: '',
@@ -214,6 +242,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
           motivosConsulta: [],
           observaciones: '',
         });
+        setNewMentor('');
         setSuccess(false);
         if (onSuccess) onSuccess();
       }, 2000);
@@ -231,8 +260,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     // Confirmar antes de limpiar
     if (window.confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderán todos los datos ingresados.')) {
       setFormData({
-        nombreMentor: '',
-        correoMentor: '',
+        mentores: [],
         fecha: new Date().toISOString().split('T')[0],
         rangoEdad: '',
         sexo: '',
@@ -243,6 +271,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
         motivosConsulta: [],
         observaciones: '',
       });
+      setNewMentor('');
       setErrors({});
       setSearchArea('');
       showToast('Formulario limpiado correctamente', 'success');
@@ -331,63 +360,87 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Nombre del Mentor */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                    Nombre Completo <span className="text-rose">*</span>
-                  </label>
-                  <div className="relative">
+              {/* Múltiples Mentores */}
+              <div className="space-y-4">
+                <label className="block text-gray-700 text-sm font-semibold">
+                  Mentores <span className="text-rose">*</span>
+                </label>
+                
+                {/* Input para agregar mentor */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <User className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
                       type="text"
-                      name="nombreMentor"
-                      value={formData.nombreMentor}
-                      onChange={handleChange}
-                      placeholder="Ingresa tu nombre completo"
+                      value={newMentor}
+                      onChange={(e) => setNewMentor(e.target.value)}
+                      onKeyPress={handleNewMentorKeyPress}
+                      placeholder="Nombre del mentor"
                       className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.nombreMentor ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                        errors.mentores ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
                       }`}
                     />
                   </div>
-                  {errors.nombreMentor && (
-                    <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {errors.nombreMentor}
-                    </p>
-                  )}
+                  <button
+                    type="button"
+                    onClick={handleAddMentor}
+                    className="px-6 py-3.5 bg-gradient-to-r from-primary to-primary-light text-white rounded-xl font-semibold hover:from-primary-dark hover:to-primary transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    Agregar
+                  </button>
                 </div>
 
-                {/* Campo de correo del mentor - OCULTO - Se genera automáticamente */}
-                {/* <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                    Correo Electrónico <span className="text-rose">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      name="correoMentor"
-                      value={formData.correoMentor}
-                      onChange={handleChange}
-                      placeholder="correo@ejemplo.com"
-                      className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.correoMentor ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
-                      }`}
-                    />
+                {/* Lista de mentores agregados */}
+                {formData.mentores.length > 0 && (
+                  <div className="space-y-2">
+                    {formData.mentores.map((mentor, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-xl px-4 py-3 group hover:border-primary/40 transition-all"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-primary" />
+                          </div>
+                          <span className="text-gray-700 font-medium">{mentor}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMentor(mentor)}
+                          className="p-2 hover:bg-red-100 rounded-lg transition-colors group-hover:opacity-100 opacity-60"
+                        >
+                          <X size={18} className="text-red-600" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                  {errors.correoMentor && (
-                    <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {errors.correoMentor}
-                    </p>
-                  )}
-                </div> */}
+                )}
 
+                {errors.mentores && (
+                  <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.mentores}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Sección 2: Datos de la Consulta */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-accent/10 to-primary/10 rounded-xl">
+                  <Calendar className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Datos de la Consulta</h2>
+                  <p className="text-sm text-gray-600">Información sobre la mentoría</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Fecha de Consulta */}
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
@@ -488,6 +541,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                       <option value="">Selecciona una opción</option>
                       <option value="Hombre">Hombre</option>
                       <option value="Mujer">Mujer</option>
+                      <option value="Diversidad">Diversidad</option>
                     </select>
                   </div>
                   {errors.sexo && (

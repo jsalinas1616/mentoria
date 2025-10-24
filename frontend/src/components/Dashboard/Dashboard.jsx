@@ -6,7 +6,7 @@ import {
 import {
   Users, FileText, Calendar, TrendingUp, Download, Filter,
   Plus, LogOut, Menu, Sparkles, BarChart3, PieChart as PieChartIcon, Activity,
-  Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare,
+  Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare, User,
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -112,8 +112,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     
     const terminoBusqueda = busqueda.toLowerCase();
     return (
-      consulta.nombreMentor?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.correoMentor?.toLowerCase().includes(terminoBusqueda) ||
+      consulta.mentores?.some(mentor => mentor.toLowerCase().includes(terminoBusqueda)) ||
       consulta.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
       consulta.sexo?.toLowerCase().includes(terminoBusqueda) ||
       consulta.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
@@ -501,7 +500,18 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                       {formatearFecha(consulta.fecha)}
                     </td>
                     <td className="py-4 px-4">
-                      <p className="text-gray-900 text-sm font-semibold">{consulta.nombreMentor}</p>
+                      {consulta.mentores && consulta.mentores.length > 0 ? (
+                        consulta.mentores.length === 1 ? (
+                          <p className="text-gray-900 text-sm font-semibold">{consulta.mentores[0]}</p>
+                        ) : (
+                          <div className="space-y-1">
+                            <p className="text-gray-900 text-sm font-semibold">{consulta.mentores[0]}</p>
+                            <p className="text-gray-500 text-xs">+{consulta.mentores.length - 1} más</p>
+                          </div>
+                        )
+                      ) : (
+                        <p className="text-gray-400 text-sm italic">Sin mentores</p>
+                      )}
                     </td>
                     <td className="py-4 px-4">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-primary/10 to-accent/10 text-primary font-bold rounded-full">
@@ -642,17 +652,24 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <Users className="text-primary" size={20} />
                   </div>
-                  Datos del Mentor
+                  Mentores ({consultaSeleccionada.mentores?.length || 0})
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">Nombre Completo</label>
-                    <p className="text-gray-900 font-medium">{consultaSeleccionada.nombreMentor}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">Correo Electrónico</label>
-                    <p className="text-gray-900 font-medium">{consultaSeleccionada.correoMentor}</p>
-                  </div>
+                <div className="space-y-2">
+                  {consultaSeleccionada.mentores && consultaSeleccionada.mentores.length > 0 ? (
+                    consultaSeleccionada.mentores.map((mentor, index) => (
+                      <div 
+                        key={index}
+                        className="flex items-center gap-3 bg-white/80 rounded-lg px-4 py-3 border border-primary/10"
+                      >
+                        <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <User className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-gray-900 font-medium">{mentor}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 italic">No hay mentores asignados</p>
+                  )}
                 </div>
               </div>
 

@@ -170,8 +170,10 @@ ls serverless.yml
 Usa el comando de deploy con tu stage (ambiente):
 
 ```bash
-# Para stage dev-jul (ejemplo)
+# Para stage dev-jul (ejemplo backend)
 npm run deploy:dev
+# Para stage dev-jul (ejemplo frontend)
+./deploy-frontend.sh dev-jul mentoria
 
 # O directamente con serverless (más específico)
 serverless deploy --stage dev-jul --profile mentoria

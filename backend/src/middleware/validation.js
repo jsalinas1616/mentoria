@@ -56,18 +56,16 @@ const validateRegister = [
 
 // Validaciones para consultas
 const validateConsulta = [
-  body('nombreMentor')
+  // Validar array de mentores
+  body('mentores')
+    .isArray({ min: 1 })
+    .withMessage('Debe agregar al menos un mentor'),
+  body('mentores.*')
     .trim()
     .isLength({ min: 2, max: 100 })
     .withMessage('El nombre del mentor debe tener entre 2 y 100 caracteres')
     .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
     .withMessage('El nombre del mentor solo puede contener letras y espacios'),
-  body('correoMentor')
-    .isEmail()
-    .withMessage('Debe ser un email válido')
-    .normalizeEmail()
-    .isLength({ max: 255 })
-    .withMessage('El email no puede exceder 255 caracteres'),
   body('fecha')
     .isISO8601()
     .withMessage('La fecha debe ser válida')
@@ -80,6 +78,10 @@ const validateConsulta = [
       }
       return true;
     }),
+  body('sexo')
+    .trim()
+    .isIn(['Hombre', 'Mujer', 'Diversidad'])
+    .withMessage('El sexo debe ser Hombre, Mujer o Diversidad'),
   body('lugarTrabajo')
     .trim()
     .isLength({ min: 2, max: 100 })
@@ -90,8 +92,8 @@ const validateConsulta = [
     .withMessage('El área debe tener entre 2 y 100 caracteres'),
   body('lugarConsulta')
     .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('El lugar de consulta debe tener entre 2 y 100 caracteres'),
+    .isIn(['Lugar de trabajo', 'Hospital', 'Funeraria', 'Domicilio', 'Llamada', 'Videollamada', 'Almacén', 'Patio de maniobras', 'Oficina', 'Otro'])
+    .withMessage('El lugar de consulta debe ser una opción válida'),
   body('motivosConsulta')
     .isArray({ min: 1 })
     .withMessage('Debe seleccionar al menos un motivo de consulta'),
