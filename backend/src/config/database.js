@@ -10,6 +10,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const TABLES = {
   CONSULTAS: process.env.CONSULTAS_TABLE || 'NadroMentoria-Consultas',
   USUARIOS: process.env.USUARIOS_TABLE || 'NadroMentoria-Usuarios',
+  CAPACITACIONES: process.env.CAPACITACIONES_TABLE || 'NadroMentoria-Capacitaciones',
 };
 
 module.exports = {

@@ -109,6 +109,75 @@ const validateConsulta = [
   handleValidationErrors
 ];
 
+// Validaciones para capacitaciones
+const validateCapacitacion = [
+  body('capacitadores')
+    .isArray({ min: 1 })
+    .withMessage('Debe agregar al menos un capacitador'),
+  body('capacitadores.*')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El nombre del capacitador debe tener entre 2 y 100 caracteres')
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+    .withMessage('El nombre del capacitador solo puede contener letras y espacios'),
+  body('tema')
+    .trim()
+    .isLength({ min: 2, max: 200 })
+    .withMessage('El tema debe tener entre 2 y 200 caracteres'),
+  body('fecha')
+    .isISO8601()
+    .withMessage('La fecha debe ser válida')
+    .custom((value) => {
+      const fecha = new Date(value);
+      const hoy = new Date();
+      hoy.setHours(23, 59, 59, 999);
+      if (fecha > hoy) {
+        throw new Error('La fecha no puede ser futura');
+      }
+      return true;
+    }),
+  body('hora')
+    .trim()
+    .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    .withMessage('La hora debe tener el formato HH:MM'),
+  body('duracion')
+    .trim()
+    .isLength({ min: 1, max: 50 })
+    .withMessage('La duración debe tener entre 1 y 50 caracteres'),
+  body('lugar')
+    .trim()
+    .isLength({ min: 2, max: 200 })
+    .withMessage('El lugar debe tener entre 2 y 200 caracteres'),
+  body('numeroPersonasInvitadas')
+    .isInt({ min: 1, max: 10000 })
+    .withMessage('El número de personas invitadas debe ser un número válido mayor a 0'),
+  body('asistentes')
+    .isArray()
+    .withMessage('Los asistentes deben ser un array'),
+  body('asistentes.*.rangoEdad')
+    .trim()
+    .isIn(['18-25', '26-35', '36-45', '46-55', '56+'])
+    .withMessage('El rango de edad debe ser válido'),
+  body('asistentes.*.sexo')
+    .trim()
+    .isIn(['Masculino', 'Femenino', 'Diversidad'])
+    .withMessage('El sexo debe ser Masculino, Femenino o Diversidad'),
+  body('asistentes.*.lugarTrabajo')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El lugar de trabajo debe tener entre 2 y 100 caracteres'),
+  body('asistentes.*.area')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El área debe tener entre 2 y 100 caracteres'),
+  body('observaciones')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Las observaciones no pueden exceder 1000 caracteres'),
+  handleValidationErrors
+];
+
 // Sanitización general para prevenir XSS
 const sanitizeInput = (req, res, next) => {
   const sanitizeString = (str) => {
@@ -153,6 +222,7 @@ module.exports = {
   validateLogin,
   validateRegister,
   validateConsulta,
+  validateCapacitacion,
   sanitizeInput,
   handleValidationErrors
 };

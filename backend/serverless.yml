@@ -16,6 +16,7 @@ provider:
     COGNITO_CLIENT_ID: !Ref CognitoUserPoolClient
     CONSULTAS_TABLE: NadroMentoria-Consultas
     USUARIOS_TABLE: NadroMentoria-Usuarios
+    CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones
   
   iam:
     role:
@@ -31,6 +32,7 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser

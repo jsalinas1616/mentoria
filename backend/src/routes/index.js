@@ -4,6 +4,7 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const consultasRoutes = require('./consultasRoutes');
 const dashboardRoutes = require('./dashboardRoutes');
+const capacitacionesRoutes = require('./capacitacionesRoutes');
 
 console.log('✅ Routes module loaded');
 
@@ -29,6 +30,10 @@ console.log('✅ Consultas routes mounted on /consultas');
 // Rutas del dashboard (PROTEGIDAS - requieren autenticación)
 router.use('/dashboard', dashboardRoutes);
 console.log('✅ Dashboard routes mounted on /dashboard');
+
+// Rutas de capacitaciones (PROTEGIDAS - requieren autenticación)
+router.use('/capacitaciones', capacitacionesRoutes);
+console.log('✅ Capacitaciones routes mounted on /capacitaciones');
 
 module.exports = router;
 

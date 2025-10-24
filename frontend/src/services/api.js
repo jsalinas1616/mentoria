@@ -139,6 +139,42 @@ export const consultasService = {
   },
 };
 
+// Servicios de capacitaciones
+export const capacitacionesService = {
+  crear: async (capacitacion) => {
+    const response = await api.post('/capacitaciones', capacitacion);
+    return response.data;
+  },
+  
+  listar: async (filtros = {}) => {
+    const response = await api.get('/capacitaciones', { params: filtros });
+    return response.data;
+  },
+  
+  obtener: async (id) => {
+    const response = await api.get(`/capacitaciones/${id}`);
+    return response.data;
+  },
+  
+  actualizar: async (id, capacitacion) => {
+    const response = await api.put(`/capacitaciones/${id}`, capacitacion);
+    return response.data;
+  },
+  
+  eliminar: async (id) => {
+    const response = await api.delete(`/capacitaciones/${id}`);
+    return response.data;
+  },
+
+  exportar: async (formato = 'excel', filtros = {}) => {
+    const response = await api.get('/capacitaciones/export', {
+      params: { formato, ...filtros },
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+};
+
 // Servicios de dashboard
 export const dashboardService = {
   obtenerEstadisticas: async (filtros = {}) => {

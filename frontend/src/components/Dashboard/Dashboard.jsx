@@ -176,6 +176,14 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <Plus size={18} />
                 <span className="hidden sm:inline">Nueva Consulta</span>
               </button>
+
+              <button
+                onClick={() => window.location.href = '/#/dashboard/capacitaciones/nueva'}
+                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">Nueva Capacitación</span>
+              </button>
               
               <button
                 onClick={onLogout}

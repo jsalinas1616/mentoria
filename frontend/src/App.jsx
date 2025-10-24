@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Auth/Login';
 import Dashboard from './components/Dashboard/Dashboard';
 import FormularioConsulta from './components/FormularioConsulta/FormularioConsulta';
+import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
 import { authService } from './services/api';
 
 function App() {
@@ -88,6 +89,22 @@ function App() {
           element={
             isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <FormularioConsulta
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
+                userMode={user?.rol}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        {/* Ruta protegida - Nueva Capacitación (Admin y Mentor) */}
+        <Route 
+          path="/dashboard/capacitaciones/nueva" 
+          element={
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
+              <FormularioCapacitacion
                 onSuccess={() => window.location.href = '/#/dashboard'}
                 onCancel={() => window.location.href = '/#/dashboard'}
                 userMode={user?.rol}
