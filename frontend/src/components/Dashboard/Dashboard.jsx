@@ -6,7 +6,7 @@ import {
 import {
   Users, FileText, Calendar, TrendingUp, Download, Filter,
   Plus, LogOut, Menu, Sparkles, BarChart3, PieChart as PieChartIcon, Activity,
-  Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare, User,
+  Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare, User, BookOpen,
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -38,9 +38,14 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   // Nuevos estados para funcionalidades
   const [consultaSeleccionada, setConsultaSeleccionada] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [capacitacionSeleccionada, setCapacitacionSeleccionada] = useState(null);
+  const [mostrarModalCapacitacion, setMostrarModalCapacitacion] = useState(false);
   const [busqueda, setBusqueda] = useState('');
+  const [busquedaCapacitaciones, setBusquedaCapacitaciones] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
+  const [paginaActualCapacitaciones, setPaginaActualCapacitaciones] = useState(1);
   const [consultasPorPagina] = useState(10);
+  const [capacitacionesPorPagina] = useState(10);
   const [tabActivo, setTabActivo] = useState('consultas'); // 'consultas' o 'capacitaciones'
   const user = authService.getCurrentUser();
 
@@ -112,6 +117,16 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setConsultaSeleccionada(null);
   };
 
+  const abrirModalCapacitacion = (capacitacion) => {
+    setCapacitacionSeleccionada(capacitacion);
+    setMostrarModalCapacitacion(true);
+  };
+
+  const cerrarModalCapacitacion = () => {
+    setMostrarModalCapacitacion(false);
+    setCapacitacionSeleccionada(null);
+  };
+
   // Función para filtrar consultas por búsqueda
   const consultasFiltradas = consultas.filter(consulta => {
     if (!busqueda) return true;
@@ -140,6 +155,37 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   useEffect(() => {
     setPaginaActual(1);
   }, [busqueda]);
+
+  // Función para filtrar capacitaciones por búsqueda
+  const capacitacionesFiltradas = capacitaciones.filter(capacitacion => {
+    if (!busquedaCapacitaciones) return true;
+    
+    const terminoBusqueda = busquedaCapacitaciones.toLowerCase();
+    return (
+      capacitacion.tema?.toLowerCase().includes(terminoBusqueda) ||
+      capacitacion.lugar?.toLowerCase().includes(terminoBusqueda) ||
+      capacitacion.capacitadores?.some(cap => cap.toLowerCase().includes(terminoBusqueda)) ||
+      capacitacion.asistentes?.some(asistente => 
+        asistente.area?.toLowerCase().includes(terminoBusqueda) ||
+        asistente.lugarTrabajo?.toLowerCase().includes(terminoBusqueda)
+      )
+    );
+  });
+
+  // Paginación para capacitaciones
+  const indiceUltimaCapacitacion = paginaActualCapacitaciones * capacitacionesPorPagina;
+  const indicePrimeraCapacitacion = indiceUltimaCapacitacion - capacitacionesPorPagina;
+  const capacitacionesPaginaActual = capacitacionesFiltradas.slice(indicePrimeraCapacitacion, indiceUltimaCapacitacion);
+  const totalPaginasCapacitaciones = Math.ceil(capacitacionesFiltradas.length / capacitacionesPorPagina);
+
+  const cambiarPaginaCapacitaciones = (numeroPagina) => {
+    setPaginaActualCapacitaciones(numeroPagina);
+  };
+
+  // Resetear página cuando cambia la búsqueda de capacitaciones
+  useEffect(() => {
+    setPaginaActualCapacitaciones(1);
+  }, [busquedaCapacitaciones]);
 
   if (loading && consultas.length === 0) {
     return (
@@ -180,7 +226,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
               >
                 <Plus size={18} />
-                <span className="hidden sm:inline">Nueva Consulta</span>
+                <span className="hidden sm:inline">Nueva Mentoría</span>
               </button>
 
               <button
@@ -462,7 +508,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               }`}
             >
               <FileText size={20} />
-              Consultas ({consultas.length})
+              Mentorías ({consultas.length})
             </button>
             <button
               onClick={() => setTabActivo('capacitaciones')}
@@ -487,9 +533,9 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                   <FileText className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Consultas Recientes</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Mentorías Recientes</h2>
                   <p className="text-sm text-gray-600">
-                    {consultasFiltradas.length} de {consultas.length} consultas
+                    {consultasFiltradas.length} de {consultas.length} mentorías
                   </p>
                 </div>
               </div>
@@ -656,8 +702,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
             <div className="text-center py-12">
               <div className="p-4 bg-gray-50 rounded-2xl inline-block">
                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">No hay consultas registradas</p>
-                <p className="text-gray-400 text-sm">Las consultas aparecerán aquí cuando se registren</p>
+                <p className="text-gray-500 font-medium">No hay mentorías registradas</p>
+                <p className="text-gray-400 text-sm">Las mentorías aparecerán aquí cuando se registren</p>
               </div>
             </div>
           )}
@@ -675,9 +721,30 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Capacitaciones Recientes</h2>
                   <p className="text-sm text-gray-600">
-                    {capacitaciones.length} capacitaciones registradas
+                    {capacitacionesFiltradas.length} de {capacitaciones.length} capacitaciones
                   </p>
                 </div>
+              </div>
+              <button
+                onClick={() => handleExportar('excel')}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-xl transform hover:scale-[1.02]"
+              >
+                <Download size={18} />
+                <span className="hidden sm:inline">Exportar Excel</span>
+              </button>
+            </div>
+
+            {/* Buscador */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Buscar por tema, capacitador, lugar..."
+                  value={busquedaCapacitaciones}
+                  onChange={(e) => setBusquedaCapacitaciones(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                />
               </div>
             </div>
 
@@ -692,10 +759,11 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                     <th className="text-left text-gray-700 font-semibold pb-4 px-4">Asistentes</th>
                     <th className="text-left text-gray-700 font-semibold pb-4 px-4">Lugar</th>
                     <th className="text-left text-gray-700 font-semibold pb-4 px-4">Duración</th>
+                    <th className="text-center text-gray-700 font-semibold pb-4 px-4">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(capacitaciones) && capacitaciones.map((capacitacion) => (
+                  {Array.isArray(capacitacionesPaginaActual) && capacitacionesPaginaActual.map((capacitacion) => (
                     <tr
                       key={capacitacion.id}
                       className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
@@ -728,11 +796,55 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                       <td className="py-4 px-4">
                         <span className="text-gray-700">{capacitacion.duracion}</span>
                       </td>
+                      <td className="py-4 px-4">
+                        <button
+                          onClick={() => abrirModalCapacitacion(capacitacion)}
+                          className="bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 text-primary px-3 py-2 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium border border-primary/20 hover:border-primary/40"
+                        >
+                          <Eye size={16} />
+                          Ver
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
+            {/* Paginación para Capacitaciones */}
+            {capacitacionesFiltradas.length > 0 && totalPaginasCapacitaciones > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-6">
+                <button
+                  onClick={() => cambiarPaginaCapacitaciones(paginaActualCapacitaciones - 1)}
+                  disabled={paginaActualCapacitaciones === 1}
+                  className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                
+                {[...Array(totalPaginasCapacitaciones)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => cambiarPaginaCapacitaciones(index + 1)}
+                    className={`px-4 py-2 rounded-xl font-medium transition-all ${
+                      paginaActualCapacitaciones === index + 1
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => cambiarPaginaCapacitaciones(paginaActualCapacitaciones + 1)}
+                  disabled={paginaActualCapacitaciones === totalPaginasCapacitaciones}
+                  className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
 
             {capacitaciones.length === 0 && (
               <div className="text-center py-12">
@@ -889,6 +1001,165 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <p>Consulta creada el {formatearFecha(consultaSeleccionada.createdAt)}</p>
                 {consultaSeleccionada.updatedAt !== consultaSeleccionada.createdAt && (
                   <p>Última actualización: {formatearFecha(consultaSeleccionada.updatedAt)}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Capacitación */}
+      {mostrarModalCapacitacion && capacitacionSeleccionada && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Header del Modal */}
+            <div className="sticky top-0 bg-gradient-to-r from-primary via-secondary to-accent p-6 text-white rounded-t-3xl flex justify-between items-center z-10">
+              <div>
+                <h2 className="text-2xl font-bold">Detalles de Capacitación</h2>
+                <p className="text-white/90 text-sm">Información completa del evento</p>
+              </div>
+              <button
+                onClick={cerrarModalCapacitacion}
+                className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Contenido del Modal */}
+            <div className="p-6 space-y-6">
+              {/* Información Básica */}
+              <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-6 border border-primary/20">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <BookOpen className="text-primary" size={20} />
+                  </div>
+                  Información de la Capacitación
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Tema</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.tema || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Fecha</p>
+                    <p className="text-gray-900 font-medium">{formatearFecha(capacitacionSeleccionada.fecha)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Hora</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.hora || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Duración</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.duracion || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Lugar</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.lugar || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Personas Invitadas</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.numeroPersonasInvitadas || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Mentorías Agendadas</p>
+                    <p className="text-gray-900 font-medium">{capacitacionSeleccionada.numeroMentoriasAgendadas || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Capacitadores */}
+              <div className="bg-gradient-to-br from-accent/5 to-primary/5 rounded-2xl p-6 border border-accent/20">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-accent/10 rounded-lg">
+                    <Users className="text-accent" size={20} />
+                  </div>
+                  Capacitadores ({capacitacionSeleccionada.capacitadores?.length || 0})
+                </h3>
+                <div className="space-y-2">
+                  {capacitacionSeleccionada.capacitadores && capacitacionSeleccionada.capacitadores.length > 0 ? (
+                    capacitacionSeleccionada.capacitadores.map((capacitador, index) => (
+                      <div 
+                        key={index}
+                        className="bg-white p-3 rounded-xl border border-gray-200 flex items-center gap-3"
+                      >
+                        <div className="p-2 bg-accent/10 rounded-lg">
+                          <User className="text-accent" size={16} />
+                        </div>
+                        <span className="text-gray-900 font-medium">{capacitador}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">No hay capacitadores registrados</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Asistentes */}
+              <div className="bg-gradient-to-br from-secondary/5 to-primary/5 rounded-2xl p-6 border border-secondary/20">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="p-2 bg-secondary/10 rounded-lg">
+                    <Users className="text-secondary" size={20} />
+                  </div>
+                  Asistentes ({capacitacionSeleccionada.asistentes?.length || 0})
+                </h3>
+                <div className="space-y-3">
+                  {capacitacionSeleccionada.asistentes && capacitacionSeleccionada.asistentes.length > 0 ? (
+                    capacitacionSeleccionada.asistentes.map((asistente, index) => (
+                      <div 
+                        key={index}
+                        className="bg-white p-4 rounded-xl border border-gray-200"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="p-2 bg-secondary/10 rounded-lg">
+                            <User className="text-secondary" size={16} />
+                          </div>
+                          <h4 className="font-semibold text-gray-900">Asistente {index + 1}</h4>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-gray-600">Rango de Edad:</span>
+                            <span className="ml-2 text-gray-900 font-medium">{asistente.rangoEdad || 'N/A'}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Sexo:</span>
+                            <span className="ml-2 text-gray-900 font-medium">{asistente.sexo || 'N/A'}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Lugar de Trabajo:</span>
+                            <span className="ml-2 text-gray-900 font-medium">{asistente.lugarTrabajo || 'N/A'}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Área:</span>
+                            <span className="ml-2 text-gray-900 font-medium">{asistente.area || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">No hay asistentes registrados</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Observaciones */}
+              {capacitacionSeleccionada.observaciones && (
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div className="p-2 bg-gray-200 rounded-lg">
+                      <FileText className="text-gray-600" size={20} />
+                    </div>
+                    Observaciones
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">{capacitacionSeleccionada.observaciones}</p>
+                </div>
+              )}
+
+              {/* Fechas de Creación */}
+              <div className="text-center text-sm text-gray-500 border-t border-gray-200 pt-4">
+                <p>Capacitación creada el {formatearFecha(capacitacionSeleccionada.createdAt)}</p>
+                {capacitacionSeleccionada.updatedAt !== capacitacionSeleccionada.createdAt && (
+                  <p>Última actualización: {formatearFecha(capacitacionSeleccionada.updatedAt)}</p>
                 )}
               </div>
             </div>
