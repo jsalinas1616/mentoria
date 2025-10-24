@@ -12,11 +12,13 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
     tema: '',
     fecha: new Date().toISOString().split('T')[0],
     hora: '',
-    duracion: '',
+    duracionHoras: '',
+    duracionMinutos: '',
     lugar: '',
     capacitadores: [],
     numeroPersonasInvitadas: '',
     asistentes: [],
+    numeroMentoriasAgendadas: '',
     observaciones: '',
   });
 
@@ -91,13 +93,23 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
   const handleAddAsistente = () => {
     setFormData(prev => ({
       ...prev,
-      asistentes: [...prev.asistentes, {
+      asistentes: [{
         rangoEdad: '',
         sexo: '',
         lugarTrabajo: '',
         area: ''
-      }]
+      }, ...prev.asistentes]
     }));
+    
+    // Actualizar los índices de searchAreas al agregar al inicio
+    setSearchAreas(prev => {
+      const newSearchAreas = { 0: '' }; // Nuevo asistente en índice 0 con búsqueda vacía
+      Object.keys(prev).forEach(key => {
+        const oldIndex = parseInt(key, 10);
+        newSearchAreas[oldIndex + 1] = prev[oldIndex]; // Desplazar índices
+      });
+      return newSearchAreas;
+    });
   };
 
   const handleRemoveAsistente = (index) => {
@@ -106,10 +118,20 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
       asistentes: prev.asistentes.filter((_, i) => i !== index)
     }));
     
-    // Limpiar búsqueda del asistente eliminado
+    // Actualizar los índices de searchAreas al eliminar
     setSearchAreas(prev => {
-      const newSearchAreas = { ...prev };
-      delete newSearchAreas[index];
+      const newSearchAreas = {};
+      Object.keys(prev).forEach(key => {
+        const oldIndex = parseInt(key, 10);
+        if (oldIndex < index) {
+          // Mantener índices anteriores al eliminado
+          newSearchAreas[oldIndex] = prev[oldIndex];
+        } else if (oldIndex > index) {
+          // Desplazar índices posteriores hacia abajo
+          newSearchAreas[oldIndex - 1] = prev[oldIndex];
+        }
+        // Omitir el índice eliminado
+      });
       return newSearchAreas;
     });
   };
@@ -180,10 +202,24 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
     }
 
     try {
+      // Construir duración en formato "X horas Y minutos"
+      const horas = parseInt(formData.duracionHoras || 0, 10);
+      const minutos = parseInt(formData.duracionMinutos || 0, 10);
+      let duracion = '';
+      if (horas > 0) duracion += `${horas} hora${horas !== 1 ? 's' : ''}`;
+      if (horas > 0 && minutos > 0) duracion += ' ';
+      if (minutos > 0) duracion += `${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+      
       const dataToSend = {
         ...formData,
-        numeroPersonasInvitadas: parseInt(formData.numeroPersonasInvitadas, 10)
+        duracion,
+        numeroPersonasInvitadas: parseInt(formData.numeroPersonasInvitadas, 10),
+        numeroMentoriasAgendadas: parseInt(formData.numeroMentoriasAgendadas, 10)
       };
+      
+      // Eliminar campos temporales
+      delete dataToSend.duracionHoras;
+      delete dataToSend.duracionMinutos;
 
       if (capacitacionInicial) {
         await capacitacionesService.actualizar(capacitacionInicial.id, dataToSend);
@@ -211,11 +247,13 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
         tema: '',
         fecha: new Date().toISOString().split('T')[0],
         hora: '',
-        duracion: '',
+        duracionHoras: '',
+        duracionMinutos: '',
         lugar: '',
         capacitadores: [],
         numeroPersonasInvitadas: '',
         asistentes: [],
+        numeroMentoriasAgendadas: '',
         observaciones: '',
       });
       setNewCapacitador('');
@@ -374,9 +412,9 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Tema */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-3">
                   <label className="block text-gray-700 text-sm font-semibold mb-2">
                     Tema de Capacitación <span className="text-rose">*</span>
                   </label>
@@ -434,39 +472,43 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                 </div>
 
                 {/* Duración */}
-                <div>
+                <div className="md:col-span-3">
                   <label className="block text-gray-700 text-sm font-semibold mb-2">
                     Duración <span className="text-rose">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="duracion"
-                    value={formData.duracion}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                    placeholder="Ej: 2 horas, 90 minutos"
-                    required
-                  />
-                </div>
-
-                {/* Lugar */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2">
-                    Lugar <span className="text-rose">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="lugar"
-                    value={formData.lugar}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                    placeholder="Ej: Sala de juntas, Auditorio"
-                    required
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Horas</label>
+                      <input
+                        type="number"
+                        name="duracionHoras"
+                        value={formData.duracionHoras}
+                        onChange={handleChange}
+                        min="0"
+                        max="12"
+                        className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        placeholder="0"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Minutos</label>
+                      <input
+                        type="number"
+                        name="duracionMinutos"
+                        value={formData.duracionMinutos}
+                        onChange={handleChange}
+                        min="0"
+                        max="59"
+                        className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Número de Personas Invitadas */}
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2">
                     Número de Personas Invitadas <span className="text-rose">*</span>
                   </label>
@@ -487,6 +529,22 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                       <AlertCircle size={14} /> {errors.numeroPersonasInvitadas}
                     </p>
                   )}
+                </div>
+
+                {/* Lugar */}
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2">
+                    Lugar <span className="text-rose">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="lugar"
+                    value={formData.lugar}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="Ej: Sala de juntas, Auditorio"
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -541,7 +599,7 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                         <X size={20} />
                       </button>
 
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">Asistente {index + 1}</h3>
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Asistente {formData.asistentes.length - index}</h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Rango de Edad */}
@@ -630,7 +688,36 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
               )}
             </div>
 
-            {/* Sección 4: Observaciones */}
+            {/* Sección 4: Número de Mentorías Agendadas */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                  <Calendar className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Número de Mentorías Agendadas</h2>
+                  <p className="text-sm text-gray-600">Mentorías programadas a partir de esta capacitación</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-semibold mb-2">
+                  Número de Mentorías Agendadas <span className="text-rose">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="numeroMentoriasAgendadas"
+                  value={formData.numeroMentoriasAgendadas}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="Número de mentorías agendadas"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Sección 5: Observaciones */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-gray-500/10 to-gray-600/10 rounded-xl">

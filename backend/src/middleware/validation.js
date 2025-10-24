@@ -142,8 +142,8 @@ const validateCapacitacion = [
     .withMessage('La hora debe tener el formato HH:MM'),
   body('duracion')
     .trim()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('La duración debe tener entre 1 y 50 caracteres'),
+    .isLength({ min: 1, max: 100 })
+    .withMessage('La duración debe tener entre 1 y 100 caracteres'),
   body('lugar')
     .trim()
     .isLength({ min: 2, max: 200 })
@@ -151,6 +151,9 @@ const validateCapacitacion = [
   body('numeroPersonasInvitadas')
     .isInt({ min: 1, max: 10000 })
     .withMessage('El número de personas invitadas debe ser un número válido mayor a 0'),
+  body('numeroMentoriasAgendadas')
+    .isInt({ min: 0, max: 10000 })
+    .withMessage('El número de mentorías agendadas debe ser un número entero positivo o cero'),
   body('asistentes')
     .isArray()
     .withMessage('Los asistentes deben ser un array'),
