@@ -1,7 +1,8 @@
 import axios from 'axios';
+import cognitoAuth from './cognitoAuth';
 
-// URL base de la API - se configurará según el ambiente
-const API_BASE_URL = 'https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com/api';
+// URL base de la API - se puede configurar con variable de entorno
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com/api';
 
 console.log('API_BASE_URL:', API_BASE_URL);
 
@@ -12,14 +13,11 @@ const api = axios.create({
   },
 });
 
-// Interceptor para agregar token de autenticación
+// Interceptor para agregar token de autenticación de Cognito
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = cognitoAuth.getToken();
   
-  // No enviar token para rutas públicas (solo POST /consultas)
-  const isPublicConsulta = config.url?.includes('/consultas') && config.method === 'post';
-  
-  if (token && !isPublicConsulta) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -29,14 +27,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Solo manejar 401 si NO estamos en login y NO es una petición de login
-    const isLoginRequest = error.config?.url?.includes('/auth/login');
+    // Solo manejar 401 si NO estamos en login
     const isOnLoginPage = window.location.hash.includes('/admin/login');
     
-    if (error.response?.status === 401 && !isLoginRequest && !isOnLoginPage) {
+    if (error.response?.status === 401 && !isOnLoginPage) {
       // Limpiar datos de autenticación
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
+      cognitoAuth.logout();
       
       // Redirigir al login
       window.location.href = '#/admin/login';
@@ -45,20 +41,54 @@ api.interceptors.response.use(
   }
 );
 
-// Servicios de autenticación
+// Servicios de autenticación usando Cognito
 export const authService = {
   login: async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    try {
+      const result = await cognitoAuth.login(email, password);
+      console.log('📡 Resultado de cognitoAuth.login:', result);
+      
+      // Si necesita cambiar contraseña, retornar información especial
+      if (result.challengeName === 'NEW_PASSWORD_REQUIRED') {
+        console.log('🔐 Detectado NEW_PASSWORD_REQUIRED - Retornando challenge');
+        return {
+          success: false,
+          newPasswordRequired: true,
+          cognitoUser: result.cognitoUser,
+          userAttributes: result.userAttributes,
+        };
+      }
+      
+      // Login exitoso
+      console.log('✅ Login exitoso en authService');
+      return {
+        success: true,
+        user: result.user,
+        token: result.tokens.idToken,
+      };
+    } catch (error) {
+      console.error('❌ Error en authService.login:', error);
+      throw error;
     }
-    return response.data;
+  },
+  
+  completeNewPassword: async (cognitoUser, newPassword, userAttributes = {}) => {
+    try {
+      console.log('📝 Completando cambio de contraseña con atributos:', userAttributes);
+      const result = await cognitoAuth.completeNewPassword(cognitoUser, newPassword, userAttributes);
+      return {
+        success: true,
+        user: result.user,
+        token: result.session.getIdToken().getJwtToken(),
+      };
+    } catch (error) {
+      console.error('❌ Error al cambiar contraseña:', error);
+      throw error;
+    }
   },
   
   logout: () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    cognitoAuth.logout();
   },
   
   getCurrentUser: () => {
@@ -67,19 +97,15 @@ export const authService = {
   },
   
   isTokenValid: () => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return false;
-    
-    try {
-      // Decodificar el token JWT (solo la parte del payload)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Date.now() / 1000;
-      
-      // Verificar si el token no ha expirado
-      return payload.exp > currentTime;
-    } catch (error) {
-      return false;
-    }
+    return cognitoAuth.isAuthenticated();
+  },
+  
+  forgotPassword: async (email) => {
+    return await cognitoAuth.forgotPassword(email);
+  },
+  
+  confirmPassword: async (email, code, newPassword) => {
+    return await cognitoAuth.confirmPassword(email, code, newPassword);
   },
 };
 
