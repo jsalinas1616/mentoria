@@ -12,8 +12,8 @@ provider:
   memorySize: ${self:custom.memorySize.${self:provider.stage}, 512}
   environment:
     NODE_ENV: ${self:provider.stage}
-    JWT_SECRET: ${env:JWT_SECRET}
-    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN, '7d'}
+    COGNITO_USER_POOL_ID: !Ref CognitoUserPool
+    COGNITO_CLIENT_ID: !Ref CognitoUserPoolClient
     CONSULTAS_TABLE: NadroMentoria-Consultas-${self:provider.stage}
     USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
   
@@ -31,20 +31,54 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminGetUser
+            - cognito-idp:AdminListGroupsForUser
+            - cognito-idp:ListUsers
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminRemoveUserFromGroup
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminUpdateUserAttributes
+            - cognito-idp:AdminDisableUser
+            - cognito-idp:AdminEnableUser
+            - cognito-idp:AdminSetUserPassword
+          Resource:
+            - !GetAtt CognitoUserPool.Arn
+  
+  # Configuración del HTTP API con Cognito Authorizer
+  httpApi:
+    authorizers:
+      cognitoAuthorizer:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}
+        audience:
+          - !Ref CognitoUserPoolClient
 
 functions:
   api:
     handler: src/lambda.handler
     events:
-      - httpApi:
-          path: /api/{proxy+}
-          method: ANY
-      - httpApi:
-          path: /api
-          method: ANY
+      # Ruta pública - Home
       - httpApi:
           path: /
           method: GET
+      # Ruta pública - Health Check (para monitoreo)
+      - httpApi:
+          path: /api/health
+          method: GET
+      # Rutas protegidas con Cognito (TODO lo demás requiere autenticación)
+      - httpApi:
+          path: /api/{proxy+}
+          method: ANY
+          authorizer:
+            name: cognitoAuthorizer
+      - httpApi:
+          path: /api
+          method: ANY
+          authorizer:
+            name: cognitoAuthorizer
 
 plugins:
   - serverless-offline
@@ -55,9 +89,9 @@ custom:
   
   # Configuración específica por ambiente
   timeout:
-    dev: 30        # QA (actual)
-    'dev-jul': 30   # DEV-JUL (ajustado para HTTP API)
-    prod: 30        # PRODUCCIÓN (ajustado para HTTP API)
+    dev: 29        # 29 segundos para dejar margen con HTTP API (límite 30s)
+    'dev-jul': 29   # 29 segundos para dejar margen con HTTP API (límite 30s)
+    prod: 29        # 29 segundos para dejar margen con HTTP API (límite 30s)
   
   memorySize:
     dev: 512       # QA (actual)
@@ -67,12 +101,93 @@ custom:
 # Configuración de seguridad adicional
 resources:
   Resources:
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
+    # Cognito User Pool
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
       Properties:
-        Name: ${self:service}-${self:provider.stage}
-        Description: API segura para Nadro Mentoría
-        EndpointConfiguration:
-          Types:
-            - REGIONAL
+        UserPoolName: NadroMentoria-UserPool-${self:provider.stage}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: false
+          - Name: name
+            Required: true
+            Mutable: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        MfaConfiguration: OPTIONAL
+        EnabledMfas:
+          - SOFTWARE_TOKEN_MFA
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+        UserPoolTags:
+          Environment: ${self:provider.stage}
+          Project: NadroMentoria
+
+    # Cognito User Pool Client
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: NadroMentoria-Client-${self:provider.stage}
+        UserPoolId: !Ref CognitoUserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
+        PreventUserExistenceErrors: ENABLED
+        AccessTokenValidity: 1
+        IdTokenValidity: 1
+        RefreshTokenValidity: 30
+        TokenValidityUnits:
+          AccessToken: hours
+          IdToken: hours
+          RefreshToken: days
+
+    # Cognito User Groups (Roles)
+    CognitoUserPoolGroupAdmin:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: admin
+        Description: Administradores - Acceso completo al dashboard y consultas
+        UserPoolId: !Ref CognitoUserPool
+        Precedence: 1
+
+    CognitoUserPoolGroupMentor:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: mentor
+        Description: Mentores - Solo acceso a consultas
+        UserPoolId: !Ref CognitoUserPool
+        Precedence: 2
+  
+  Outputs:
+    CognitoUserPoolId:
+      Value: !Ref CognitoUserPool
+      Description: ID del User Pool de Cognito
+      Export:
+        Name: NadroMentoria-UserPoolId-${self:provider.stage}
+    
+    CognitoUserPoolClientId:
+      Value: !Ref CognitoUserPoolClient
+      Description: ID del Cliente de Cognito
+      Export:
+        Name: NadroMentoria-UserPoolClientId-${self:provider.stage}
+    
+    CognitoUserPoolArn:
+      Value: !GetAtt CognitoUserPool.Arn
+      Description: ARN del User Pool de Cognito
+      Export:
+        Name: NadroMentoria-UserPoolArn-${self:provider.stage}
 

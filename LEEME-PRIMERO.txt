@@ -1,17 +1,18 @@
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║                                                                       ║
-║          🎉  NADRO MENTORÍA - PROYECTO COMPLETO  🎉                  ║
+║            NADRO MENTORÍA - PROYECTO COMPLETO                        ║
 ║                                                                       ║
 ║                  Sistema de Consulta Integral                        ║
+║                                                                       ║
+║  🚀 ¿VAS A DEPLOYAR? → Abre: GUIA-DEPLOYMENT-COMPLETA.md            ║
+║  📚 ¿Buscas algo específico? → Abre: INDICE-DOCUMENTACION.md        ║
 ║                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 
-✅ ESTADO: 100% COMPLETADO Y LISTO PARA USAR
-
 
 ═══════════════════════════════════════════════════════════════════════
-📦 QUÉ SE CREÓ
+QUÉ SE CREÓ
 ═══════════════════════════════════════════════════════════════════════
 
 ✅ FRONTEND (React + Tailwind CSS)
@@ -22,8 +23,9 @@
    └─ Responsive (funciona en móvil/tablet/desktop)
 
 ✅ BACKEND (Express + AWS)
-   └─ API REST con 14 endpoints
-   └─ Autenticación JWT
+   └─ API REST con 14+ endpoints
+   └─ Autenticación AWS Cognito (JWT automático)
+   └─ Roles: Admin y Mentor
    └─ Integración DynamoDB
    └─ Logging automático
    └─ Listo para AWS Lambda
@@ -35,10 +37,10 @@
 
 ✅ DOCUMENTACIÓN COMPLETA
    └─ README.md (documentación principal)
-   └─ GUIA-RAPIDA.md (inicio en 5 minutos)
-   └─ API-DOCUMENTATION.md (docs técnicas)
-   └─ DEPLOYMENT-GUIDE.md (desplegar a AWS)
-   └─ INICIO.md (¡empieza aquí!)
+   └─ GUIA-DEPLOYMENT-COMPLETA.md (🆕 ¡DEPLOY COMPLETO PASO A PASO!)
+   └─ PERMISOS-AWS-SIMPLE.md (permisos detallados de AWS)
+   └─ COGNITO-IMPLEMENTACION.md (guía técnica de Cognito)
+   └─ INDICE-DOCUMENTACION.md (índice rápido de docs)
 
 
 ═══════════════════════════════════════════════════════════════════════
@@ -66,11 +68,16 @@ cd infrastructure && npm run setup
 🔐 CREDENCIALES DE ACCESO
 ═══════════════════════════════════════════════════════════════════════
 
-URL:      http://localhost:3000
-Email:    admin@nadro.com
-Password: admin123
+🌐 PRODUCCIÓN:
+   URL:      [Tu URL de S3 o CloudFront]
+   Email:    admin@nadro.com
+   Password: [Contraseña temporal de Cognito]
+   
+   ⚠️  En el primer login deberás cambiar la contraseña temporal
 
-⚠️  IMPORTANTE: Cambia estas credenciales después del primer login
+💻 DESARROLLO LOCAL:
+   Requiere configurar variables de entorno de Cognito
+   Ver: DEPLOYMENT-COGNITO.md
 
 
 ═══════════════════════════════════════════════════════════════════════
@@ -102,21 +109,21 @@ DASHBOARD:
 ═══════════════════════════════════════════════════════════════════════
 
 LÉEME PRIMERO:
-  • INICIO.md            ← ¡Empieza aquí! 🎯
+  • Este archivo (LEEME-PRIMERO.txt)  ← ¡Empiezas aquí! 🎯
+  • INDICE-DOCUMENTACION.md           ← Índice rápido de toda la documentación
 
-DOCUMENTACIÓN:
-  • README.md            ← Documentación completa
-  • GUIA-RAPIDA.md       ← Inicio rápido (5 min)
-  • DEPLOYMENT-GUIDE.md  ← Deploy a AWS
-  • API-DOCUMENTATION.md ← Docs del API
+DEPLOYMENT A AWS:
+  • GUIA-DEPLOYMENT-COMPLETA.md  ← 🚀 Deploy paso a paso (NUEVA CUENTA AWS)
+  • PERMISOS-AWS-SIMPLE.md       ← Permisos detallados de AWS
 
-INFORMACIÓN:
-  • RESUMEN-PROYECTO.md  ← Estado y métricas
-  • CHANGELOG.md         ← Historial de cambios
+DOCUMENTACIÓN TÉCNICA:
+  • README.md                    ← Documentación completa del proyecto
+  • COGNITO-IMPLEMENTACION.md    ← Guía técnica de Cognito con roles
+  • CHANGELOG.md                 ← Historial de cambios
 
-SCRIPTS:
-  • start-dev.sh         ← Inicia todo
-  • infrastructure/setup.sh  ← Setup AWS
+SCRIPTS DESARROLLO LOCAL:
+  • start-dev.sh                 ← Inicia todo (frontend + backend)
+  • infrastructure/setup.sh      ← Setup inicial de AWS
 
 
 ═══════════════════════════════════════════════════════════════════════
@@ -228,26 +235,25 @@ Mentorias/
 
 
 ═══════════════════════════════════════════════════════════════════════
-🚀 DEPLOYMENT A PRODUCCIÓN
+🚀 DEPLOYMENT A PRODUCCIÓN (NUEVA CUENTA AWS)
 ═══════════════════════════════════════════════════════════════════════
 
-Cuando estés listo para AWS:
-  1. Lee DEPLOYMENT-GUIDE.md
-  2. cd backend && npm run deploy
-  3. Sube frontend a S3
-  4. ¡Listo!
+Para deployar en cuenta AWS nueva:
+  1. Abre: GUIA-DEPLOYMENT-COMPLETA.md
+  2. Sigue los 8 pasos (tan fácil que cualquiera puede hacerlo)
+  3. ¡Listo en 30-45 minutos!
 
-Costo estimado: ~$1.70/mes (o GRATIS con capa gratuita AWS)
+Costo estimado: GRATIS primer año (o ~$1-2/mes después)
 
 
 ═══════════════════════════════════════════════════════════════════════
 📞 SOPORTE
 ═══════════════════════════════════════════════════════════════════════
 
-• Problemas: Revisa la documentación
+• Deployment: Sigue GUIA-DEPLOYMENT-COMPLETA.md
 • Errores: Consulta backend/logs.txt
-• Dudas técnicas: Lee API-DOCUMENTATION.md
-• Deployment: Sigue DEPLOYMENT-GUIDE.md
+• Permisos AWS: Lee PERMISOS-AWS-SIMPLE.md
+• Dudas técnicas: Lee COGNITO-IMPLEMENTACION.md o README.md
 
 
 ═══════════════════════════════════════════════════════════════════════

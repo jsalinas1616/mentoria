@@ -5,17 +5,24 @@ const authRoutes = require('./authRoutes');
 const consultasRoutes = require('./consultasRoutes');
 const dashboardRoutes = require('./dashboardRoutes');
 
-// Montar rutas
-router.use('/auth', authRoutes);
-// Mantener ruta pública para formulario sin login
-router.use('/consultas', consultasRoutes);
-// Rutas protegidas del dashboard (incluye consultas protegidas)
-router.use('/dashboard', dashboardRoutes);
-
-// Ruta de health check
+// Health check público (para monitoreo y verificación del API)
 router.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Nadro Mentoría API funcionando correctamente' });
+  res.json({ 
+    status: 'OK', 
+    message: 'Nadro Mentoría API funcionando correctamente',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0'
+  });
 });
+
+// Rutas de autenticación y gestión de usuarios (Cognito)
+router.use('/auth', authRoutes);
+
+// Rutas de consultas (PROTEGIDAS - requieren autenticación)
+router.use('/consultas', consultasRoutes);
+
+// Rutas del dashboard (PROTEGIDAS - requieren autenticación)
+router.use('/dashboard', dashboardRoutes);
 
 module.exports = router;
 

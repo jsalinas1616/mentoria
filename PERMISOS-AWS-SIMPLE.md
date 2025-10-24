@@ -210,6 +210,67 @@ Desplegar nuevos ambientes del sistema Nadro Mentoría usando Serverless Framewo
       "Resource": [
         "arn:aws:s3:::nadro-mentoria-api-*-serverlessdeploymentbucket-*"
       ]
+    },
+    {
+      "Sid": "CognitoUserPoolManagement",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:CreateUserPool",
+        "cognito-idp:DeleteUserPool",
+        "cognito-idp:DescribeUserPool",
+        "cognito-idp:UpdateUserPool",
+        "cognito-idp:ListUserPools",
+        "cognito-idp:TagResource",
+        "cognito-idp:UntagResource",
+        "cognito-idp:SetUserPoolMfaConfig",
+        "cognito-idp:GetUserPoolMfaConfig"
+      ],
+      "Resource": [
+        "arn:aws:cognito-idp:us-east-1:975130647458:userpool/*"
+      ]
+    },
+    {
+      "Sid": "CognitoUserPoolClientManagement",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:CreateUserPoolClient",
+        "cognito-idp:DeleteUserPoolClient",
+        "cognito-idp:DescribeUserPoolClient",
+        "cognito-idp:UpdateUserPoolClient",
+        "cognito-idp:ListUserPoolClients"
+      ],
+      "Resource": [
+        "arn:aws:cognito-idp:us-east-1:975130647458:userpool/*"
+      ]
+    },
+    {
+      "Sid": "CognitoUserPoolGroupManagement",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:CreateGroup",
+        "cognito-idp:DeleteGroup",
+        "cognito-idp:GetGroup",
+        "cognito-idp:UpdateGroup",
+        "cognito-idp:ListGroups"
+      ],
+      "Resource": [
+        "arn:aws:cognito-idp:us-east-1:975130647458:userpool/*"
+      ]
+    },
+    {
+      "Sid": "APIGatewayV2Management",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:PATCH",
+        "apigateway:DELETE"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:us-east-1::/apis",
+        "arn:aws:apigateway:us-east-1::/apis/*"
+      ]
     }
   ]
 }
@@ -233,12 +294,20 @@ npm run info:desarrollo   # Ver info de PRODUCCIÓN
 - **Lambda:** `nadro-mentoria-api-dev-jul-api`
 - **API Gateway:** `nadro-mentoria-api-dev-jul`
 - **DynamoDB:** `NadroMentoria-Consultas-dev-jul`, `NadroMentoria-Usuarios-dev-jul`
+- **Cognito User Pool:** `NadroMentoria-UserPool-dev-jul`
+- **Cognito Groups:** `admin` (acceso completo), `mentor` (solo consultas)
+- **Cognito Client:** `NadroMentoria-Client-dev-jul`
+- **API Gateway Authorizer:** JWT Authorizer con Cognito
 - **S3:** `nadro-mentoria-frontend-dev-jul`
 
 ### **PRODUCCIÓN (stage: prod):**
 - **Lambda:** `nadro-mentoria-api-prod-api`
 - **API Gateway:** `nadro-mentoria-api-prod`
 - **DynamoDB:** `NadroMentoria-Consultas-prod`, `NadroMentoria-Usuarios-prod`
+- **Cognito User Pool:** `NadroMentoria-UserPool-prod`
+- **Cognito Groups:** `admin` (acceso completo), `mentor` (solo consultas)
+- **Cognito Client:** `NadroMentoria-Client-prod`
+- **API Gateway Authorizer:** JWT Authorizer con Cognito
 - **S3:** `nadro-mentoria-frontend-prod`
 
 ## 🛡️ **Seguridad y Principio de Menor Privilegio**
@@ -294,13 +363,39 @@ Agregado permiso para el bucket de despliegue que Serverless crea automáticamen
 - **IAM**: Incluye `DeleteRole`, `DetachRolePolicy` para limpieza completa
 - **CloudWatch**: Incluye `DeleteLogGroup` para limpieza de logs
 
+### **🆕 Permisos de Cognito (Nuevos):**
+
+**1. User Pool Management:**
+- `CreateUserPool` / `DeleteUserPool`: Crear/eliminar el pool de usuarios
+- `DescribeUserPool` / `UpdateUserPool`: Ver y actualizar configuración
+- `SetUserPoolMfaConfig`: Configurar MFA (autenticación multifactor)
+- `TagResource` / `UntagResource`: Gestionar etiquetas
+
+**2. User Pool Client Management:**
+- `CreateUserPoolClient` / `DeleteUserPoolClient`: Crear/eliminar cliente de app
+- `DescribeUserPoolClient` / `UpdateUserPoolClient`: Ver y actualizar cliente
+
+**3. User Pool Groups (Roles):**
+- `CreateGroup` / `DeleteGroup`: Crear/eliminar grupos (admin, mentor)
+- `GetGroup` / `UpdateGroup`: Ver y actualizar grupos
+- `ListGroups`: Listar todos los grupos
+
+**4. API Gateway V2 (HTTP API):**
+- Permisos para crear/gestionar HTTP API Authorizer con JWT de Cognito
+- Resource: `arn:aws:apigateway:us-east-1::/apis/*`
+
+**Nota importante:** Los permisos de Cognito permiten crear User Pools en cualquier pool (`userpool/*`), pero CloudFormation solo creará los que están definidos en `serverless.yml` con el prefijo correcto.
+
 ## 📝 **Justificación**
 
 Necesito estos permisos para:
 1. **Crear** nuevos ambientes de desarrollo y producción
 2. **Desplegar** código usando Serverless Framework
-3. **Configurar** recursos AWS necesarios
-4. **Verificar** que el despliegue funcione correctamente
+3. **Configurar** recursos AWS necesarios (Lambda, API Gateway, DynamoDB, **Cognito**)
+4. **Implementar** sistema de autenticación con AWS Cognito y roles:
+   - **Admin**: Acceso completo al dashboard y gestión de consultas
+   - **Mentor**: Solo acceso a consultas (ver, crear, editar, exportar)
+5. **Verificar** que el despliegue funcione correctamente
 
 ---
 

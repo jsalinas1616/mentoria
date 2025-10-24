@@ -16,14 +16,15 @@ Sistema completo para gestionar reportes de consultas de mentoría integral en N
 ### Backend
 - ✅ Express.js con arquitectura serverless
 - ✅ API REST completa
-- ✅ Autenticación JWT
+- ✅ Autenticación AWS Cognito (roles: admin, mentor)
+- ✅ Control de acceso basado en roles (RBAC)
 - ✅ Integración con AWS DynamoDB
 - ✅ Logging automático a archivo
 - ✅ Manejo de errores centralizado
 - ✅ Listo para desplegar en AWS Lambda
 
 ### Características del Sistema
-- 🔓 **Acceso público al formulario** - Los mentores pueden registrar consultas sin login
+- 🔐 **Sistema 100% protegido** - Todas las funciones requieren autenticación
 - 📝 Registro completo de consultas con:
   - Datos del mentor (nombre, correo)
   - Información laboral (lugar de trabajo, área)
@@ -115,23 +116,30 @@ El sistema estará disponible en:
 
 ### 5. Acceso al sistema
 
-#### 👥 **Usuarios/Mentores (Acceso Público)**
-- URL: `http://localhost:3000/`
-- **No necesitan login** - Formulario disponible inmediatamente
-- Pueden registrar sus consultas de mentoría
-
-#### 👨‍💼 **Administradores**
+#### 🔐 **Login Requerido**
 - URL: `http://localhost:3000/admin/login`
-- Credenciales por defecto:
+- **Credenciales de desarrollo:**
   ```
   Email: admin@nadro.com
-  Password: admin123
+  Password: [contraseña temporal de Cognito]
   ```
-- Acceso completo al dashboard, estadísticas y gestión de consultas
+- Todos los usuarios (admins y mentores) deben autenticarse
 
-⚠️ **IMPORTANTE:** Cambia las credenciales de admin después del primer login.
+#### 👥 **Roles de Usuario**
 
-> 📖 Para más información sobre el acceso público, consulta [ACCESO-PUBLICO.md](./ACCESO-PUBLICO.md)
+**Administradores:**
+- Acceso completo al dashboard y estadísticas
+- Crear, editar, ver y eliminar consultas
+- Gestionar usuarios (crear, modificar roles, deshabilitar)
+- Ver métricas y reportes
+
+**Mentores:**
+- Crear y registrar consultas
+- Ver lista de consultas
+- Editar sus propias consultas
+- Sin acceso a estadísticas ni eliminación
+
+⚠️ **IMPORTANTE:** En producción, los usuarios se crean en AWS Cognito con contraseñas temporales que deben cambiar en el primer login.
 
 ## 📁 Estructura del Proyecto
 

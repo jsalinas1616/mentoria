@@ -1,28 +1,20 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { authenticateToken } = require('../middleware/auth');
-const { validateLogin, validateRegister, sanitizeInput } = require('../middleware/validation');
+const { authenticateCognito, requireAdmin } = require('../middleware/auth');
 
-// Rate limiting estricto para autenticación
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // máximo 5 intentos por IP por ventana
-  message: {
-    error: true,
-    message: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// ============= RUTAS PROTEGIDAS CON COGNITO =============
+// Obtener información del usuario autenticado
+router.get('/me', authenticateCognito, authController.obtenerUsuario);
 
-// Rutas públicas con rate limiting y validación
-router.post('/registrar', authLimiter, sanitizeInput, validateRegister, authController.registrar);
-router.post('/login', authLimiter, sanitizeInput, validateLogin, authController.login);
-
-// Rutas protegidas
-router.get('/me', authenticateToken, authController.obtenerUsuario);
+// ============= RUTAS DE ADMINISTRACIÓN (SOLO ADMIN) =============
+// Gestión de usuarios
+router.get('/usuarios', authenticateCognito, requireAdmin, authController.listarUsuarios);
+router.post('/usuarios', authenticateCognito, requireAdmin, authController.crearUsuario);
+router.put('/usuarios/:email/rol', authenticateCognito, requireAdmin, authController.cambiarRol);
+router.put('/usuarios/:email/password', authenticateCognito, requireAdmin, authController.cambiarPassword);
+router.put('/usuarios/:email/deshabilitar', authenticateCognito, requireAdmin, authController.deshabilitarUsuario);
+router.put('/usuarios/:email/habilitar', authenticateCognito, requireAdmin, authController.habilitarUsuario);
 
 module.exports = router;
 

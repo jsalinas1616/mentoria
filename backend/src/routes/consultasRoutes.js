@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const consultasController = require('../controllers/consultasController');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateCognito, requireMentorOrAdmin, requireAdmin } = require('../middleware/auth');
 const { validateConsulta, sanitizeInput } = require('../middleware/validation');
 
-// Ruta pública - Crear consulta (sin autenticación) con validación
-router.post('/', sanitizeInput, validateConsulta, consultasController.crear);
+// TODAS las rutas requieren autenticación
+// Mentores y Admins pueden crear y gestionar consultas
+router.post('/', authenticateCognito, requireMentorOrAdmin, sanitizeInput, validateConsulta, consultasController.crear);
+router.get('/', authenticateCognito, requireMentorOrAdmin, consultasController.listar);
+router.get('/export', authenticateCognito, requireMentorOrAdmin, consultasController.exportar);
+router.get('/:id', authenticateCognito, requireMentorOrAdmin, consultasController.obtener);
+router.put('/:id', authenticateCognito, requireMentorOrAdmin, sanitizeInput, validateConsulta, consultasController.actualizar);
 
-// Rutas protegidas - Requieren autenticación
-router.get('/', authenticateToken, consultasController.listar);
-router.get('/export', authenticateToken, consultasController.exportar);
-router.get('/:id', authenticateToken, consultasController.obtener);
-router.put('/:id', authenticateToken, sanitizeInput, validateConsulta, consultasController.actualizar);
-router.delete('/:id', authenticateToken, consultasController.eliminar);
+// Solo admins pueden eliminar
+router.delete('/:id', authenticateCognito, requireAdmin, consultasController.eliminar);
 
 module.exports = router;
 
