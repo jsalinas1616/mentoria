@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { dashboardService, consultasService, authService } from '../../services/api';
+import { dashboardService, consultasService, capacitacionesService, authService } from '../../services/api';
 import { formatearFecha } from '../../utils/validation';
 
 const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399'];
@@ -24,6 +24,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     consultasPorFecha: [],
   });
   const [consultas, setConsultas] = useState([]);
+  const [capacitaciones, setCapacitaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
@@ -40,6 +41,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [busqueda, setBusqueda] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
   const [consultasPorPagina] = useState(10);
+  const [tabActivo, setTabActivo] = useState('consultas'); // 'consultas' o 'capacitaciones'
   const user = authService.getCurrentUser();
 
   useEffect(() => {
@@ -49,14 +51,18 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = async () => {
     setLoading(true);
     try {
-      const [statsData, consultasData] = await Promise.all([
+      const [statsData, consultasData, capacitacionesData] = await Promise.all([
         dashboardService.obtenerEstadisticas(filtros),
         consultasService.listar(filtros),
+        capacitacionesService.listar(filtros),
       ]);
       setStats(statsData);
       setConsultas(consultasData);
+      setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
     } catch (error) {
       console.error('Error al cargar datos:', error);
+      console.error('Error detallado capacitaciones:', error);
+      setCapacitaciones([]);
     } finally {
       setLoading(false);
     }
@@ -444,28 +450,57 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
           </div>
         </div>
 
-        {/* Tabla de Consultas Recientes Moderna */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
-                <FileText className="text-primary" size={24} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Consultas Recientes</h2>
-                <p className="text-sm text-gray-600">
-                  {consultasFiltradas.length} de {consultas.length} consultas
-                </p>
-              </div>
-            </div>
+        {/* Tabs para Consultas y Capacitaciones */}
+        <div className="bg-white rounded-t-3xl border-b-2 border-gray-200">
+          <div className="flex gap-2 p-2">
             <button
-              onClick={() => handleExportar('excel')}
-              className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 font-semibold shadow-lg"
+              onClick={() => setTabActivo('consultas')}
+              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                tabActivo === 'consultas'
+                  ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
-              <Download size={18} />
-              Exportar Excel
+              <FileText size={20} />
+              Consultas ({consultas.length})
+            </button>
+            <button
+              onClick={() => setTabActivo('capacitaciones')}
+              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                tabActivo === 'capacitaciones'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Users size={20} />
+              Capacitaciones ({capacitaciones.length})
             </button>
           </div>
+        </div>
+
+        {/* Tabla de Consultas Recientes Moderna */}
+        {tabActivo === 'consultas' && (
+          <div className="bg-white rounded-b-3xl p-6 border border-t-0 border-gray-200/50 shadow-soft">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+                  <FileText className="text-primary" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Consultas Recientes</h2>
+                  <p className="text-sm text-gray-600">
+                    {consultasFiltradas.length} de {consultas.length} consultas
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleExportar('excel')}
+                className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 font-semibold shadow-lg"
+              >
+                <Download size={18} />
+                Exportar Excel
+              </button>
+            </div>
 
           {/* Buscador */}
           <div className="mb-6">
@@ -626,7 +661,90 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        )}
+
+        {/* Tabla de Capacitaciones */}
+        {tabActivo === 'capacitaciones' && (
+          <div className="bg-white rounded-b-3xl p-6 border border-t-0 border-gray-200/50 shadow-soft">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-xl">
+                  <Users className="text-blue-600" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Capacitaciones Recientes</h2>
+                  <p className="text-sm text-gray-600">
+                    {capacitaciones.length} capacitaciones registradas
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Fecha</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Tema</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Capacitadores</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Invitados</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Asistentes</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Lugar</th>
+                    <th className="text-left text-gray-700 font-semibold pb-4 px-4">Duración</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(capacitaciones) && capacitaciones.map((capacitacion) => (
+                    <tr
+                      key={capacitacion.id}
+                      className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
+                    >
+                      <td className="py-4 px-4">
+                        <span className="text-gray-900 font-medium">
+                          {formatearFecha(capacitacion.fecha)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-900 font-medium">{capacitacion.tema}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-700">
+                          {capacitacion.capacitadores.length === 1 
+                            ? capacitacion.capacitadores[0]
+                            : `${capacitacion.capacitadores[0]} +${capacitacion.capacitadores.length - 1}`
+                          }
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-700">{capacitacion.numeroPersonasInvitadas}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-700">{capacitacion.asistentes?.length || 0}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-700">{capacitacion.lugar}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-gray-700">{capacitacion.duracion}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {capacitaciones.length === 0 && (
+              <div className="text-center py-12">
+                <div className="p-4 bg-gray-50 rounded-2xl inline-block">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500 font-medium">No hay capacitaciones registradas</p>
+                  <p className="text-gray-400 text-sm">Las capacitaciones aparecerán aquí cuando se registren</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modal de Detalles de Consulta */}

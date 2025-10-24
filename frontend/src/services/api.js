@@ -143,22 +143,22 @@ export const consultasService = {
 export const capacitacionesService = {
   crear: async (capacitacion) => {
     const response = await api.post('/capacitaciones', capacitacion);
-    return response.data;
+    return response.data.data || response.data;
   },
   
   listar: async (filtros = {}) => {
     const response = await api.get('/capacitaciones', { params: filtros });
-    return response.data;
+    return response.data.data || response.data; // Extraer el array de "data"
   },
   
   obtener: async (id) => {
     const response = await api.get(`/capacitaciones/${id}`);
-    return response.data;
+    return response.data.data || response.data;
   },
   
   actualizar: async (id, capacitacion) => {
     const response = await api.put(`/capacitaciones/${id}`, capacitacion);
-    return response.data;
+    return response.data.data || response.data;
   },
   
   eliminar: async (id) => {
