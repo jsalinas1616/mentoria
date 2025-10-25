@@ -932,6 +932,14 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                     <label className="text-sm font-semibold text-gray-600">Número de Sesión</label>
                     <p className="text-gray-900 font-medium">{consultaSeleccionada.numeroSesion || 'N/A'}</p>
                   </div>
+                  {consultaSeleccionada.numeroSesion && parseInt(consultaSeleccionada.numeroSesion) > 1 && consultaSeleccionada.haMejorado && (
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">¿Ha mejorado?</label>
+                      <p className={`font-bold ${consultaSeleccionada.haMejorado === 'Sí' ? 'text-green-600' : 'text-orange-600'}`}>
+                        {consultaSeleccionada.haMejorado}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1013,16 +1021,21 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             {/* Header del Modal */}
-            <div className="sticky top-0 bg-gradient-to-r from-primary via-secondary to-accent p-6 text-white rounded-t-3xl flex justify-between items-center z-10">
-              <div>
-                <h2 className="text-2xl font-bold">Detalles de Capacitación</h2>
-                <p className="text-white/90 text-sm">Información completa del evento</p>
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-xl">
+                  <Users className="text-blue-600" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Detalles de la Capacitación</h2>
+                  <p className="text-sm text-gray-600">Información completa del evento</p>
+                </div>
               </div>
               <button
                 onClick={cerrarModalCapacitacion}
-                className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
               >
-                <X size={24} />
+                <X size={24} className="text-gray-500" />
               </button>
             </div>
 

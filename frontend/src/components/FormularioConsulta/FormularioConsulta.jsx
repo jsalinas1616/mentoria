@@ -20,6 +20,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     rangoEdad: '',
     sexo: '',
     numeroSesion: '',
+    haMejorado: '',
     lugarTrabajo: '',
     area: '',
     lugarConsulta: '',
@@ -236,6 +237,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
           rangoEdad: '',
           sexo: '',
           numeroSesion: '',
+          haMejorado: '',
           lugarTrabajo: '',
           area: '',
           lugarConsulta: '',
@@ -265,6 +267,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
         rangoEdad: '',
         sexo: '',
         numeroSesion: '',
+        haMejorado: '',
         lugarTrabajo: '',
         area: '',
         lugarConsulta: '',
@@ -577,6 +580,39 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                     </p>
                   )}
                 </div>
+
+                {/* ¿Ha mejorado? - Solo se muestra si numeroSesion > 1 */}
+                {formData.numeroSesion && parseInt(formData.numeroSesion) > 1 && (
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border-2 border-blue-200">
+                    <label className="block text-gray-700 text-sm font-semibold mb-2.5">
+                      ¿Ha mejorado?
+                    </label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="haMejorado"
+                          value="Sí"
+                          checked={formData.haMejorado === 'Sí'}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+                        />
+                        <span className="text-gray-700 font-medium">Sí</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="haMejorado"
+                          value="No"
+                          checked={formData.haMejorado === 'No'}
+                          onChange={handleChange}
+                          className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+                        />
+                        <span className="text-gray-700 font-medium">No</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
 
                 {/* Lugar de Trabajo */}
                 <div>

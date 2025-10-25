@@ -14,9 +14,9 @@ provider:
     NODE_ENV: ${self:provider.stage}
     COGNITO_USER_POOL_ID: !Ref CognitoUserPool
     COGNITO_CLIENT_ID: !Ref CognitoUserPoolClient
-    CONSULTAS_TABLE: NadroMentoria-Consultas
-    USUARIOS_TABLE: NadroMentoria-Usuarios
-    CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones
+    CONSULTAS_TABLE: NadroMentoria-Consultas-${self:provider.stage}
+    USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
+    CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones-${self:provider.stage}
   
   iam:
     role:
@@ -30,9 +30,9 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas"
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios"
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones-${self:provider.stage}"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -196,6 +196,76 @@ resources:
         Description: Mentores - Solo acceso a consultas
         UserPoolId: !Ref CognitoUserPool
         Precedence: 2
+
+    # DynamoDB Tables
+    ConsultasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NadroMentoria-Consultas-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatedAtIndex
+            KeySchema:
+              - AttributeName: createdAt
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
+
+    UsuariosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NadroMentoria-Usuarios-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
+
+    CapacitacionesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NadroMentoria-Capacitaciones-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatedAtIndex
+            KeySchema:
+              - AttributeName: createdAt
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
   
   Outputs:
     CognitoUserPoolId:
