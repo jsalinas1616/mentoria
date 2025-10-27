@@ -159,8 +159,13 @@ class AuthController {
         return res.status(400).json({ message: 'Contraseña es requerida' });
       }
 
-      const result = await cognitoService.setUserPassword(email, password, permanent !== false);
-      res.json(result);
+      await cognitoService.setUserPassword(email, password, permanent !== false);
+      
+      // Respuesta sin incluir datos sensibles
+      res.json({ 
+        success: true, 
+        message: 'Contraseña actualizada correctamente' 
+      });
     } catch (error) {
       next(error);
     }
