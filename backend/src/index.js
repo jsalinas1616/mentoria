@@ -120,9 +120,7 @@ app.use(errorHandler);
 
 // Iniciar servidor solo en modo local (no en Lambda)
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
-  });
+  app.listen(PORT);
 }
 
 module.exports = app;
