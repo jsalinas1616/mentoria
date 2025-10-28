@@ -4,8 +4,6 @@ import cognitoAuth from './cognitoAuth';
 // URL base de la API - se puede configurar con variable de entorno
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com/api';
 
-console.log('API_BASE_URL:', API_BASE_URL);
-
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -46,11 +44,9 @@ export const authService = {
   login: async (email, password) => {
     try {
       const result = await cognitoAuth.login(email, password);
-      console.log('📡 Resultado de cognitoAuth.login:', result);
       
       // Si necesita cambiar contraseña, retornar información especial
       if (result.challengeName === 'NEW_PASSWORD_REQUIRED') {
-        console.log('🔐 Detectado NEW_PASSWORD_REQUIRED - Retornando challenge');
         return {
           success: false,
           newPasswordRequired: true,
@@ -60,21 +56,18 @@ export const authService = {
       }
       
       // Login exitoso
-      console.log('✅ Login exitoso en authService');
       return {
         success: true,
         user: result.user,
         token: result.tokens.idToken,
       };
     } catch (error) {
-      console.error('❌ Error en authService.login:', error);
       throw error;
     }
   },
   
   completeNewPassword: async (cognitoUser, newPassword, userAttributes = {}) => {
     try {
-      console.log('📝 Completando cambio de contraseña con atributos:', userAttributes);
       const result = await cognitoAuth.completeNewPassword(cognitoUser, newPassword, userAttributes);
       return {
         success: true,
@@ -82,7 +75,6 @@ export const authService = {
         token: result.session.getIdToken().getJwtToken(),
       };
     } catch (error) {
-      console.error('❌ Error al cambiar contraseña:', error);
       throw error;
     }
   },

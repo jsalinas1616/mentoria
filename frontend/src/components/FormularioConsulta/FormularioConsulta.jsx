@@ -41,16 +41,26 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
     toast.className = `fixed top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 -translate-y-full ${
       type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
     }`;
-    toast.innerHTML = `
-      <div class="flex items-center gap-3">
-        <div class="flex-shrink-0">
-          ${type === 'error' ? '⚠️' : '✅'}
-        </div>
-        <div class="flex-1">
-          <p class="font-medium">${message}</p>
-        </div>
-      </div>
-    `;
+    
+    // Crear estructura segura sin innerHTML
+    const container = document.createElement('div');
+    container.className = 'flex items-center gap-3';
+    
+    const icon = document.createElement('div');
+    icon.className = 'flex-shrink-0';
+    icon.textContent = type === 'error' ? '⚠️' : '✅';
+    
+    const content = document.createElement('div');
+    content.className = 'flex-1';
+    
+    const paragraph = document.createElement('p');
+    paragraph.className = 'font-medium';
+    paragraph.textContent = message; // textContent es seguro, no ejecuta HTML
+    
+    content.appendChild(paragraph);
+    container.appendChild(icon);
+    container.appendChild(content);
+    toast.appendChild(container);
     
     document.body.appendChild(toast);
     

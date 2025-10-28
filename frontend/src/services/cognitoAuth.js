@@ -75,9 +75,6 @@ class CognitoAuthService {
         newPasswordRequired: (userAttributes, requiredAttributes) => {
           // Usuario debe cambiar contraseña temporal
           // Guardamos el cognitoUser para usarlo después
-          console.log('🔐 Cognito callback: NEW_PASSWORD_REQUIRED');
-          console.log('   userAttributes:', userAttributes);
-          console.log('   requiredAttributes:', requiredAttributes);
           resolve({
             success: false,
             challengeName: 'NEW_PASSWORD_REQUIRED',
@@ -109,8 +106,6 @@ class CognitoAuthService {
       // Eliminar solo atributos que no se pueden modificar en el cambio de contraseña
       delete attributes.email_verified;
       delete attributes.email;
-      
-      console.log('🔐 Completando challenge con atributos finales:', attributes);
 
       cognitoUser.completeNewPasswordChallenge(newPassword, attributes, {
         onSuccess: (session) => {

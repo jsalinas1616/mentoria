@@ -89,29 +89,17 @@ const Login = ({ onLoginSuccess }) => {
 
     try {
       const response = await authService.login(formData.email.toLocaleLowerCase(), formData.password);
-      console.log('🔍 Respuesta de login:', response);
       
       // Verificar si necesita cambiar contraseña
       if (response.newPasswordRequired) {
-        console.log('⚠️ NEW_PASSWORD_REQUIRED detectado - Mostrando formulario de cambio');
-        console.log('   userAttributes:', response.userAttributes);
         setCognitoUserTemp(response.cognitoUser);
         setUserAttributesTemp(response.userAttributes);
         setNeedNewPassword(true);
         setErrorMessage('');
       } else if (response.success) {
-        console.log('✅ Login exitoso - Usuario:', response.user);
-        // Mostrar mensaje según el rol
-        if (response.user.rol === 'admin') {
-          console.log('Acceso administrador - Dashboard disponible');
-        } else {
-          console.log('Acceso mentor - Dashboard disponible');
-        }
-        
         onLoginSuccess(response.user);
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
       
       // Mensajes de error específicos de Cognito
       let message = 'Error al iniciar sesión. Verifica tus credenciales.';
@@ -142,16 +130,12 @@ const Login = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
-      console.log('🔄 Enviando cambio de contraseña con atributos:', userAttributesTemp);
       const response = await authService.completeNewPassword(cognitoUserTemp, newPassword, userAttributesTemp || {});
       
       if (response.success) {
-        // Login exitoso después de cambiar contraseña
-        console.log('✅ Contraseña cambiada exitosamente');
         onLoginSuccess(response.user);
       }
     } catch (error) {
-      console.error('Error al cambiar contraseña:', error);
       
       let message = 'Error al cambiar la contraseña. Intenta nuevamente.';
       if (error.code === 'InvalidPasswordException') {
