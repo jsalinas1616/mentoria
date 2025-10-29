@@ -7,9 +7,12 @@ provider:
   runtime: nodejs18.x
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
-  profile: default
+  profile: ${self:custom.awsProfile.${self:provider.stage}, 'default'}
   timeout: ${self:custom.timeout.${self:provider.stage}, 30}
   memorySize: ${self:custom.memorySize.${self:provider.stage}, 512}
+  stackTags:
+    Environment: ${self:provider.stage}
+    Project: NadroMentoria
   environment:
     NODE_ENV: ${self:provider.stage}
     COGNITO_USER_POOL_ID: !Ref CognitoUserPool
@@ -50,6 +53,7 @@ provider:
   
   # Configuración del HTTP API con Cognito Authorizer
   httpApi:
+    disableDefaultEndpoint: false
     cors:
       allowedOrigins:
         - '*'
@@ -73,6 +77,7 @@ provider:
         issuerUrl: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}
         audience:
           - !Ref CognitoUserPoolClient
+    shouldStartNameWithService: true
 
 functions:
   api:
@@ -111,6 +116,13 @@ plugins:
 custom:
   serverless-offline:
     httpPort: 3001
+  
+  # Configuración de AWS Profile por ambiente
+  awsProfile:
+    qa: 'qa-nadro'      # QA en cuenta separada
+    dev: 'mentoria'     # QA-JUL en cuenta mentoria
+    'dev-jul': 'mentoria' # DEV-JUL en cuenta mentoria
+    prod: 'mentoria'    # PROD en cuenta mentoria
   
   # Configuración específica por ambiente
   timeout:
