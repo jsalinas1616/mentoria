@@ -647,7 +647,7 @@ const Login = ({ onLoginSuccess }) => {
             />
           </div>
           <div className="text-center">
-            <h1 className="text-lg font-bold text-gray-900">Acceso Administrativo</h1>
+            <h1 className="text-lg font-bold text-gray-900">Mentoria de vida</h1>
             <p className="text-xs text-gray-500">Panel de control</p>
           </div>
         </div>
