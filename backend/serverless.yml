@@ -122,7 +122,7 @@ custom:
     qa: 'qa-nadro'      # QA en cuenta separada
     dev: 'mentoria'     # QA-JUL en cuenta mentoria
     'dev-jul': 'mentoria' # DEV-JUL en cuenta mentoria
-    prod: 'mentoria'    # PROD en cuenta mentoria
+    prod: 'prod-nadro'    # PROD en cuenta mentoria
   
   # Configuración específica por ambiente
   timeout:

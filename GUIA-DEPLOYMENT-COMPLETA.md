@@ -9,6 +9,7 @@ Esta guía te llevará paso a paso para tener el sistema funcionando en AWS.
 
 **MFA o doble autenticación estimado: 30-45 minutos**
  aws-mfa --profile qa-nadro
+ aws-mfa --profile prod-nadro
 
 ---
 
