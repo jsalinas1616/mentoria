@@ -98,22 +98,31 @@ const Login = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
+      console.log('🔐 Intentando login con:', formData.email);
       const response = await authService.login(formData.email.toLocaleLowerCase(), formData.password);
+      console.log('✅ Respuesta de login:', response);
       
       // Verificar si necesita cambiar contraseña
       if (response.newPasswordRequired) {
+        console.log('⚠️ Requiere cambio de contraseña');
         setCognitoUserTemp(response.cognitoUser);
         setUserAttributesTemp(response.userAttributes);
         setNeedNewPassword(true);
         setErrorMessage('');
       } else if (response.success) {
+        console.log('✅ Login exitoso, llamando onLoginSuccess');
         onLoginSuccess(response.user);
+      } else {
+        console.warn('⚠️ Respuesta inesperada:', response);
       }
     } catch (error) {
+      console.error('❌ Error en login:', error);
       
       // Mensajes de error específicos de Cognito
       let message = 'Error al iniciar sesión. Verifica tus credenciales.';
-      if (error.code === 'NotAuthorizedException') {
+      if (error.code === 'NoRoleAssignedException') {
+        message = 'Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema para que te asigne un rol (admin o mentor).';
+      } else if (error.code === 'NotAuthorizedException') {
         message = 'Usuario o contraseña incorrectos';
       } else if (error.code === 'UserNotFoundException') {
         message = 'Usuario no encontrado';

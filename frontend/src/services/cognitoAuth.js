@@ -38,14 +38,27 @@ class CognitoAuthService {
           const payload = session.getIdToken().payload;
           const groups = payload['cognito:groups'] || [];
 
+          console.log('🔐 Grupos del usuario en Cognito:', groups);
+
+          // Determinar rol principal
+          const rol = groups.includes('admin') ? 'admin' : 
+                      groups.includes('mentor') ? 'mentor' : null;
+
+          // Validar que el usuario tenga un rol asignado
+          if (!rol) {
+            reject({
+              code: 'NoRoleAssignedException',
+              message: 'Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.',
+            });
+            return;
+          }
+
           const userData = {
             id: payload.sub,
             email: payload.email,
             username: payload['cognito:username'],
             roles: groups,
-            // Determinar rol principal
-            rol: groups.includes('admin') ? 'admin' : 
-                 groups.includes('mentor') ? 'mentor' : 'empleado',
+            rol: rol,
           };
 
           // Guardar tokens en localStorage
@@ -54,6 +67,8 @@ class CognitoAuthService {
           localStorage.setItem('refreshToken', refreshToken);
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('authToken', idToken); // Para compatibilidad
+
+          console.log('✅ Usuario autenticado con rol:', rol);
 
           resolve({
             success: true,
@@ -114,13 +129,27 @@ class CognitoAuthService {
           const payload = session.getIdToken().payload;
           const groups = payload['cognito:groups'] || [];
 
+          console.log('🔐 Grupos del usuario en Cognito:', groups);
+
+          // Determinar rol principal
+          const rol = groups.includes('admin') ? 'admin' : 
+                      groups.includes('mentor') ? 'mentor' : null;
+
+          // Validar que el usuario tenga un rol asignado
+          if (!rol) {
+            reject({
+              code: 'NoRoleAssignedException',
+              message: 'Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.',
+            });
+            return;
+          }
+
           const userData = {
             id: payload.sub,
             email: payload.email,
             username: payload['cognito:username'],
             roles: groups,
-            rol: groups.includes('admin') ? 'admin' : 
-                 groups.includes('mentor') ? 'mentor' : 'empleado',
+            rol: rol,
           };
 
           // Guardar tokens
@@ -128,6 +157,8 @@ class CognitoAuthService {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('authToken', idToken);
+
+          console.log('✅ Usuario autenticado con rol:', rol);
 
           resolve({
             success: true,
@@ -185,13 +216,25 @@ class CognitoAuthService {
         const payload = session.getIdToken().payload;
         const groups = payload['cognito:groups'] || [];
 
+        // Determinar rol principal
+        const rol = groups.includes('admin') ? 'admin' : 
+                    groups.includes('mentor') ? 'mentor' : null;
+
+        // Validar que el usuario tenga un rol asignado
+        if (!rol) {
+          reject({
+            code: 'NoRoleAssignedException',
+            message: 'Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.',
+          });
+          return;
+        }
+
         resolve({
           id: payload.sub,
           email: payload.email,
           username: payload['cognito:username'],
           roles: groups,
-          rol: groups.includes('admin') ? 'admin' : 
-               groups.includes('mentor') ? 'mentor' : 'empleado',
+          rol: rol,
         });
       });
     });
