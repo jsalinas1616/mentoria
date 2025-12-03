@@ -9,12 +9,17 @@ import areasData from '../../data/areas.json';
 import lugaresConsultaData from '../../data/lugaresConsulta.json';
 import { validarEmail, validarRequerido, validarArray } from '../../utils/validation';
 
+console.log("Lugares de trabajo cargados:", lugaresTrabajoData);
+console.log("Lugares de consulta cargados:", lugaresConsultaData);
+console.log("Motivos de consulta cargados:", motivosConsultaData);
+console.log("Areas cargadas para entrevista:", areasData);
+
 const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
-    // Datos del Mentor (ahora es array)
-    Ente: [],
-    // Datos de la Consulta
+    // Datos del Entrevistador (ahora es array)
+    entrevistadores: [],
+    // Datos de la Entrevista
     fecha: new Date().toISOString().split('T')[0],
     // Datos Demográficos (Anónimos)
     rangoEdad: '',
@@ -23,7 +28,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     haMejorado: '',
     lugarTrabajo: '',
     area: '',
-    lugarConsulta: '',
+    lugarEntrevista: '',
     motivosConsulta: [],
     observaciones: '',
   });
@@ -32,7 +37,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [searchArea, setSearchArea] = useState('');
-  const [newMentor, setNewMentor] = useState('');
+  const [newEntrevistador, setNewMentor] = useState('');
 
   // Función para mostrar toast
   const showToast = (message, type = 'error') => {
@@ -129,30 +134,30 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     }
   };
 
-  // Funciones para manejar múltiples Ente
+  // Funciones para manejar múltiples entrevistadores
   const handleAddMentor = () => {
-    if (newMentor.trim() === '') {
+    if (newEntrevistador.trim() === '') {
       return;
     }
     
     // Verificar que no esté duplicado
-    if (formData.Ente.includes(newMentor.trim())) {
+    if (formData.entrevistadores.includes(newEntrevistador.trim())) {
       showToast('Este mentor ya fue agregado', 'error');
       return;
     }
     
     setFormData((prev) => ({
       ...prev,
-      Ente: [...prev.Ente, newMentor.trim()],
+      entrevistadores: [...prev.entrevistadores, newEntrevistador.trim()],
     }));
     
     setNewMentor('');
     
     // Limpiar error si existía
-    if (errors.Ente) {
+    if (errors.entrevistadores) {
       setErrors((prev) => ({
         ...prev,
-        Ente: '',
+        entrevistadores: '',
       }));
     }
   };
@@ -160,7 +165,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   const handleRemoveMentor = (mentorToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      Ente: prev.Ente.filter(m => m !== mentorToRemove),
+      entrevistadores: prev.entrevistadores.filter(m => m !== mentorToRemove),
     }));
   };
 
@@ -175,8 +180,8 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     const newErrors = {};
 
     // Validar que haya al menos un mentor
-    if (!formData.Ente || formData.Ente.length === 0) {
-      newErrors.Ente = 'Debes agregar al menos un mentor';
+    if (!formData.entrevistadores || formData.entrevistadores.length === 0) {
+      newErrors.entrevistadores = 'Debes agregar al menos un mentor';
     }
 
     if (!validarRequerido(formData.fecha)) {
@@ -205,11 +210,11 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     }
 
     if (!validarRequerido(formData.lugarConsulta)) {
-      newErrors.lugarConsulta = 'El lugar de consulta es requerido';
+      newErrors.lugarConsulta = 'El lugar de la entevista es requerido';
     }
 
     if (!validarArray(formData.motivosConsulta)) {
-      newErrors.motivosConsulta = 'Selecciona al menos un motivo de consulta';
+      newErrors.motivosConsulta = 'Selecciona al menos un motivo de entrevista';
     }
 
     setErrors(newErrors);
@@ -230,7 +235,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     setLoading(true);
 
     try {
-      // Enviar datos con el array de Ente directamente
+      // Enviar datos con el array de entrevistadores directamente
       const dataToSend = {
         ...formData,
       };
@@ -242,7 +247,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
       // Limpiar formulario después de 2 segundos
       setTimeout(() => {
         setFormData({
-          Ente: [],
+          entrevistadores: [],
           fecha: new Date().toISOString().split('T')[0],
           rangoEdad: '',
           sexo: '',
@@ -259,9 +264,9 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
         if (onSuccess) onSuccess();
       }, 2000);
     } catch (error) {
-      console.error('Error al guardar consulta:', error);
+      console.error('Error al guardar la entrevista:', error);
       setErrors({
-        submit: error.response?.data?.message || 'Error al guardar la consulta',
+        submit: error.response?.data?.message || 'Error al guardar la entrevista',
       });
     } finally {
       setLoading(false);
@@ -272,7 +277,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     // Confirmar antes de limpiar
     if (window.confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderán todos los datos ingresados.')) {
       setFormData({
-        Ente: [],
+        entrevistadores: [],
         fecha: new Date().toISOString().split('T')[0],
         rangoEdad: '',
         sexo: '',
@@ -373,7 +378,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                 </div>
               </div>
               
-              {/* Múltiples Ente */}
+              {/* Múltiples entrevistadores */}
               <div className="space-y-4">
                 <label className="block text-gray-700 text-sm font-semibold">
                   Entrevistador <span className="text-rose">*</span>
@@ -387,12 +392,12 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                     </div>
                     <input
                       type="text"
-                      value={newMentor}
+                      value={newEntrevistador}
                       onChange={(e) => setNewMentor(e.target.value)}
                       onKeyPress={handleNewMentorKeyPress}
                       placeholder="Nombre del entrevistador"
                       className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.Ente ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                        errors.entrevistadores ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
                       }`}
                     />
                   </div>
@@ -406,10 +411,10 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   </button>
                 </div>
 
-                {/* Lista de Ente agregados */}
-                {formData.Ente.length > 0 && (
+                {/* Lista de entrevistadores agregados */}
+                {formData.entrevistadores.length > 0 && (
                   <div className="space-y-2">
-                    {formData.Ente.map((mentor, index) => (
+                    {formData.entrevistadores.map((mentor, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-xl px-4 py-3 group hover:border-primary/40 transition-all"
@@ -432,10 +437,10 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   </div>
                 )}
 
-                {errors.Ente && (
+                {errors.entrevistadores && (
                   <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
                     <AlertCircle size={14} />
-                    {errors.Ente}
+                    {errors.entrevistadores}
                   </p>
                 )}
               </div>
@@ -702,7 +707,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   <MessageSquare className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">Detalles de la Entrevista</h2>
                   <p className="text-sm text-gray-500">Lugar y motivos de la entrevista (confidencial)</p>
                 </div>
               </div>
