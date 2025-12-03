@@ -13,6 +13,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { dashboardService, consultasService, capacitacionesService, authService } from '../../services/api';
 import { formatearFecha } from '../../utils/validation';
 import MentorEmptyState from './MentorEmptyState';
+import DropdownActions from '../Dropdown/Dropdown';
 
 const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399'];
 
@@ -272,12 +273,14 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               </div>
             </div>
 
+
             <div className="flex items-center gap-3">
               <div className="hidden md:block text-right mr-4">
                 <p className="text-gray-900 text-sm font-medium">{user?.nombre || 'Usuario'}</p>
                 <p className="text-gray-500 text-xs">{user?.email || ''}</p>
               </div>
-              
+              <DropdownActions />
+{/*               
               <button
                 onClick={() => window.location.href = '/#/dashboard/consultas/nueva'}
                 className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center gap-2 shadow-lg"
@@ -292,7 +295,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               >
                 <Plus size={18} />
                 <span className="hidden sm:inline">Nueva Capacitación</span>
-              </button>
+              </button> */}
               
               <button
                 onClick={onLogout}
