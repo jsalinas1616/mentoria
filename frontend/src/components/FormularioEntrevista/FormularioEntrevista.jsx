@@ -13,7 +13,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
   const [formData, setFormData] = useState({
     // Datos del Mentor (ahora es array)
-    mentores: [],
+    Ente: [],
     // Datos de la Consulta
     fecha: new Date().toISOString().split('T')[0],
     // Datos Demográficos (Anónimos)
@@ -129,30 +129,30 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     }
   };
 
-  // Funciones para manejar múltiples mentores
+  // Funciones para manejar múltiples Ente
   const handleAddMentor = () => {
     if (newMentor.trim() === '') {
       return;
     }
     
     // Verificar que no esté duplicado
-    if (formData.mentores.includes(newMentor.trim())) {
+    if (formData.Ente.includes(newMentor.trim())) {
       showToast('Este mentor ya fue agregado', 'error');
       return;
     }
     
     setFormData((prev) => ({
       ...prev,
-      mentores: [...prev.mentores, newMentor.trim()],
+      Ente: [...prev.Ente, newMentor.trim()],
     }));
     
     setNewMentor('');
     
     // Limpiar error si existía
-    if (errors.mentores) {
+    if (errors.Ente) {
       setErrors((prev) => ({
         ...prev,
-        mentores: '',
+        Ente: '',
       }));
     }
   };
@@ -160,7 +160,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   const handleRemoveMentor = (mentorToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      mentores: prev.mentores.filter(m => m !== mentorToRemove),
+      Ente: prev.Ente.filter(m => m !== mentorToRemove),
     }));
   };
 
@@ -175,8 +175,8 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     const newErrors = {};
 
     // Validar que haya al menos un mentor
-    if (!formData.mentores || formData.mentores.length === 0) {
-      newErrors.mentores = 'Debes agregar al menos un mentor';
+    if (!formData.Ente || formData.Ente.length === 0) {
+      newErrors.Ente = 'Debes agregar al menos un mentor';
     }
 
     if (!validarRequerido(formData.fecha)) {
@@ -230,7 +230,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     setLoading(true);
 
     try {
-      // Enviar datos con el array de mentores directamente
+      // Enviar datos con el array de Ente directamente
       const dataToSend = {
         ...formData,
       };
@@ -242,7 +242,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
       // Limpiar formulario después de 2 segundos
       setTimeout(() => {
         setFormData({
-          mentores: [],
+          Ente: [],
           fecha: new Date().toISOString().split('T')[0],
           rangoEdad: '',
           sexo: '',
@@ -272,7 +272,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     // Confirmar antes de limpiar
     if (window.confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderán todos los datos ingresados.')) {
       setFormData({
-        mentores: [],
+        Ente: [],
         fecha: new Date().toISOString().split('T')[0],
         rangoEdad: '',
         sexo: '',
@@ -305,7 +305,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
             <div className="absolute inset-0 bg-gradient-to-br from-success to-primary rounded-full animate-pulse opacity-20"></div>
             <Check size={48} className="text-success relative z-10" strokeWidth={3} />
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-3">¡Consulta Guardada!</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-3">¡Entrevista Guardada!</h2>
           <div className="h-1 w-24 bg-gradient-primary mx-auto rounded-full mb-4"></div>
           <p className="text-gray-600 text-lg">La información se ha registrado correctamente en el sistema</p>
         </div>
@@ -321,7 +321,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
           <div className="flex items-center gap-3">
             <img 
               src="/LOGO_Blanco.png" 
-              alt="Nadro Mentoría" 
+              alt="Nadro Entrevista" 
               className="h-12 w-auto"
             />
             <div>
@@ -361,25 +361,25 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
         {/* Formulario Premium */}
         <div className="bg-white rounded-3xl shadow-soft p-8 md:p-10 border border-gray-300/50">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Sección 1: Datos del Mentor */}
+            {/* Sección 1: Datos del Entrevistador */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
                   <User className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Datos del Mentor</h2>
-                  <p className="text-sm text-gray-600">Información personal del mentor</p>
+                  <h2 className="text-2xl font-bold text-gray-900">Datos del Entrevistador</h2>
+                  <p className="text-sm text-gray-600">Información personal del entrevistador</p>
                 </div>
               </div>
               
-              {/* Múltiples Mentores */}
+              {/* Múltiples Ente */}
               <div className="space-y-4">
                 <label className="block text-gray-700 text-sm font-semibold">
-                  Mentores <span className="text-rose">*</span>
+                  Entrevistador <span className="text-rose">*</span>
                 </label>
                 
-                {/* Input para agregar mentor */}
+                {/* Input para agregar entrevistador */}
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -390,9 +390,9 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                       value={newMentor}
                       onChange={(e) => setNewMentor(e.target.value)}
                       onKeyPress={handleNewMentorKeyPress}
-                      placeholder="Nombre del mentor"
+                      placeholder="Nombre del entrevistador"
                       className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
-                        errors.mentores ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
+                        errors.Ente ? 'border-rose focus:border-rose focus:ring-rose/10' : 'border-gray-300'
                       }`}
                     />
                   </div>
@@ -406,10 +406,10 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   </button>
                 </div>
 
-                {/* Lista de mentores agregados */}
-                {formData.mentores.length > 0 && (
+                {/* Lista de Ente agregados */}
+                {formData.Ente.length > 0 && (
                   <div className="space-y-2">
-                    {formData.mentores.map((mentor, index) => (
+                    {formData.Ente.map((mentor, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-xl px-4 py-3 group hover:border-primary/40 transition-all"
@@ -432,32 +432,32 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   </div>
                 )}
 
-                {errors.mentores && (
+                {errors.Ente && (
                   <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
                     <AlertCircle size={14} />
-                    {errors.mentores}
+                    {errors.Ente}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Sección 2: Datos de la Consulta */}
+            {/* Sección 2: Datos de la Entrevista */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-accent/10 to-primary/10 rounded-xl">
                   <Calendar className="w-6 h-6 text-accent" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Datos de la Consulta</h2>
-                  <p className="text-sm text-gray-600">Información sobre la mentoría</p>
+                  <h2 className="text-2xl font-bold text-gray-900">Datos de la Entrevista</h2>
+                  <p className="text-sm text-gray-600">Información sobre la entrevista</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Fecha de Consulta */}
+                {/* Fecha de Entrevista */}
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                    Fecha de Consulta <span className="text-rose">*</span>
+                    Fecha de Entrevista <span className="text-rose">*</span>
                   </label>
                   <div className="relative w-full">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
@@ -703,13 +703,13 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800">Detalles de la Consulta</h2>
-                  <p className="text-sm text-gray-500">Lugar y motivos de la consulta (confidencial)</p>
+                  <p className="text-sm text-gray-500">Lugar y motivos de la entrevista (confidencial)</p>
                 </div>
               </div>
               
               <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-semibold mb-2.5">
-                  Lugar de Consulta <span className="text-rose">*</span>
+                  Lugar de Entrevista <span className="text-rose">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -741,7 +741,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
 
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-4">
-                  Motivo(s) de Consulta <span className="text-rose">*</span>
+                  Motivo(s) de Entrevista <span className="text-rose">*</span>
                   <span className="text-gray-500 font-normal ml-2 text-xs">(Puedes seleccionar varios)</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-gradient-to-br from-gray-50 to-cream rounded-2xl border-2 border-gray-100">
@@ -792,7 +792,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                 name="observaciones"
                 value={formData.observaciones}
                 onChange={handleChange}
-                placeholder="Agrega comentarios, observaciones o detalles adicionales sobre la consulta..."
+                placeholder="Agrega comentarios, observaciones o detalles adicionales sobre la entrevista..."
                 rows="6"
                 className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-5 py-4 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none shadow-sm hover:shadow-md"
               />
@@ -830,7 +830,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                 <Save size={22} className="relative z-10" />
                 <span className="relative z-10 text-lg tracking-wide">
-                  {loading ? 'GUARDANDO...' : 'GUARDAR CONSULTA'}
+                  {loading ? 'GUARDANDO...' : 'GUARDAR ENTREVISTA'}
                 </span>
               </button>
             </div>
