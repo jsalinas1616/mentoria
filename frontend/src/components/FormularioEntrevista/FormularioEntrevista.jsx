@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, Briefcase, MessageSquare, FileText, Sparkles, Users, ArrowLeft, RotateCcw, Plus, X } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, MessageSquare, FileText, Users, ArrowLeft, RotateCcw, Plus, X } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { consultasService, authService } from '../../services/api';
@@ -7,7 +7,7 @@ import motivosConsultaData from '../../data/motivosConsulta.json';
 import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
 import areasData from '../../data/areas.json';
 import lugaresConsultaData from '../../data/lugaresConsulta.json';
-import { validarEmail, validarRequerido, validarArray } from '../../utils/validation';
+import { validarRequerido, validarArray } from '../../utils/validation';
 
 console.log("Lugares de trabajo cargados:", lugaresTrabajoData);
 console.log("Lugares de consulta cargados:", lugaresConsultaData);
@@ -29,7 +29,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     lugarTrabajo: '',
     area: '',
     lugarEntrevista: '',
-    motivosConsulta: [],
+    motivosEntrevista: [],
     observaciones: '',
   });
 
@@ -115,21 +115,21 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
 
   const handleMotivoToggle = (motivo) => {
     setFormData((prev) => {
-      const motivosActuales = prev.motivosConsulta;
+      const motivosActuales = prev.motivosEntrevista;
       const existe = motivosActuales.includes(motivo);
       
       return {
         ...prev,
-        motivosConsulta: existe
+        motivosEntrevista: existe
           ? motivosActuales.filter((m) => m !== motivo)
           : [...motivosActuales, motivo],
       };
     });
     
-    if (errors.motivosConsulta) {
+    if (errors.motivosEntrevista) {
       setErrors((prev) => ({
         ...prev,
-        motivosConsulta: '',
+        motivosEntrevista: '',
       }));
     }
   };
@@ -209,12 +209,12 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
       newErrors.area = 'El área es requerida';
     }
 
-    if (!validarRequerido(formData.lugarConsulta)) {
-      newErrors.lugarConsulta = 'El lugar de la entevista es requerido';
+    if (!validarRequerido(formData.lugarEntrevista)) {
+      newErrors.lugarEntrevista = 'El lugar de la entevista es requerido';
     }
 
-    if (!validarArray(formData.motivosConsulta)) {
-      newErrors.motivosConsulta = 'Selecciona al menos un motivo de entrevista';
+    if (!validarArray(formData.motivosEntrevista)) {
+      newErrors.motivosEntrevista = 'Selecciona al menos un motivo de entrevista';
     }
 
     setErrors(newErrors);
@@ -224,53 +224,55 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      // Mostrar toast y scroll al primer error
-      const errorCount = Object.keys(errors).length;
-      showToast(`Por favor, corrige ${errorCount} error${errorCount > 1 ? 'es' : ''} en el formulario`);
-      scrollToFirstError();
-      return;
-    }
+    console.log('Enviando formulario con datos:', formData);
 
-    setLoading(true);
+    // if (!validateForm()) {
+    //   // Mostrar toast y scroll al primer error
+    //   const errorCount = Object.keys(errors).length;
+    //   showToast(`Por favor, corrige ${errorCount} error${errorCount > 1 ? 'es' : ''} en el formulario`);
+    //   scrollToFirstError();
+    //   return;
+    // }
 
-    try {
-      // Enviar datos con el array de entrevistadores directamente
-      const dataToSend = {
-        ...formData,
-      };
+    // setLoading(true);
 
-      await consultasService.crear(dataToSend);
-      setSuccess(true);
-      showToast('¡Consulta guardada exitosamente!', 'success');
+    // try {
+    //   // Enviar datos con el array de entrevistadores directamente
+    //   const dataToSend = {
+    //     ...formData,
+    //   };
+
+    //   await consultasService.crear(dataToSend);
+    //   setSuccess(true);
+    //   showToast('¡Consulta guardada exitosamente!', 'success');
       
-      // Limpiar formulario después de 2 segundos
-      setTimeout(() => {
-        setFormData({
-          entrevistadores: [],
-          fecha: new Date().toISOString().split('T')[0],
-          rangoEdad: '',
-          sexo: '',
-          numeroSesion: '',
-          haMejorado: '',
-          lugarTrabajo: '',
-          area: '',
-          lugarConsulta: '',
-          motivosConsulta: [],
-          observaciones: '',
-        });
-        setNewMentor('');
-        setSuccess(false);
-        if (onSuccess) onSuccess();
-      }, 2000);
-    } catch (error) {
-      console.error('Error al guardar la entrevista:', error);
-      setErrors({
-        submit: error.response?.data?.message || 'Error al guardar la entrevista',
-      });
-    } finally {
-      setLoading(false);
-    }
+    //   // Limpiar formulario después de 2 segundos
+    //   setTimeout(() => {
+    //     setFormData({
+    //       entrevistadores: [],
+    //       fecha: new Date().toISOString().split('T')[0],
+    //       rangoEdad: '',
+    //       sexo: '',
+    //       numeroSesion: '',
+    //       haMejorado: '',
+    //       lugarTrabajo: '',
+    //       area: '',
+    //       lugarEntrevista: '',
+    //       motivosEntrevista: [],
+    //       observaciones: '',
+    //     });
+    //     setNewMentor('');
+    //     setSuccess(false);
+    //     if (onSuccess) onSuccess();
+    //   }, 2000);
+    // } catch (error) {
+    //   console.error('Error al guardar la entrevista:', error);
+    //   setErrors({
+    //     submit: error.response?.data?.message || 'Error al guardar la entrevista',
+    //   });
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const limpiarFormulario = () => {
@@ -285,8 +287,8 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
         haMejorado: '',
         lugarTrabajo: '',
         area: '',
-        lugarConsulta: '',
-        motivosConsulta: [],
+        lugarEntrevista: '',
+        motivosEntrevista: [],
         observaciones: '',
       });
       setNewMentor('');
@@ -373,15 +375,15 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   <User className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Datos del Entrevistador</h2>
-                  <p className="text-sm text-gray-600">Información personal del entrevistador</p>
+                  <h2 className="text-2xl font-bold text-gray-900">Datos del Mentor</h2>
+                  <p className="text-sm text-gray-600">Nombre</p>
                 </div>
               </div>
               
               {/* Múltiples entrevistadores */}
               <div className="space-y-4">
                 <label className="block text-gray-700 text-sm font-semibold">
-                  Entrevistador <span className="text-rose">*</span>
+                  Entrevistadores <span className="text-rose">*</span>
                 </label>
                 
                 {/* Input para agregar entrevistador */}
@@ -721,11 +723,11 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                     <MapPin className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    name="lugarConsulta"
-                    value={formData.lugarConsulta}
+                    name="lugarEntrevista"
+                    value={formData.lugarEntrevista}
                     onChange={handleChange}
                     className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md appearance-none cursor-pointer ${
-                      errors.lugarConsulta ? 'border-rose focus:border-rose focus:ring-maple/10' : 'border-gray-300'
+                      errors.lugarEntrevista ? 'border-rose focus:border-rose focus:ring-maple/10' : 'border-gray-300'
                     }`}
                   >
                     <option value="">Selecciona un lugar</option>
@@ -736,10 +738,10 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                     ))}
                   </select>
                 </div>
-                {errors.lugarConsulta && (
+                {errors.lugarEntrevista && (
                   <p className="text-rose text-sm mt-1.5 flex items-center gap-1">
                     <AlertCircle size={14} />
-                    {errors.lugarConsulta}
+                    {errors.lugarEntrevista}
                   </p>
                 )}
               </div>
@@ -754,29 +756,29 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                     <label
                       key={motivo}
                       className={`flex items-start space-x-3 p-4 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-105 ${
-                        formData.motivosConsulta.includes(motivo)
+                        formData.motivosEntrevista.includes(motivo)
                           ? 'bg-gradient-to-br from-primary/10 to-leaf/10 border-2 border-primary shadow-md'
                           : 'bg-white border-2 border-gray-300 hover:border-primary/50 hover:shadow'
                       }`}
                     >
                       <input
                         type="checkbox"
-                        checked={formData.motivosConsulta.includes(motivo)}
+                        checked={formData.motivosEntrevista.includes(motivo)}
                         onChange={() => handleMotivoToggle(motivo)}
                         className="w-5 h-5 accent-primary rounded-md mt-0.5 cursor-pointer"
                       />
                       <span className={`text-sm leading-tight ${
-                        formData.motivosConsulta.includes(motivo) ? 'text-primary font-semibold' : 'text-gray-700'
+                        formData.motivosEntrevista.includes(motivo) ? 'text-primary font-semibold' : 'text-gray-700'
                       }`}>
                         {motivo}
                       </span>
                     </label>
                   ))}
                 </div>
-                {errors.motivosConsulta && (
+                {errors.motivosEntrevista && (
                   <p className="text-rose text-sm mt-3 flex items-center gap-1.5 bg-maple/5 p-3 rounded-xl">
                     <AlertCircle size={16} />
-                    {errors.motivosConsulta}
+                    {errors.motivosEntrevista}
                   </p>
                 )}
               </div>

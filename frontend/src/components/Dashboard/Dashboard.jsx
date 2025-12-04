@@ -566,6 +566,17 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               <Users size={20} />
               Capacitaciones ({capacitaciones.length})
             </button>
+            {/* <button
+              onClick={() => setTabActivo('entrevistas')}
+              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                tabActivo === 'entrevistas'
+                  ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <FileText size={20} />
+              Entrevistas (0)
+            </button> */}
           </div>
         </div>
 

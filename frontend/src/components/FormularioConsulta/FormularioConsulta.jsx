@@ -369,7 +369,7 @@ const FormularioConsulta = ({ onSuccess, onCancel, userMode = 'publico' }) => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Datos del Mentor</h2>
-                  <p className="text-sm text-gray-600">Información personal del mentor</p>
+                  <p className="text-sm text-gray-600">Nombre</p>
                 </div>
               </div>
               
