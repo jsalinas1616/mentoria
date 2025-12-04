@@ -2,13 +2,13 @@ const { v4: uuidv4 } = require('uuid');
 const { dynamodb, TABLES } = require('../config/database');
 
 class EntrevistasService {
-  async crear(consulta) {
+  async crear(entrevista) {
     const id = uuidv4();
     const timestamp = new Date().toISOString();
 
     const item = {
       id,
-      ...consulta,
+      ...entrevista,
       createdAt: timestamp,
       updatedAt: timestamp,
     };
@@ -134,17 +134,17 @@ class EntrevistasService {
     return convertedItem;
   }
 
-  async actualizar(id, consulta) {
+  async actualizar(id, entrevista) {
     const timestamp = new Date().toISOString();
 
     const updateExpression = [];
     const expressionAttributeNames = {};
     const expressionAttributeValues = {};
 
-    Object.keys(consulta).forEach((key) => {
+    Object.keys(entrevista).forEach((key) => {
       updateExpression.push(`#${key} = :${key}`);
       expressionAttributeNames[`#${key}`] = key;
-      expressionAttributeValues[`:${key}`] = consulta[key];
+      expressionAttributeValues[`:${key}`] = entrevista[key];
     });
 
     updateExpression.push('#updatedAt = :updatedAt');
@@ -191,8 +191,8 @@ class EntrevistasService {
     // Motivos más frecuentes
     const motivosMap = {};
     entrevistas.forEach(c => {
-      // Asegurar que motivosConsulta sea un array
-      const motivos = Array.isArray(c.motivosConsulta) ? c.motivosConsulta : [];
+      // Asegurar que motivoEntrevistaa sea un array
+      const motivos = Array.isArray(c.motivosEntrevista) ? c.motivosEntrevista : [];
       motivos.forEach(motivo => {
         motivosMap[motivo] = (motivosMap[motivo] || 0) + 1;
       });

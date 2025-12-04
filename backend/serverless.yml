@@ -20,6 +20,7 @@ provider:
     CONSULTAS_TABLE: NadroMentoria-Consultas-${self:provider.stage}
     USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
     CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones-${self:provider.stage}
+    ENTREVISTAS_TABLE: NadroMentoria-Entrevistas-${self:provider.stage}
   
   iam:
     role:
@@ -36,6 +37,7 @@ provider:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Consultas-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Entrevistas-${self:provider.stage}"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -257,6 +259,32 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Capacitaciones-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatedAtIndex
+            KeySchema:
+              - AttributeName: createdAt
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
+
+    EntrevistasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NadroMentoria-Entrevistas-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id

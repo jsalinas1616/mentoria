@@ -28,6 +28,9 @@ router.use('/dashboard', dashboardRoutes);
 // Rutas de capacitaciones (PROTEGIDAS - requieren autenticación)
 router.use('/capacitaciones', capacitacionesRoutes);
 
+// Rutas de entrevistas (PROTEGIDAS - requieren autenticación)
+router.use('/entrevistas', entrevistasRoutes);
+
 module.exports = router;
 
 
