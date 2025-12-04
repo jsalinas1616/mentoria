@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, User, Mail, Calendar, MapPin, Building2, MessageSquare, FileText, Users, ArrowLeft, RotateCcw, Plus, X } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, User, Calendar, MapPin, Building2, MessageSquare, FileText, Users, ArrowLeft, RotateCcw, Plus, X } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { consultasService, authService } from '../../services/api';
+import { entrevistasService, authService } from '../../services/api';
 import motivosConsultaData from '../../data/motivosConsulta.json';
 import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
 import areasData from '../../data/areas.json';
 import lugaresConsultaData from '../../data/lugaresConsulta.json';
 import { validarRequerido, validarArray } from '../../utils/validation';
-
-console.log("Lugares de trabajo cargados:", lugaresTrabajoData);
-console.log("Lugares de consulta cargados:", lugaresConsultaData);
-console.log("Motivos de consulta cargados:", motivosConsultaData);
-console.log("Areas cargadas para entrevista:", areasData);
 
 const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => {
   // const user = userMode !== 'publico' ? authService.getCurrentUser() : null;
@@ -37,7 +32,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [searchArea, setSearchArea] = useState('');
-  const [newEntrevistador, setNewMentor] = useState('');
+  const [newEntrevistador, setNewEntrevistador] = useState('');
 
   // Función para mostrar toast
   const showToast = (message, type = 'error') => {
@@ -135,14 +130,14 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
   };
 
   // Funciones para manejar múltiples entrevistadores
-  const handleAddMentor = () => {
+  const handleAddEntrevistador = () => {
     if (newEntrevistador.trim() === '') {
       return;
     }
     
     // Verificar que no esté duplicado
     if (formData.entrevistadores.includes(newEntrevistador.trim())) {
-      showToast('Este mentor ya fue agregado', 'error');
+      showToast('Este entrevistador ya fue agregado', 'error');
       return;
     }
     
@@ -151,7 +146,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
       entrevistadores: [...prev.entrevistadores, newEntrevistador.trim()],
     }));
     
-    setNewMentor('');
+    setNewEntrevistador('');
     
     // Limpiar error si existía
     if (errors.entrevistadores) {
@@ -162,26 +157,26 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
     }
   };
 
-  const handleRemoveMentor = (mentorToRemove) => {
+  const handleRemoveEntrevistador = (entrevistadorToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      entrevistadores: prev.entrevistadores.filter(m => m !== mentorToRemove),
+      entrevistadores: prev.entrevistadores.filter(m => m !== entrevistadorToRemove),
     }));
   };
 
   const handleNewMentorKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddMentor();
+      handleAddEntrevistador();
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Validar que haya al menos un mentor
+    // Validar que haya al menos un entrevistador
     if (!formData.entrevistadores || formData.entrevistadores.length === 0) {
-      newErrors.entrevistadores = 'Debes agregar al menos un mentor';
+      newErrors.entrevistadores = 'Debes agregar al menos un entrevistadorr';
     }
 
     if (!validarRequerido(formData.fecha)) {
@@ -226,53 +221,53 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
 
     console.log('Enviando formulario con datos:', formData);
 
-    // if (!validateForm()) {
-    //   // Mostrar toast y scroll al primer error
-    //   const errorCount = Object.keys(errors).length;
-    //   showToast(`Por favor, corrige ${errorCount} error${errorCount > 1 ? 'es' : ''} en el formulario`);
-    //   scrollToFirstError();
-    //   return;
-    // }
+    if (!validateForm()) {
+      // Mostrar toast y scroll al primer error
+      const errorCount = Object.keys(errors).length;
+      showToast(`Por favor, corrige ${errorCount} error${errorCount > 1 ? 'es' : ''} en el formulario`);
+      scrollToFirstError();
+      return;
+    }
 
-    // setLoading(true);
+    setLoading(true);
 
-    // try {
-    //   // Enviar datos con el array de entrevistadores directamente
-    //   const dataToSend = {
-    //     ...formData,
-    //   };
+    try {
+      // Enviar datos con el array de entrevistadores directamente
+      const dataToSend = {
+        ...formData,
+      };
 
-    //   await consultasService.crear(dataToSend);
-    //   setSuccess(true);
-    //   showToast('¡Consulta guardada exitosamente!', 'success');
+      await entrevistasService.crear(dataToSend);
+      setSuccess(true);
+      showToast('¡Entrevista guardada exitosamente!', 'success');
       
-    //   // Limpiar formulario después de 2 segundos
-    //   setTimeout(() => {
-    //     setFormData({
-    //       entrevistadores: [],
-    //       fecha: new Date().toISOString().split('T')[0],
-    //       rangoEdad: '',
-    //       sexo: '',
-    //       numeroSesion: '',
-    //       haMejorado: '',
-    //       lugarTrabajo: '',
-    //       area: '',
-    //       lugarEntrevista: '',
-    //       motivosEntrevista: [],
-    //       observaciones: '',
-    //     });
-    //     setNewMentor('');
-    //     setSuccess(false);
-    //     if (onSuccess) onSuccess();
-    //   }, 2000);
-    // } catch (error) {
-    //   console.error('Error al guardar la entrevista:', error);
-    //   setErrors({
-    //     submit: error.response?.data?.message || 'Error al guardar la entrevista',
-    //   });
-    // } finally {
-    //   setLoading(false);
-    // }
+      // Limpiar formulario después de 2 segundos
+      setTimeout(() => {
+        setFormData({
+          entrevistadores: [],
+          fecha: new Date().toISOString().split('T')[0],
+          rangoEdad: '',
+          sexo: '',
+          numeroSesion: '',
+          haMejorado: '',
+          lugarTrabajo: '',
+          area: '',
+          lugarEntrevista: '',
+          motivosEntrevista: [],
+          observaciones: '',
+        });
+        setNewEntrevistador('');
+        setSuccess(false);
+        if (onSuccess) onSuccess();
+      }, 2000);
+    } catch (error) {
+      console.error('Error al guardar la entrevista:', error);
+      setErrors({
+        submit: error.response?.data?.message || 'Error al guardar la entrevista',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const limpiarFormulario = () => {
@@ -291,7 +286,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
         motivosEntrevista: [],
         observaciones: '',
       });
-      setNewMentor('');
+      setNewEntrevistador('');
       setErrors({});
       setSearchArea('');
       showToast('Formulario limpiado correctamente', 'success');
@@ -333,7 +328,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
             />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Mentoria Integral</h1>
-              {/* <p className="text-xs text-gray-500">Reporte de mentoría</p> */}
+              
             </div>
           </div>
           
@@ -395,7 +390,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                     <input
                       type="text"
                       value={newEntrevistador}
-                      onChange={(e) => setNewMentor(e.target.value)}
+                      onChange={(e) => setNewEntrevistador(e.target.value)}
                       onKeyPress={handleNewMentorKeyPress}
                       placeholder="Nombre del entrevistador"
                       className={`w-full bg-white border-2 text-gray-900 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md ${
@@ -405,7 +400,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                   </div>
                   <button
                     type="button"
-                    onClick={handleAddMentor}
+                    onClick={handleAddEntrevistador}
                     className="px-6 py-3.5 bg-gradient-to-r from-primary to-primary-light text-white rounded-xl font-semibold hover:from-primary-dark hover:to-primary transition-all shadow-md hover:shadow-lg flex items-center gap-2"
                   >
                     <Plus size={20} />
@@ -416,7 +411,7 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                 {/* Lista de entrevistadores agregados */}
                 {formData.entrevistadores.length > 0 && (
                   <div className="space-y-2">
-                    {formData.entrevistadores.map((mentor, index) => (
+                    {formData.entrevistadores.map((ent, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5 border-2 border-primary/20 rounded-xl px-4 py-3 group hover:border-primary/40 transition-all"
@@ -425,11 +420,11 @@ const FormularioEntrevista = ({ onSuccess, onCancel, userMode = 'publico' }) => 
                           <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                             <User className="w-4 h-4 text-primary" />
                           </div>
-                          <span className="text-gray-700 font-medium">{mentor}</span>
+                          <span className="text-gray-700 font-medium">{ent}</span>
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleRemoveMentor(mentor)}
+                          onClick={() => handleRemoveEntrevistador(ent)}
                           className="p-2 hover:bg-red-100 rounded-lg transition-colors group-hover:opacity-100 opacity-60"
                         >
                           <X size={18} className="text-red-600" />

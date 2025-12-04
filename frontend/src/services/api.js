@@ -167,6 +167,36 @@ export const capacitacionesService = {
   },
 };
 
+// Servicios de entrevistas
+export const entrevistasService = {
+  // Crear entrevista pública (sin autenticación)
+  crear: async (entrevista) => {
+    const response = await api.post('/entrevistas', entrevista);
+    return response.data;
+  },
+  
+  // Consultas protegidas (requieren autenticación) - ahora en dashboard
+  listar: async (filtros = {}) => {
+    const response = await api.get('/dashboard/entrevistas', { params: filtros });
+    return response.data;
+  },
+  
+  obtener: async (id) => {
+    const response = await api.get(`/dashboard/entrevistas/${id}`);
+    return response.data;
+  },
+  
+  actualizar: async (id, entrevista) => {
+    const response = await api.put(`/dashboard/entrevistas/${id}`, entrevista);
+    return response.data;
+  },
+  
+  eliminar: async (id) => {
+    const response = await api.delete(`/dashboard/entrevistas/${id}`);
+    return response.data;
+  },
+};
+
 // Servicios de dashboard
 export const dashboardService = {
   obtenerEstadisticas: async (filtros = {}) => {
