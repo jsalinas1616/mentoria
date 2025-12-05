@@ -5,6 +5,7 @@ const authRoutes = require('./authRoutes');
 const consultasRoutes = require('./consultasRoutes');
 const dashboardRoutes = require('./dashboardRoutes');
 const capacitacionesRoutes = require('./capacitacionesRoutes');
+const entrevistasRoutes = require('./entrevistasRoutes');
 
 // Health check público (para monitoreo y verificación del API)
 router.get('/health', (req, res) => {

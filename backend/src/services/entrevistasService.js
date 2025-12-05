@@ -237,7 +237,7 @@ class EntrevistasService {
   }
 }
 
-module.exports = new ConsultasService();
+module.exports = new EntrevistasService();
 
 
 

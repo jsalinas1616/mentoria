@@ -177,22 +177,22 @@ export const entrevistasService = {
   
   // Consultas protegidas (requieren autenticación) - ahora en dashboard
   listar: async (filtros = {}) => {
-    const response = await api.get('/dashboard/entrevistas', { params: filtros });
+    const response = await api.get('/entrevistas', { params: filtros });
     return response.data;
   },
   
   obtener: async (id) => {
-    const response = await api.get(`/dashboard/entrevistas/${id}`);
+    const response = await api.get(`/entrevistas/${id}`);
     return response.data;
   },
   
   actualizar: async (id, entrevista) => {
-    const response = await api.put(`/dashboard/entrevistas/${id}`, entrevista);
+    const response = await api.put(`/entrevistas/${id}`, entrevista);
     return response.data;
   },
   
   eliminar: async (id) => {
-    const response = await api.delete(`/dashboard/entrevistas/${id}`);
+    const response = await api.delete(`/entrevistas/${id}`);
     return response.data;
   },
 };
