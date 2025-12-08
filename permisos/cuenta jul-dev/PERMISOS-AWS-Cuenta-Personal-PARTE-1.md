@@ -172,9 +172,7 @@
         "dynamodb:UntagResource"
       ],
       "Resource": [
-        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria-Consultas-dev-jul",
-        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria-Capacitaciones-dev-jul",
-        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria-Usuarios-dev-jul"
+        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria*"
       ]
     },
     {
