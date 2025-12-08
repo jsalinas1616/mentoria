@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { dashboardService, consultasService, capacitacionesService, authService } from '../../services/api';
+import { dashboardService, consultasService, capacitacionesService, authService, entrevistasService } from '../../services/api';
 import { formatearFecha } from '../../utils/validation';
 import MentorEmptyState from './MentorEmptyState';
 import DropdownActions from '../Dropdown/Dropdown';
@@ -68,14 +68,16 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = async () => {
     setLoading(true);
     try {
-      const [statsData, consultasData, capacitacionesData] = await Promise.all([
+      const [statsData, consultasData, capacitacionesData, entrevistasData] = await Promise.all([
         dashboardService.obtenerEstadisticas(filtros),
         consultasService.listar(filtros),
         capacitacionesService.listar(filtros),
+        entrevistasService.listar(filtros)
       ]);
       setStats(statsData);
       setConsultas(consultasData);
       setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
+      setEntrevistas(entrevistasData)
     } catch (error) {
       console.error('Error al cargar datos:', error);
       console.error('Error detallado capacitaciones:', error);
@@ -139,8 +141,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setCapacitacionSeleccionada(null);
   };
 
-  const abrirModalEntrevista = (capacitacion) => {
-    setEntrevistaSeleccionada(capacitacion);
+  const abrirModalEntrevista = (entrevista) => {
+    setEntrevistaSeleccionada(entrevista);
     setMostrarModalEntrevista(true);
   };
 
@@ -203,6 +205,36 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cambiarPaginaCapacitaciones = (numeroPagina) => {
     setPaginaActualCapacitaciones(numeroPagina);
   };
+
+  // Función para filtrar entrevistas por búsqueda
+
+    const entrevistasFiltradas = entrevistas.filter(entrevista => {
+    if (!busquedaEntrevistas) return true;
+    
+    const terminoBusquedaEntrevista = busquedaEntrevistas.toLowerCase();
+    return (
+      entrevista.entrevistadores?.some(entrevistador => entrevistador.toLowerCase().includes(terminoBusquedaEntrevista)) ||
+      entrevista.rangoEdad?.toLowerCase().includes(terminoBusquedaEntrevista) ||
+      entrevista.sexo?.toLowerCase().includes(terminoBusquedaEntrevista) ||
+      entrevista.lugarTrabajo?.toLowerCase().includes(terminoBusquedaEntrevista) ||
+      entrevista.area?.toLowerCase().includes(terminoBusquedaEntrevista)
+    );
+  });
+
+    //Paginación entrevistas
+    const indiceUltimaEntrevista = paginaActualEntrevistas * entrevistasPorPagina;
+    const indicePrimeraEntrevista = indiceUltimaEntrevista - entrevistasPorPagina;
+    const entrevistasPaginaActual = entrevistasFiltradas.slice(indicePrimeraEntrevista, indiceUltimaEntrevista);
+    const totalPaginasEntrevistas = Math.ceil(entrevistasFiltradas.length / entrevistasPorPagina);
+
+    const cambiarPaginaEntrevista = (numeroPagina) => {
+      setPaginaActualEntrevistas(numeroPagina);
+    };
+
+    // Resetear página cuando cambia la búsqueda entrevistas
+    useEffect(() => {
+      setPaginaActualEntrevistas(1);
+    }, [busquedaEntrevistas]);
 
   // Resetear página cuando cambia la búsqueda de capacitaciones
   useEffect(() => {
@@ -941,7 +973,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Entrevistas Recientes</h2>
                   <p className="text-sm text-gray-600">
-                    {consultasFiltradas.length} de {consultas.length} entrevistas
+                    {entrevistasFiltradas.length} de {entrevistas.length} entrevistas
                   </p>
                 </div>
               </div>
@@ -963,8 +995,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               <input
                 type="text"
                 placeholder="Buscar por nombre, correo, lugar de trabajo..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                value={busquedaEntrevistas}
+                onChange={(e) => setBusquedaEntrevistas(e.target.value)}
                 className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
               />
             </div>
@@ -986,42 +1018,42 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 </tr>
               </thead>
               <tbody>
-                {consultasPaginaActual.map((consulta) => (
+                {entrevistasPaginaActual.map((entrevista) => (
                   <tr
-                    key={consulta.id}
+                    key={entrevista.id}
                     className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
                   >
                     <td className="py-4 px-4 text-gray-900 text-sm font-medium">
-                      {formatearFecha(consulta.fecha)}
+                      {formatearFecha(entrevista.fecha)}
                     </td>
                     <td className="py-4 px-4">
-                      {consulta.mentores && consulta.mentores.length > 0 ? (
-                        consulta.mentores.length === 1 ? (
-                          <p className="text-gray-900 text-sm font-semibold">{consulta.mentores[0]}</p>
+                      {entrevista.entrevistadores && entrevista.entrevistadores.length > 0 ? (
+                        entrevista.entrevistadores.length === 1 ? (
+                          <p className="text-gray-900 text-sm font-semibold">{entrevista.entrevistadores[0]}</p>
                         ) : (
                           <div className="space-y-1">
-                            <p className="text-gray-900 text-sm font-semibold">{consulta.mentores[0]}</p>
-                            <p className="text-gray-500 text-xs">+{consulta.mentores.length - 1} más</p>
+                            <p className="text-gray-900 text-sm font-semibold">{entrevista.entrevistadores[0]}</p>
+                            <p className="text-gray-500 text-xs">+{entrevista.entrevistadores.length - 1} más</p>
                           </div>
                         )
                       ) : (
-                        <p className="text-gray-400 text-sm italic">Sin mentores</p>
+                        <p className="text-gray-400 text-sm italic">Sin entrevistadores</p>
                       )}
                     </td>
                     <td className="py-4 px-4">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-primary/10 to-accent/10 text-primary font-bold rounded-full">
-                        {consulta.numeroSesion || '-'}
+                        {entrevista.numeroSesion || '-'}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.rangoEdad || 'N/A'}</td>
-                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.sexo || 'N/A'}</td>
-                    <td className="py-4 px-4 text-gray-700 text-sm">{consulta.lugarTrabajo}</td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{entrevista.rangoEdad || 'N/A'}</td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{entrevista.sexo || 'N/A'}</td>
+                    <td className="py-4 px-4 text-gray-700 text-sm">{entrevista.lugarTrabajo}</td>
                     <td className="py-4 px-4 text-gray-600 text-sm truncate max-w-xs">
-                      {consulta.area}
+                      {entrevista.area}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex flex-wrap gap-1">
-                        {consulta.motivosConsulta.slice(0, 2).map((motivo, idx) => (
+                        {entrevista.motivosEntrevista.slice(0, 2).map((motivo, idx) => (
                           <span
                             key={idx}
                             className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20"
@@ -1029,16 +1061,16 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                             {motivo}
                           </span>
                         ))}
-                        {consulta.motivosConsulta.length > 2 && (
+                        {entrevista.motivosConsulta.length > 2 && (
                           <span className="text-gray-500 text-xs px-3 py-1">
-                            +{consulta.motivosConsulta.length - 2}
+                            +{entrevista.motivosEntrevista.length - 2}
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="py-4 px-4">
                       <button
-                        onClick={() => abrirModal(consulta)}
+                        onClick={() => abrirModalEntrevista(entrevista)}
                         className="bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 text-primary px-3 py-2 rounded-xl transition-all duration-200 flex items-center gap-2 font-medium border border-primary/20 hover:border-primary/40"
                       >
                         <Eye size={16} />
@@ -1052,50 +1084,50 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
           </div>
 
           {/* Paginador */}
-          {totalPaginas > 1 && (
+          {totalPaginasEntrevistas > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-gray-600">
-                Mostrando {indicePrimeraConsulta + 1} a {Math.min(indiceUltimaConsulta, consultasFiltradas.length)} de {consultasFiltradas.length} consultas
+                Mostrando {indicePrimeraEntrevista + 1} a {Math.min(indiceUltimaEntrevista, entrevistasFiltradas.length)} de {entrevistasFiltradas.length} entrevistas
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => cambiarPagina(paginaActual - 1)}
-                  disabled={paginaActual === 1}
+                  onClick={() => cambiarPagina(paginaActualEntrevistas - 1)}
+                  disabled={paginaActualEntrevistas === 1}
                   className="p-2 rounded-xl border border-gray-300 hover:border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <ChevronLeft size={20} />
                 </button>
                 
-                {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                  let numeroPagina;
-                  if (totalPaginas <= 5) {
-                    numeroPagina = i + 1;
-                  } else if (paginaActual <= 3) {
-                    numeroPagina = i + 1;
-                  } else if (paginaActual >= totalPaginas - 2) {
-                    numeroPagina = totalPaginas - 4 + i;
+                {Array.from({ length: Math.min(5, totalPaginasEntrevistas) }, (_, i) => {
+                  let numeroPaginaEntrevista;
+                  if (totalPaginasEntrevistas <= 5) {
+                    numeroPaginaEntrevista = i + 1;
+                  } else if (paginaActualEntrevistas <= 3) {
+                    numeroPaginaEntrevista = i + 1;
+                  } else if (paginaActualEntrevistas >= totalPaginasEntrevistas - 2) {
+                    numeroPaginaEntrevista = totalPaginasEntrevistas - 4 + i;
                   } else {
-                    numeroPagina = paginaActual - 2 + i;
+                    numeroPaginaEntrevista = paginaActualEntrevistas - 2 + i;
                   }
                   
                   return (
                     <button
-                      key={numeroPagina}
-                      onClick={() => cambiarPagina(numeroPagina)}
+                      key={numeroPaginaEntrevista}
+                      onClick={() => cambiarPaginaEntrevista(numeroPaginaEntrevista)}
                       className={`px-3 py-2 rounded-xl font-medium transition-all ${
-                        paginaActual === numeroPagina
+                        paginaActualEntrevistas === numeroPaginaEntrevista
                           ? 'bg-primary text-white shadow-lg'
                           : 'border border-gray-300 hover:border-primary hover:bg-primary/10 text-gray-700'
                       }`}
                     >
-                      {numeroPagina}
+                      {numeroPaginaEntrevista}
                     </button>
                   );
                 })}
                 
                 <button
-                  onClick={() => cambiarPagina(paginaActual + 1)}
-                  disabled={paginaActual === totalPaginas}
+                  onClick={() => cambiarPaginaEntrevista(paginaActualEntrevistas + 1)}
+                  disabled={paginaActualEntrevistas === totalPaginasEntrevistas}
                   className="p-2 rounded-xl border border-gray-300 hover:border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <ChevronRight size={20} />
@@ -1104,12 +1136,12 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
             </div>
           )}
 
-          {consultas.length === 0 && (
+          {entrevistas.length === 0 && (
             <div className="text-center py-12">
               <div className="p-4 bg-gray-50 rounded-2xl inline-block">
                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">No hay mentorías registradas</p>
-                <p className="text-gray-400 text-sm">Las mentorías aparecerán aquí cuando se registren</p>
+                <p className="text-gray-500 font-medium">No hay entrevistas registradas</p>
+                <p className="text-gray-400 text-sm">Las entrevistas aparecerán aquí cuando se registren</p>
               </div>
             </div>
           )}
