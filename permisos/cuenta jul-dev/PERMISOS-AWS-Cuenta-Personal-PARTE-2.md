@@ -27,7 +27,7 @@
         "s3:GetBucketPublicAccessBlock"
       ],
       "Resource": [
-        "arn:aws:s3:::nadro-mentoria-frontend-qa*"
+        "arn:aws:s3:::nadro-mentoria-frontend*"
       ]
     },
     {
@@ -40,7 +40,7 @@
         "s3:PutObjectAcl"
       ],
       "Resource": [
-        "arn:aws:s3:::nadro-mentoria-frontend-qa*/*"
+        "arn:aws:s3:::nadro-mentoria-frontend*/*"
       ]
     },
     {
@@ -137,6 +137,40 @@
         "cloudfront:DeleteDistribution"
       ],
       "Resource": "*"
+    },
+      {
+      "Sid": "DynamoDBManagement",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:UpdateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:ListTables",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria*"
+      ]
+    },
+     {
+      "Sid": "DynamoDBCRUD",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:BatchGetItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria*",
+        "arn:aws:dynamodb:us-east-1:975130647458:table/NadroMentoria*/index/*"
+      ]
     }
   ]
 }
