@@ -622,7 +622,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
               }`}
             >
               <FileText size={20} />
-              Entrevistas (0)
+              Entrevistas ({entrevistas.length})
             </button>
           </div>
         </div>
@@ -1482,7 +1482,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Detalles de la Entrevista</h2>
-                  <p className="text-sm text-gray-600">InformaciÇün completa de la entrevista</p>
+                  <p className="text-sm text-gray-600">Información completa de la entrevista</p>
                 </div>
               </div>
               <button
@@ -1528,7 +1528,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                   <div className="p-2 bg-accent/10 rounded-lg">
                     <Users className="text-accent" size={20} />
                   </div>
-                  Datos DemogrÇ­ficos (Confidencial)
+                  Datos Demográ­ficos (Confidencial)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -1540,13 +1540,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                     <p className="text-gray-900 font-medium">{entrevistaSeleccionada.sexo || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">NÇ§mero de SesiÇün</label>
+                    <label className="text-sm font-semibold text-gray-600">Número de Sesión</label>
                     <p className="text-gray-900 font-medium">{entrevistaSeleccionada.numeroSesion || 'N/A'}</p>
                   </div>
                   {entrevistaSeleccionada.numeroSesion && parseInt(entrevistaSeleccionada.numeroSesion, 10) > 1 && entrevistaSeleccionada.haMejorado && (
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">¶¨Ha mejorado?</label>
-                      <p className={`font-bold ${entrevistaSeleccionada.haMejorado === 'SÇð' ? 'text-green-600' : 'text-orange-600'}`}>
+                      <label className="text-sm font-semibold text-gray-600">¿Ha mejorado?</label>
+                      <p className={`font-bold ${entrevistaSeleccionada.haMejorado === 'SÍ' ? 'text-green-600' : 'text-orange-600'}`}>
                         {entrevistaSeleccionada.haMejorado}
                       </p>
                     </div>
@@ -1554,13 +1554,13 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                 </div>
               </div>
 
-              {/* InformaciÇün de la Entrevista */}
+              {/* Información de la Entrevista */}
               <div className="bg-gradient-to-r from-success/5 to-success-light/5 rounded-2xl p-6 border border-success/10">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <div className="p-2 bg-success/10 rounded-lg">
                     <Calendar className="text-success" size={20} />
                   </div>
-                  InformaciÇün de la Entrevista
+                  Información de la Entrevista
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -1572,7 +1572,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
                     <p className="text-gray-900 font-medium">{entrevistaSeleccionada.lugarTrabajo || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Ç?rea</label>
+                    <label className="text-sm font-semibold text-gray-600">Área</label>
                     <p className="text-gray-900 font-medium">{entrevistaSeleccionada.area || 'N/A'}</p>
                   </div>
                   <div>
