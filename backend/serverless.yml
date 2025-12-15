@@ -121,10 +121,10 @@ custom:
   
   # Configuración de AWS Profile por ambiente
   awsProfile:
-    qa: 'qa-nadro'      # QA en cuenta separada
-    dev: 'mentoria'     # QA-JUL en cuenta mentoria
-    'dev-jul': 'mentoria' # DEV-JUL en cuenta mentoria
-    prod: 'prod-nadro'    # PROD en cuenta mentoria
+    qa: 'qa-mentoria'        # QA en tu cuenta
+    dev: 'dev-mentoria'      # DEV en tu cuenta
+    'dev-jul': 'dev-mentoria' # DEV-JUL apuntando a tu cuenta (compatibilidad)
+    prod: 'prod-mentoria'    # PROD en tu cuenta
   
   # Configuración específica por ambiente
   timeout:
@@ -325,4 +325,3 @@ resources:
       Description: ARN del User Pool de Cognito
       Export:
         Name: NadroMentoria-UserPoolArn-${self:provider.stage}
-
