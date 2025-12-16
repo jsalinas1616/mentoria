@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import Dashboard from './components/Dashboard/Dashboard';
-import FormularioConsulta from './components/FormularioConsulta/FormularioConsulta';
-// import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
-// import FormularioEntrevista from './components/FormularioEntrevista/FormularioEntrevista';
+import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
 import FormularioSesion from './components/FormualrioSesion/FormularioSesion';
 import { authService } from './services/api';
 
@@ -78,6 +76,21 @@ function App() {
             isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <Dashboard 
                 onLogout={handleLogout}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/dashboard/capacitaciones/nueva" 
+          element={
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
+              <FormularioCapacitacion
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
+                userMode={user?.rol}
               />
             ) : (
               <Navigate to="/login" />
