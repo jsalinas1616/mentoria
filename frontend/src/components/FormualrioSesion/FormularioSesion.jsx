@@ -25,6 +25,7 @@ import { validarRequerido, validarArray } from "../../utils/validation"
 
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
 import areasData from "../../data/areas.json"
+import motivosConsultaData from '../../data/motivosConsulta.json';
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
@@ -169,48 +170,58 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           error={errors.fecha}
         />
 
-        {/* 🔥 DATOS DEMOGRÁFICOS */}
-        <DemographicSection>
-          <AgeRangeField
-            value={formData.rangoEdad}
-            onChange={(v) => setFormData(p => ({ ...p, rangoEdad: v }))}
-            error={errors.rangoEdad}
-          />
+ {/* 🔥 DATOS DEMOGRÁFICOS */}
+<DemographicSection>
 
-          <GenderField
-            value={formData.sexo}
-            onChange={(v) => setFormData(p => ({ ...p, sexo: v }))}
-            error={errors.sexo}
-          />
+  <AgeRangeField
+    value={formData.rangoEdad}
+    onChange={(v) => setFormData(p => ({ ...p, rangoEdad: v }))}
+    error={errors.rangoEdad}
+  />
 
-          <SessionNumberField
-            value={formData.numeroSesion}
-            onChange={(v) => setFormData(p => ({ ...p, numeroSesion: v }))}
-            error={errors.numeroSesion}
-          />
+      <GenderField
+        value={formData.sexo}
+        onChange={(v) => setFormData(p => ({ ...p, sexo: v }))}
+        error={errors.sexo}
+      />
 
-          <WorkplaceField
-            value={formData.lugarTrabajo}
-            onChange={(v) => setFormData(p => ({ ...p, lugarTrabajo: v }))}
-            options={lugaresTrabajoData}
-            error={errors.lugarTrabajo}
-          />
+      <SessionNumberField
+        value={formData.numeroSesion}
+        onChange={(v) => setFormData(p => ({ ...p, numeroSesion: v }))}
+        error={errors.numeroSesion}
+      />
 
-          <AreaField
-            value={formData.area}
-            onChange={(v) => setFormData(p => ({ ...p, area: v }))}
-            options={areasData}
-            error={errors.area}
+      {Number(formData.numeroSesion) > 1 && (
+        <div className="md:col-span-1">
+          <ImprovementField
+            value={formData.haMejorado}
+            onChange={(v) => setFormData(p => ({ ...p, haMejorado: v }))}
           />
-        </DemographicSection>
+        </div>
+      )}
 
-        <ImprovementField
-          visible={Number(formData.numeroSesion) > 1}
-          value={formData.haMejorado}
-          onChange={(v) => setFormData(p => ({ ...p, haMejorado: v }))}
+      <div className="md:col-span-1">
+        <WorkplaceField
+          value={formData.lugarTrabajo}
+          onChange={(v) => setFormData(p => ({ ...p, lugarTrabajo: v }))}
+          options={lugaresTrabajoData}
+          error={errors.lugarTrabajo}
         />
+      </div>
+    
+      <div className="md:col-span-1">
+        <AreaField
+          value={formData.area}
+          onChange={(v) => setFormData(p => ({ ...p, area: v }))}
+          options={areasData}
+          error={errors.area}
+        />
+      </div>
 
-        {/* 🔥 DETALLES DE LA SESIÓN */}
+    </DemographicSection>
+
+
+        {/* 🔥 DETALLES */}
         <DetailsSection
           subtitle={
             isEntrevista
@@ -228,6 +239,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
             value={formData.motivos}
             onChange={(list) => setFormData(p => ({ ...p, motivos: list }))}
             error={errors.motivos}
+            options={motivosConsultaData}
           />
         </DetailsSection>
 

@@ -12,7 +12,7 @@ const AreaField = ({ value, onChange, options = [], error }) => {
   return (
     <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-        Area <span className="text-rose">*</span>
+        Área <span className="text-rose">*</span>
       </label>
 
       <div className="relative">

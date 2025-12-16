@@ -16,31 +16,32 @@ const ReasonsField = ({
   }
 
   return (
-    <div>
+    <>
       <label className="block text-sm font-semibold text-gray-700 mb-3">
         {label} <span className="text-rose">*</span>
       </label>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-gradient-to-br from-gray-50 to-cream rounded-2xl border-2 border-gray-100">
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"> */}
         {options.map((reason) => (
           <label
-            key={reason}
-            className={`flex items-start gap-2 p-3 border-2 rounded-xl cursor-pointer ${
-              value.includes(reason)
-                ? "border-primary bg-primary/5"
+          key={reason}
+          className={`flex items-start gap-2 p-3 border-2 rounded-xl cursor-pointer ${
+            value.includes(reason)
+            ? "border-primary bg-primary/5"
                 : "border-gray-300"
-            }`}
+              }`}
           >
             <input
               type="checkbox"
               checked={value.includes(reason)}
               onChange={() => toggle(reason)}
               className="mt-1"
-            />
+              />
             <span className="text-sm text-gray-700">{reason}</span>
           </label>
         ))}
-      </div>
+      {/* </div> */}
 
       {error && (
         <p className="text-rose text-sm mt-2 flex items-center gap-1">
@@ -49,6 +50,7 @@ const ReasonsField = ({
         </p>
       )}
     </div>
+  </>
   )
 }
 
