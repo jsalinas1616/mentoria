@@ -1,8 +1,13 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { AlertCircle, Search } from "lucide-react"
 
 const AreaField = ({ value, onChange, options = [], error }) => {
   const [searchTerm, setSearchTerm] = useState("")
+
+  // Mantener el buscador alineado con el valor seleccionado
+  useEffect(() => {
+    setSearchTerm(value || "")
+  }, [value])
 
   const filteredOptions = useMemo(() => {
     const term = searchTerm.toLowerCase()
@@ -30,7 +35,11 @@ const AreaField = ({ value, onChange, options = [], error }) => {
 
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const selected = e.target.value
+          onChange(selected)
+          setSearchTerm(selected)
+        }}
         size={5}
         className={`w-full bg-white border-2 rounded-xl px-4 py-2 focus:outline-none transition-all ${
           error ? "border-rose focus:ring-rose/20" : "border-gray-300 focus:ring-primary/20"

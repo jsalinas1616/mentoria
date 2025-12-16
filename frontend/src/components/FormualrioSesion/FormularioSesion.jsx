@@ -19,13 +19,14 @@ import NotesField from "../FormSections/NotesField"
 
 import DemographicSection from "../FormSections/DemographicSection"
 import DetailsSection from "../FormSections/DetailsSection"
+import SuccessModal from "../Feedback/SuccessModal"
 
 import { entrevistasService, consultasService } from "../../services/api"
 import { validarRequerido, validarArray } from "../../utils/validation"
 
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
 import areasData from "../../data/areas.json"
-import motivosConsultaData from '../../data/motivosConsulta.json';
+import motivosConsultaData from "../../data/motivosConsulta.json"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
@@ -49,9 +50,9 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const [formData, setFormData] = useState(initialFormData())
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
-  const isEntrevista =
-    (formData.sessionType || "sesión").toLowerCase() === "entrevista"
+  const isEntrevista = (formData.sessionType || "").toLowerCase() === "entrevista"
 
   const validateForm = () => {
     const newErrors = {}
@@ -129,6 +130,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       } else {
         await consultasService.crear(buildConsultaPayload())
       }
+      setShowSuccess(true)
       if (onSuccess) onSuccess()
     } catch (err) {
       console.error(err)
@@ -149,80 +151,82 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       userMode={userMode}
       onCancel={onCancel}
     >
-      <form onSubmit={handleSubmit} className="space-y-10">
+      <SuccessModal
+        open={showSuccess}
+        title={isEntrevista ? "¡Entrevista guardada!" : "¡Consulta guardada!"}
+        message="La información se registró correctamente en el sistema."
+        actionLabel="Cerrar"
+        onClose={() => setShowSuccess(false)}
+      />
 
+      <form onSubmit={handleSubmit} className="space-y-10">
         <SessionTypeField
           value={formData.sessionType}
-          onChange={(v) => setFormData(p => ({ ...p, sessionType: v }))}
+          onChange={(v) => setFormData((p) => ({ ...p, sessionType: v }))}
           error={errors.sessionType}
         />
 
         <FacilitatorsSection
           value={formData.facilitators}
-          onChange={(list) => setFormData(p => ({ ...p, facilitators: list }))}
+          onChange={(list) => setFormData((p) => ({ ...p, facilitators: list }))}
           label={isEntrevista ? "Entrevistadores" : "Mentores"}
           error={errors.facilitators}
         />
 
         <SessionDateSection
           value={formData.fecha}
-          onChange={(v) => setFormData(p => ({ ...p, fecha: v }))}
-          error={errors.fecha}          
+          onChange={(v) => setFormData((p) => ({ ...p, fecha: v }))}
+          error={errors.fecha}
           label={formData.sessionType !== "" ? `Datos de la ${formData.sessionType}` : "Datos"}
         />
 
- {/* 🔥 DATOS DEMOGRÁFICOS */}
-<DemographicSection>
-
-  <AgeRangeField
-    value={formData.rangoEdad}
-    onChange={(v) => setFormData(p => ({ ...p, rangoEdad: v }))}
-    error={errors.rangoEdad}
-  />
-
-      <GenderField
-        value={formData.sexo}
-        onChange={(v) => setFormData(p => ({ ...p, sexo: v }))}
-        error={errors.sexo}
-      />
-
-      <SessionNumberField
-        value={formData.numeroSesion}
-        onChange={(v) => setFormData(p => ({ ...p, numeroSesion: v }))}
-        error={errors.numeroSesion}
-      />
-
-      {Number(formData.numeroSesion) > 1 && (
-        <div className="md:col-span-1">
-          <ImprovementField
-            value={formData.haMejorado}
-            onChange={(v) => setFormData(p => ({ ...p, haMejorado: v }))}
+        <DemographicSection>
+          <AgeRangeField
+            value={formData.rangoEdad}
+            onChange={(v) => setFormData((p) => ({ ...p, rangoEdad: v }))}
+            error={errors.rangoEdad}
           />
-        </div>
-      )}
 
-      <div className="md:col-span-1">
-        <WorkplaceField
-          value={formData.lugarTrabajo}
-          onChange={(v) => setFormData(p => ({ ...p, lugarTrabajo: v }))}
-          options={lugaresTrabajoData}
-          error={errors.lugarTrabajo}
-        />
-      </div>
-    
-      <div className="md:col-span-1">
-        <AreaField
-          value={formData.area}
-          onChange={(v) => setFormData(p => ({ ...p, area: v }))}
-          options={areasData}
-          error={errors.area}
-        />
-      </div>
+          <GenderField
+            value={formData.sexo}
+            onChange={(v) => setFormData((p) => ({ ...p, sexo: v }))}
+            error={errors.sexo}
+          />
 
-    </DemographicSection>
+          <SessionNumberField
+            value={formData.numeroSesion}
+            onChange={(v) => setFormData((p) => ({ ...p, numeroSesion: v }))}
+            error={errors.numeroSesion}
+          />
 
+          {Number(formData.numeroSesion) > 1 && (
+            <div className="md:col-span-1">
+              <ImprovementField
+                value={formData.haMejorado}
+                onChange={(v) => setFormData((p) => ({ ...p, haMejorado: v }))}
+              />
+            </div>
+          )}
 
-        {/* 🔥 DETALLES */}
+          <div className="md:col-span-1">
+            <WorkplaceField
+              value={formData.lugarTrabajo}
+              onChange={(v) => setFormData((p) => ({ ...p, lugarTrabajo: v }))}
+              options={lugaresTrabajoData}
+              error={errors.lugarTrabajo}
+            />
+          </div>
+
+          <div className="md:col-span-1">
+            <AreaField
+              value={formData.area}
+              onChange={(v) => setFormData((p) => ({ ...p, area: v }))}
+              options={areasData}
+              error={errors.area}
+            />
+          </div>
+        </DemographicSection>
+
         <DetailsSection
           label={`Motivo(s) de la ${formData.sessionType}`}
           subtitle={
@@ -234,13 +238,13 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           <SessionLocationField
             label={`Lugar de la ${formData.sessionType}`}
             value={formData.lugarSesion}
-            onChange={(v) => setFormData(p => ({ ...p, lugarSesion: v }))}
+            onChange={(v) => setFormData((p) => ({ ...p, lugarSesion: v }))}
             error={errors.lugarSesion}
           />
 
           <ReasonsField
             value={formData.motivos}
-            onChange={(list) => setFormData(p => ({ ...p, motivos: list }))}
+            onChange={(list) => setFormData((p) => ({ ...p, motivos: list }))}
             error={errors.motivos}
             options={motivosConsultaData}
           />
@@ -248,10 +252,9 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
 
         <NotesField
           value={formData.observaciones}
-          onChange={(v) => setFormData(p => ({ ...p, observaciones: v }))}
+          onChange={(v) => setFormData((p) => ({ ...p, observaciones: v }))}
         />
 
-        {/* BOTONES */}
         <div className="flex flex-col sm:flex-row gap-4 pt-2">
           <button
             type="button"
