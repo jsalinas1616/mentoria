@@ -1,12 +1,20 @@
 import { FileText } from "lucide-react"
 
 const NotesField = ({ value, onChange }) => {
+
+
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <FileText className="h-4 w-4 text-primary" />
-        Observaciones
-      </label>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+          <FileText className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Obervaciones
+          </h2>
+        </div>
+      </div>
 
       <textarea
         rows={5}

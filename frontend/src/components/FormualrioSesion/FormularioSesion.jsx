@@ -26,7 +26,6 @@ import { validarRequerido, validarArray } from "../../utils/validation"
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
 import areasData from "../../data/areas.json"
 import motivosConsultaData from '../../data/motivosConsulta.json';
-import { formToJSON } from "axios"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
@@ -168,8 +167,8 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
         <SessionDateSection
           value={formData.fecha}
           onChange={(v) => setFormData(p => ({ ...p, fecha: v }))}
-          error={errors.fecha}
-          label={`Datos de la ${formData.sessionType}`}
+          error={errors.fecha}          
+          label={formData.sessionType !== "" ? `Datos de la ${formData.sessionType}` : "Datos"}
         />
 
  {/* 🔥 DATOS DEMOGRÁFICOS */}
