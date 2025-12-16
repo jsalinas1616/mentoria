@@ -46,6 +46,11 @@ const DropdownActions = () => {
             onClick={() => window.location.href = "/#/dashboard/entrevistas/nueva"}>
             <User size={16} /> Entrevista
           </button>
+          <button 
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
+            onClick={() => window.location.href = "/#/dashboard/sesion/nueva"}>
+            <User size={16} /> Sesión
+          </button>
         </div>
       )}
 

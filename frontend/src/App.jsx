@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import FormularioConsulta from './components/FormularioConsulta/FormularioConsulta';
 import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
 import FormularioEntrevista from './components/FormularioEntrevista/FormularioEntrevista';
+import FormularioSesion from './components/FormualrioSesion/FormularioSesion';
 import { authService } from './services/api';
 
 function App() {
@@ -122,6 +123,22 @@ function App() {
           element={
             isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <FormularioEntrevista
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
+                userMode={user?.rol}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        {/* Ruta protegida - Nuevo Tipo de sesión (Admin y Mentor) */}
+        <Route 
+          path="/dashboard/sesion/nueva" 
+          element={
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
+              <FormularioSesion
                 onSuccess={() => window.location.href = '/#/dashboard'}
                 onCancel={() => window.location.href = '/#/dashboard'}
                 userMode={user?.rol}

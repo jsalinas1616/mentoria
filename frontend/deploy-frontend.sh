@@ -15,9 +15,10 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuración
-STAGE=${1:-dev-jul}
+STAGE=${1:-dev}
 PROFILE=${2:-mentoria}
-BUCKET_NAME="nadro-mentoria-frontend-${STAGE}"
+# Permitir sobreescribir el bucket por variable de entorno (BUCKET_NAME)
+BUCKET_NAME=${BUCKET_NAME:-nadro-mentoria-frontend-${STAGE}}
 REGION="us-east-1"
 
 echo ""
@@ -165,4 +166,3 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${GREEN}🎉 ¡Frontend desplegado con éxito!${NC}"
 echo ""
-

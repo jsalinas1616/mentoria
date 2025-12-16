@@ -2,7 +2,7 @@ import axios from 'axios';
 import cognitoAuth from './cognitoAuth';
 
 // URL base de la API - se puede configurar con variable de entorno
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://g6eh2ci3pf.execute-api.us-east-1.amazonaws.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://ecdumohel3.execute-api.us-east-1.amazonaws.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
