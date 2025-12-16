@@ -6,7 +6,7 @@ const SessionDateSection = ({
   value,
   onChange,
   error,
-  label = "Fecha de la sesion",
+  label = "Datos de la sesion",
 }) => {
   return (
     <section className="space-y-4">
@@ -16,7 +16,7 @@ const SessionDateSection = ({
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
-            Datos de la sesion
+            {label}
           </h2>
           <p className="text-sm text-gray-600">Informacion general</p>
         </div>

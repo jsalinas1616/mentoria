@@ -37,7 +37,7 @@ const FacilitatorsSection = ({
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
-            Datos del facilitador
+            Datos del mentor
           </h2>
           <p className="text-sm text-gray-600">{label}</p>
         </div>
@@ -58,7 +58,7 @@ const FacilitatorsSection = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Nombre del facilitador"
+            placeholder="Nombre del mentor"
             className="w-full border-2 border-gray-300 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary"
           />
         </div>

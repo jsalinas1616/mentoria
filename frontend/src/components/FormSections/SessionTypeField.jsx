@@ -12,8 +12,8 @@ const SessionTypeField = ({ value, onChange, error }) => (
       }`}
     >
       <option value="">Selecciona una opción</option>
-      <option value="INTERVIEW">Entrevista</option>
-      <option value="CONSULTATION">Mentoría / Consulta</option>
+      <option value="entrevista">Entrevista</option>
+      <option value="consulta">Consulta</option>
     </select>
 
     {error && <p className="text-rose text-sm mt-1">{error}</p>}

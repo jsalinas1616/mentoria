@@ -26,6 +26,7 @@ import { validarRequerido, validarArray } from "../../utils/validation"
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
 import areasData from "../../data/areas.json"
 import motivosConsultaData from '../../data/motivosConsulta.json';
+import { formToJSON } from "axios"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
@@ -51,7 +52,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const [loading, setLoading] = useState(false)
 
   const isEntrevista =
-    (formData.sessionType || "").toLowerCase() === "entrevista"
+    (formData.sessionType || "sesión").toLowerCase() === "entrevista"
 
   const validateForm = () => {
     const newErrors = {}
@@ -168,6 +169,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           value={formData.fecha}
           onChange={(v) => setFormData(p => ({ ...p, fecha: v }))}
           error={errors.fecha}
+          label={`Datos de la ${formData.sessionType}`}
         />
 
  {/* 🔥 DATOS DEMOGRÁFICOS */}
@@ -223,13 +225,15 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
 
         {/* 🔥 DETALLES */}
         <DetailsSection
+          label={`Motivo(s) de la ${formData.sessionType}`}
           subtitle={
             isEntrevista
               ? "Lugar y motivos de la entrevista (confidencial)"
-              : "Lugar y motivos de la mentoría (confidencial)"
+              : "Lugar y motivos de la consulta (confidencial)"
           }
         >
           <SessionLocationField
+            label={`Lugar de la ${formData.sessionType}`}
             value={formData.lugarSesion}
             onChange={(v) => setFormData(p => ({ ...p, lugarSesion: v }))}
             error={errors.lugarSesion}
@@ -266,7 +270,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
             className="flex-1 bg-primary text-white rounded-2xl py-4 font-bold flex items-center justify-center gap-2"
           >
             <Save size={20} />
-            {loading ? "GUARDANDO..." : "GUARDAR SESIÓN"}
+            {loading ? "GUARDANDO..." : "GUARDAR"}
           </button>
         </div>
       </form>
