@@ -6,15 +6,20 @@ const SessionDateSection = ({
   value,
   onChange,
   error,
-  label = "Fecha de la sesión",
+  label = "Fecha de la sesion",
 }) => {
   return (
     <section className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">
-          Datos de la sesión
-        </h2>
-        <p className="text-sm text-gray-600">Información general</p>
+      <div className="flex items-center gap-3">
+        <div className="p-3 bg-gradient-to-br from-accent/10 to-primary/10 rounded-xl">
+          <Calendar className="w-6 h-6 text-accent" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Datos de la sesion
+          </h2>
+          <p className="text-sm text-gray-600">Informacion general</p>
+        </div>
       </div>
 
       <label className="block text-sm font-semibold text-gray-700">
@@ -29,9 +34,7 @@ const SessionDateSection = ({
         <DatePicker
           selected={value ? new Date(value) : null}
           onChange={(date) => {
-            const isoDate = date
-              ? date.toISOString().split("T")[0]
-              : ""
+            const isoDate = date ? date.toISOString().split("T")[0] : ""
             onChange(isoDate)
           }}
           dateFormat="dd/MM/yyyy"

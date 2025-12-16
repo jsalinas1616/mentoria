@@ -1,4 +1,12 @@
-const ReasonsField = ({ options = [], value = [], onChange, label, error }) => {
+import { AlertCircle } from "lucide-react"
+
+const ReasonsField = ({
+  options = [],
+  value = [],
+  onChange,
+  label = "Motivo(s)",
+  error,
+}) => {
   const toggle = (reason) => {
     if (value.includes(reason)) {
       onChange(value.filter((r) => r !== reason))
@@ -34,7 +42,12 @@ const ReasonsField = ({ options = [], value = [], onChange, label, error }) => {
         ))}
       </div>
 
-      {error && <p className="text-rose text-sm mt-2">{error}</p>}
+      {error && (
+        <p className="text-rose text-sm mt-2 flex items-center gap-1">
+          <AlertCircle size={14} />
+          {error}
+        </p>
+      )}
     </div>
   )
 }

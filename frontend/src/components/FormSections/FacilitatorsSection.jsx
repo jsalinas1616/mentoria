@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { User, Plus, X } from "lucide-react"
+import { User, Plus, X, AlertCircle } from "lucide-react"
 
 const FacilitatorsSection = ({
   label = "Facilitadores",
@@ -31,11 +31,16 @@ const FacilitatorsSection = ({
 
   return (
     <section className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">
-          Datos del facilitador
-        </h2>
-        <p className="text-sm text-gray-600">{label}</p>
+      <div className="flex items-center gap-3">
+        <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
+          <User className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Datos del facilitador
+          </h2>
+          <p className="text-sm text-gray-600">{label}</p>
+        </div>
       </div>
 
       <label className="block text-sm font-semibold text-gray-700">
@@ -95,6 +100,7 @@ const FacilitatorsSection = ({
 
       {error && (
         <p className="text-rose text-sm flex items-center gap-1">
+          <AlertCircle size={14} />
           {error}
         </p>
       )}
