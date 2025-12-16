@@ -11,7 +11,7 @@ const NotesField = ({ value, onChange }) => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
-            Obervaciones
+            Observaciones
           </h2>
         </div>
       </div>
@@ -21,7 +21,7 @@ const NotesField = ({ value, onChange }) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Agrega comentarios u observaciones adicionales (opcional)"
-        className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 resize-none"
+        className="w-full bg-white border-2 border-gray-300 text-gray-900 rounded-xl px-4 py-3 resize-none focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm hover:shadow-md"
       />
     </div>
   )
