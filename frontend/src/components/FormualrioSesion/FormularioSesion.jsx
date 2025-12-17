@@ -31,7 +31,7 @@ import motivosConsultaData from "../../data/motivosConsulta.json"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
-    sessionType: "",
+    sessionType: "mentoria",
     facilitators: [],
     fecha: new Date().toISOString().split("T")[0],
 
@@ -159,13 +159,13 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       <>
         <SuccessModal
           open={showSuccessToast}
-          title={isEntrevista ? "¡Entrevista guardada!" : "¡Consulta guardada!"}
+          title={isEntrevista ? "¡Entrevista guardada!" : "¡Mentoría guardada!"}
           message="La información se registró correctamente en el sistema."
           onClose={() => setShowSuccessToast(false)}
         />
         <SuccessScreen
-          title={isEntrevista ? "¡Entrevista Guardada!" : "¡Consulta Guardada!"}
-          message="La información se ha registrado correctamente en el sistema"
+          title={isEntrevista ? "¡Entrevista Guardada!" : "¡Mentoría Guardada!"}
+          message="La información se ha registrado correctamente en el sistema."
           onDone={handleSuccessDone}
         />
       </>
@@ -252,7 +252,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           subtitle={
             isEntrevista
               ? "Lugar y motivos de la entrevista (confidencial)"
-              : "Lugar y motivos de la consulta (confidencial)"
+              : "Lugar y motivos de la mentoría (confidencial)"
           }
         >
           <SessionLocationField
