@@ -4,7 +4,7 @@ const ReasonsField = ({
   options = [],
   value = [],
   onChange,
-  label = "Motivo(s)",
+  title,
   helper,
   error,
 }) => {
@@ -20,7 +20,7 @@ const ReasonsField = ({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <label className="block text-sm font-semibold text-gray-700">
-          {label} <span className="text-rose">*</span>
+          {title} <span className="text-rose">*</span>
         </label>
         {helper && (
           <span className="text-xs text-gray-500">{helper}</span>

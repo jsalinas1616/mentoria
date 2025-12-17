@@ -248,7 +248,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
         </DemographicSection>
 
         <DetailsSection
-          label={`Motivo(s) de la ${formData.sessionType}`}
+          title={`Detalles de la ${formData.sessionType}`}
           subtitle={
             isEntrevista
               ? "Lugar y motivos de la entrevista (confidencial)"
@@ -263,6 +263,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           />
 
           <ReasonsField
+            title={`Motivo(s) de la ${formData.sessionType}`}
             value={formData.motivos}
             onChange={(list) => setFormData((p) => ({ ...p, motivos: list }))}
             error={errors.motivos}
