@@ -20,6 +20,7 @@ import NotesField from "../FormSections/NotesField"
 import DemographicSection from "../FormSections/DemographicSection"
 import DetailsSection from "../FormSections/DetailsSection"
 import SuccessModal from "../Feedback/SuccessModal"
+import SuccessScreen from "../Feedback/SuccessScreen"
 
 import { entrevistasService, consultasService } from "../../services/api"
 import { validarRequerido, validarArray } from "../../utils/validation"
@@ -50,7 +51,8 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const [formData, setFormData] = useState(initialFormData())
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
 
   const isEntrevista = (formData.sessionType || "").toLowerCase() === "entrevista"
 
@@ -130,8 +132,8 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       } else {
         await consultasService.crear(buildConsultaPayload())
       }
-      setShowSuccess(true)
-      if (onSuccess) onSuccess()
+      setShowSuccessScreen(true)
+      setShowSuccessToast(true)
     } catch (err) {
       console.error(err)
     } finally {
@@ -139,9 +141,35 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
     }
   }
 
+  const handleSuccessDone = () => {
+    setShowSuccessScreen(false)
+    setShowSuccessToast(false)
+    if (onSuccess) onSuccess()
+  }
+
   const handleClear = () => {
     setFormData(initialFormData())
     setErrors({})
+    setShowSuccessScreen(false)
+    setShowSuccessToast(false)
+  }
+
+  if (showSuccessScreen) {
+    return (
+      <>
+        <SuccessModal
+          open={showSuccessToast}
+          title={isEntrevista ? "¡Entrevista guardada!" : "¡Consulta guardada!"}
+          message="La información se registró correctamente en el sistema."
+          onClose={() => setShowSuccessToast(false)}
+        />
+        <SuccessScreen
+          title={isEntrevista ? "¡Entrevista Guardada!" : "¡Consulta Guardada!"}
+          message="La información se ha registrado correctamente en el sistema"
+          onDone={handleSuccessDone}
+        />
+      </>
+    )
   }
 
   return (
@@ -151,14 +179,6 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       userMode={userMode}
       onCancel={onCancel}
     >
-      <SuccessModal
-        open={showSuccess}
-        title={isEntrevista ? "¡Entrevista guardada!" : "¡Consulta guardada!"}
-        message="La información se registró correctamente en el sistema."
-        actionLabel="Cerrar"
-        onClose={() => setShowSuccess(false)}
-      />
-
       <form onSubmit={handleSubmit} className="space-y-10">
         <SessionTypeField
           value={formData.sessionType}

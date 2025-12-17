@@ -1,51 +1,62 @@
-import { Check, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const SuccessModal = ({
   open = false,
   title = "¡Operación exitosa!",
   message = "La información se ha guardado correctamente.",
   description,
-  actionLabel = "Cerrar",
+  type = "success",
   onClose,
 }) => {
-  if (!open) return null
+  const [shouldRender, setShouldRender] = useState(open)
+  const [visible, setVisible] = useState(open)
+
+  useEffect(() => {
+    let showTimer
+    let hideTimer
+    let closeTimer
+
+    if (open) {
+      setShouldRender(true)
+      showTimer = setTimeout(() => setVisible(true), 50)
+      hideTimer = setTimeout(() => setVisible(false), 3700)
+      closeTimer = setTimeout(() => {
+        if (onClose) onClose()
+        setShouldRender(false)
+      }, 4000)
+    } else {
+      setVisible(false)
+      closeTimer = setTimeout(() => setShouldRender(false), 300)
+    }
+
+    return () => {
+      clearTimeout(showTimer)
+      clearTimeout(hideTimer)
+      clearTimeout(closeTimer)
+    }
+  }, [open, onClose])
+
+  if (!shouldRender) return null
+
+  const isError = type === "error"
+  const bgClass = isError ? "bg-red-500 text-white" : "bg-green-500 text-white"
+  const icon = isError ? "⚠️" : "✅"
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm">
-      <div className="relative bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-primary/10 max-w-lg w-full overflow-hidden">
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 text-gray-500 transition"
-          aria-label="Cerrar"
-        >
-          <X size={18} />
-        </button>
-
-        <div className="mb-6 inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-success/15 to-primary/15 rounded-full relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-success to-primary rounded-full animate-pulse opacity-15"></div>
-          <Check size={36} className="text-success relative z-10" strokeWidth={3} />
+    <div
+      className={`fixed top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
+        visible ? "translate-y-0" : "-translate-y-full"
+      } ${bgClass}`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 text-lg">{icon}</div>
+        <div className="flex-1">
+          {title && <p className="font-semibold leading-tight">{title}</p>}
+          {message && <p className="font-medium leading-tight">{message}</p>}
+          {description && (
+            <p className="text-sm opacity-90 leading-snug">{description}</p>
+          )}
         </div>
-
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-        <div className="h-1 w-20 bg-gradient-to-r from-success to-primary rounded-full mb-4"></div>
-
-        <p className="text-gray-700 text-base mb-2">{message}</p>
-        {description && (
-          <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
-        )}
-
-        {onClose && (
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full bg-gradient-to-r from-primary to-primary-light text-white font-semibold py-3 rounded-2xl shadow-md hover:from-primary-dark hover:to-primary transition-all"
-            >
-              {actionLabel}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   )
