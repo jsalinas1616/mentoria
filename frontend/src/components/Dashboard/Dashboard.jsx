@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import {
   Users, FileText, Calendar, TrendingUp, Download, Filter,
-  Plus, LogOut, Menu, Sparkles, BarChart3, PieChart as PieChartIcon, Activity,
+  LogOut, BarChart3, PieChart as PieChartIcon, Activity,
   Eye, X, Search, ChevronLeft, ChevronRight, MessageSquare, User, BookOpen,
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
@@ -291,7 +291,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
 
         {/* Vista de Bienvenida para Mentores */}
         <MentorEmptyState
-          onNuevaMentoria={() => window.location.href = '/#/dashboard/consultas/nueva'}
+          onNuevaMentoria={() => window.location.href = '/#/dashboard/sesion/nueva'}
           onNuevaCapacitacion={() => window.location.href = '/#/dashboard/capacitaciones/nueva'}
           userName={user?.name || user?.email?.split('@')[0] || 'Mentor'}
         />

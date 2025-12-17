@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, AlertCircle, LogOut, Calendar, Clock, MapPin, Users, BookOpen, ArrowLeft, RotateCcw, Plus, X, UserPlus } from 'lucide-react';
+import { Save, Check, AlertCircle, LogOut, Calendar, Users, BookOpen, ArrowLeft, RotateCcw, Plus, X, UserPlus } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { capacitacionesService, authService } from '../../services/api';

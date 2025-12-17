@@ -54,7 +54,7 @@ const MentorEmptyState = ({ onNuevaMentoria, onNuevaCapacitacion, userName }) =>
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
             <div className="relative z-10 flex items-center justify-center gap-3">
               <Plus className="w-6 h-6" />
-              <span className="text-lg">Nueva Mentoría</span>
+              <span className="text-lg">Nueva Sesión</span>
             </div>
           </button>
 
