@@ -1,9 +1,9 @@
 import React from 'react'
 
-const SessionNumberField = ({ value, onChange, error }) => (
+const SessionNumberField = ({ value, onChange, error, label }) => (
   <div>
     <label className="block text-sm font-semibold text-gray-700 mb-2">
-      Número de sesión <span className="text-rose">*</span>
+      {label} <span className="text-rose">*</span>
     </label>
 
     <input

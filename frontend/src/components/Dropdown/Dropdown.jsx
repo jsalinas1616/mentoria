@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, ChevronDown, User } from "lucide-react";
+import { Users, Plus, ChevronDown, User, NotebookText } from "lucide-react";
 
 const DropdownActions = () => {
   const [open, setOpen] = useState(false);
@@ -38,8 +38,13 @@ const DropdownActions = () => {
           </button>
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
-            onClick={() => window.location.href = "/#/dashboard/sesion/nueva"}>
-            <User size={16} /> Mentoría / Entrevista
+            onClick={() => window.location.href = "/#/dashboard/sesiones/nueva"}>
+            <NotebookText size={16} /> Mentoría / Entrevista
+          </button>
+          <button 
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
+            onClick={() => window.location.href = "/#/dashboard/acercamientos/nueva"}>
+            <Users size={16} /> Acercamiento
           </button>
         </div>
       )}

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import Dashboard from './components/Dashboard/Dashboard';
+import { authService } from './services/api';
 import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
 import FormularioSesion from './components/FormualrioSesion/FormularioSesion';
-import { authService } from './services/api';
+import FormularioAcercamiento from './FormularioAcercamiento/FormualrioAcercamiento';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -100,10 +101,25 @@ function App() {
 
         {/* Ruta protegida - Nuevo Tipo de sesión (Admin y Mentor) */}
         <Route 
-          path="/dashboard/sesion/nueva" 
+          path="/dashboard/sesiones/nueva" 
           element={
             isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <FormularioSesion
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
+                userMode={user?.rol}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/dashboard/acercamientos/nueva" 
+          element={
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
+              <FormularioAcercamiento
                 onSuccess={() => window.location.href = '/#/dashboard'}
                 onCancel={() => window.location.href = '/#/dashboard'}
                 userMode={user?.rol}

@@ -214,6 +214,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           />
 
           <SessionNumberField
+            label="Número de sesiones"
             value={formData.numeroSesion}
             onChange={(v) => setFormData((p) => ({ ...p, numeroSesion: v }))}
             error={errors.numeroSesion}
