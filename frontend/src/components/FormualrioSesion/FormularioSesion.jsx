@@ -294,7 +294,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
             className="flex-1 bg-primary text-white rounded-2xl py-4 font-bold flex items-center justify-center gap-2"
           >
             <Save size={20} />
-            {loading ? "GUARDANDO..." : "GUARDAR"}
+            {loading ? "GUARDANDO..." : `GUARDAR ${formData.sessionType.toUpperCase()}`}
           </button>
         </div>
       </form>

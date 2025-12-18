@@ -21,7 +21,7 @@ import DetailsSection from "../components/FormSections/DetailsSection"
 import SuccessModal from "../components/Feedback/SuccessModal"
 import SuccessScreen from "../components/Feedback/SuccessScreen"
 
-import { entrevistasService, consultasService } from "../services/api"
+// import { entrevistasService, consultasService } from "../services/api"
 import { validarRequerido, validarArray } from "../utils/validation"
 
 import lugaresTrabajoData from "../data/lugaresTrabajo.json"
@@ -30,20 +30,20 @@ import estadosAnimo from "../data/estadosAnimo.json"
 
 const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
-    sessionType: "mentoria",
-    facilitators: [],
+    // sessionType: "mentoria",
+    mentores: [],
     fecha: new Date().toISOString().split("T")[0],
 
     rangoEdad: "",
     sexo: "",
-    numeroSesion: "",
+    numeroAcercamiento: "",
     haMejorado: "",
 
     lugarTrabajo: "",
     area: "",
-    lugarSesion: "",
+    lugarAcercamiento: "",
 
-    motivos: [],
+    estadosAnimo: [],
     observaciones: "",
   })
 
@@ -53,16 +53,11 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
   const [showSuccessScreen, setShowSuccessScreen] = useState(false)
   const [showSuccessToast, setShowSuccessToast] = useState(false)
 
-  const isEntrevista = (formData.sessionType || "").toLowerCase() === "entrevista"
-
   const validateForm = () => {
     const newErrors = {}
 
-    if (!validarRequerido(formData.sessionType))
-      newErrors.sessionType = "Selecciona el tipo de sesión"
-
-    if (!validarArray(formData.facilitators))
-      newErrors.facilitators = "Agrega al menos una persona"
+    if (!validarArray(formData.mentores))
+      newErrors.mentores = "Agrega al menos una persona"
 
     if (!validarRequerido(formData.fecha))
       newErrors.fecha = "La fecha es requerida"
@@ -73,8 +68,8 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     if (!validarRequerido(formData.sexo))
       newErrors.sexo = "El sexo es requerido"
 
-    if (!validarRequerido(formData.numeroSesion))
-      newErrors.numeroSesion = "El número de sesión es requerido"
+    if (!validarRequerido(formData.numeroAcercamiento))
+      newErrors.numeroAcercamiento = "El número de acercamiento es requerido"
 
     if (!validarRequerido(formData.lugarTrabajo))
       newErrors.lugarTrabajo = "El lugar de trabajo es requerido"
@@ -82,62 +77,48 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     if (!validarRequerido(formData.area))
       newErrors.area = "El área es requerida"
 
-    if (!validarRequerido(formData.lugarSesion))
-      newErrors.lugarSesion = "El lugar de la sesión es requerido"
+    if (!validarRequerido(formData.lugarAcercamiento))
+      newErrors.lugarAcercamiento = "El lugar del acercamiento es requerido"
 
-    if (!validarArray(formData.motivos))
-      newErrors.motivos = "Selecciona al menos un motivo"
+    if (!validarArray(formData.estadosAnimo))
+      newErrors.estadosAnimo = "Selecciona al menos un estado de ánimo"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const buildEntrevistaPayload = () => ({
-    entrevistadores: formData.facilitators,
+  const buildAcercamientoPayload = () => ({
+    mentores: formData.mentores,
     fecha: formData.fecha,
     rangoEdad: formData.rangoEdad,
     sexo: formData.sexo,
-    numeroSesion: formData.numeroSesion,
+    numeroAcercamiento: formData.numeroAcercamiento,
     haMejorado: formData.haMejorado,
     lugarTrabajo: formData.lugarTrabajo,
     area: formData.area,
-    lugarEntrevista: formData.lugarSesion,
-    motivosEntrevista: formData.motivos,
-    observaciones: formData.observaciones,
-  })
-
-  const buildConsultaPayload = () => ({
-    mentores: formData.facilitators,
-    fecha: formData.fecha,
-    rangoEdad: formData.rangoEdad,
-    sexo: formData.sexo,
-    numeroSesion: formData.numeroSesion,
-    haMejorado: formData.haMejorado,
-    lugarTrabajo: formData.lugarTrabajo,
-    area: formData.area,
-    lugarConsulta: formData.lugarSesion,
-    motivosConsulta: formData.motivos,
+    lugarAcercamiento: formData.lugarAcercamiento,
+    estadosAnimo: formData.estadosAnimo,
     observaciones: formData.observaciones,
   })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validateForm()) return
+    
+    console.log("aqui viendo lo que retorna la chunche",buildAcercamientoPayload())
+    // setLoading(true)
+    // try {
+    //   //aqui va el servicio de los acercamientos
+    //     await entrevistasService.crear(buildAcercamientoPayload())
 
-    setLoading(true)
-    try {
-      if (isEntrevista) {
-        await entrevistasService.crear(buildEntrevistaPayload())
-      } else {
-        await consultasService.crear(buildConsultaPayload())
-      }
-      setShowSuccessScreen(true)
-      setShowSuccessToast(true)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
+
+    //   setShowSuccessScreen(true)
+    //   setShowSuccessToast(true)
+    // } catch (err) {
+    //   console.error(err)
+    // } finally {
+    //   setLoading(false)
+    // }
   }
 
   const handleSuccessDone = () => {
@@ -179,17 +160,12 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
       onCancel={onCancel}
     >
       <form onSubmit={handleSubmit} className="space-y-10">
-        {/* <SessionTypeField
-          value={formData.sessionType}
-          onChange={(v) => setFormData((p) => ({ ...p, sessionType: v }))}
-          error={errors.sessionType}
-        /> */}
 
         <FacilitatorsSection
-          value={formData.facilitators}
-          onChange={(list) => setFormData((p) => ({ ...p, facilitators: list }))}
-          label={isEntrevista ? "Entrevistadores" : "Mentores"}
-          error={errors.facilitators}
+          value={formData.mentores}
+          onChange={(list) => setFormData((p) => ({ ...p, mentores: list }))}
+          label="Mentores"
+          error={errors.mentores}
         />
 
         <SessionDateSection
@@ -214,12 +190,12 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
 
           <SessionNumberField
             label="Número de acercamietos"
-            value={formData.numeroSesion}
-            onChange={(v) => setFormData((p) => ({ ...p, numeroSesion: v }))}
-            error={errors.numeroSesion}
+            value={formData.numeroAcercamiento}
+            onChange={(v) => setFormData((p) => ({ ...p, numeroAcercamiento: v }))}
+            error={errors.numeroAcercamiento}
           />
 
-          {Number(formData.numeroSesion) > 1 && (
+          {Number(formData.numeroAcercamiento) > 1 && (
             <div className="md:col-span-1">
               <ImprovementField
                 value={formData.haMejorado}
@@ -253,16 +229,16 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
         >
           <SessionLocationField
             label="Lugar del acercamiento"
-            value={formData.lugarSesion}
-            onChange={(v) => setFormData((p) => ({ ...p, lugarSesion: v }))}
-            error={errors.lugarSesion}
+            value={formData.lugarAcercamiento}
+            onChange={(v) => setFormData((p) => ({ ...p, lugarAcercamiento: v }))}
+            error={errors.lugarAcercamiento}
           />
 
           <ReasonsField
             title="Estado de ánimo"
-            value={formData.motivos}
-            onChange={(list) => setFormData((p) => ({ ...p, motivos: list }))}
-            error={errors.motivos}
+            value={formData.estadosAnimo}
+            onChange={(list) => setFormData((p) => ({ ...p, estadosAnimo: list }))}
+            error={errors.estadosAnimo}
             options={estadosAnimo}
           />
         </DetailsSection>
