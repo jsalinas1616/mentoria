@@ -30,21 +30,21 @@ const DropdownActions = () => {
 
       {/* DROPDOWN MENU */}
       {open && (
-        <div className="absolute mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg right-0 z-50 overflow-hidden animate-scale">
-          <button 
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
-            onClick={() => window.location.href = "/#/dashboard/capacitaciones/nueva"}>
-            <User size={16} /> Capacitación
-          </button>
+        <div className="absolute mt-2 w-70 bg-white border border-gray-200 rounded-md shadow-lg right-0 z-50 overflow-hidden animate-scale">
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
             onClick={() => window.location.href = "/#/dashboard/sesiones/nueva"}>
-            <NotebookText size={16} /> Mentoría / Entrevista
+            <NotebookText size={16} /> Mentoría/Entrevista
           </button>
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
             onClick={() => window.location.href = "/#/dashboard/acercamientos/nueva"}>
             <Users size={16} /> Acercamiento
+          </button>
+          <button 
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
+            onClick={() => window.location.href = "/#/dashboard/capacitaciones/nueva"}>
+            <User size={16} /> Capacitación
           </button>
         </div>
       )}

@@ -1,12 +1,17 @@
 [
-  "tranquilo",
-  "estable",
-  "ansioso",
-  "estresado",
-  "irritable",
-  "triste",
-  "desmotivado",
-  "frustrado",
-  "agotado emocionalmente",
-  "confundido"
+  "Tranquilo",
+  "Estable",
+  "Ansioso",
+  "Estresado",
+  "Irritable",
+  "Triste",
+  "Desmotivado",
+  "Frustrado",
+  "Agotado emocionalmente",
+  "Confundido",
+  "Más o menos",
+  "Bien",
+  "Muy bien",
+  "Mal",
+  "Muy mal"
 ]

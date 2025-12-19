@@ -18,6 +18,7 @@ import NotesField from "../components/FormSections/NotesField"
 
 import DemographicSection from "../components/FormSections/DemographicSection"
 import DetailsSection from "../components/FormSections/DetailsSection"
+import Outcome from "../components/FormSections/Outcome"
 import SuccessModal from "../components/Feedback/SuccessModal"
 import SuccessScreen from "../components/Feedback/SuccessScreen"
 
@@ -42,6 +43,8 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     lugarTrabajo: "",
     area: "",
     lugarAcercamiento: "",
+
+    seguimiento:"",
 
     estadosAnimo: [],
     observaciones: "",
@@ -80,6 +83,9 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     if (!validarRequerido(formData.lugarAcercamiento))
       newErrors.lugarAcercamiento = "El lugar del acercamiento es requerido"
 
+    if (!validarRequerido(formData.seguimiento))
+      newErrors.seguimiento = "El seguimiento es requerido"
+
     if (!validarArray(formData.estadosAnimo))
       newErrors.estadosAnimo = "Selecciona al menos un estado de ánimo"
 
@@ -97,6 +103,7 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     lugarTrabajo: formData.lugarTrabajo,
     area: formData.area,
     lugarAcercamiento: formData.lugarAcercamiento,
+    seguimiento: formData.seguimiento,
     estadosAnimo: formData.estadosAnimo,
     observaciones: formData.observaciones,
   })
@@ -241,6 +248,13 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
             error={errors.estadosAnimo}
             options={estadosAnimo}
           />
+
+          <Outcome
+            value={formData.seguimiento}
+            onChange={(v) => setFormData((p) => ({ ...p, seguimiento: v }))}
+            error={errors.seguimiento}
+          />
+          
         </DetailsSection>
 
         <NotesField

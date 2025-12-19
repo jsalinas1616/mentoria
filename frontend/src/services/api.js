@@ -197,6 +197,36 @@ export const entrevistasService = {
   },
 };
 
+//servicios de Acercamientos
+export const acercamientosService = {
+  // Crear consulta pública (sin autenticación)
+  crear: async (acercamiento) => {
+    const response = await api.post('/acercamientos', acercamiento);
+    return response.data;
+  },
+  
+  // acercamientos protegidas (requieren autenticación) - ahora en dashboard
+  listar: async (filtros = {}) => {
+    const response = await api.get('/dashboard/acercamientos', { params: filtros });
+    return response.data;
+  },
+  
+  obtener: async (id) => {
+    const response = await api.get(`/dashboard/acercamientos/${id}`);
+    return response.data;
+  },
+  
+  actualizar: async (id, acercamiento) => {
+    const response = await api.put(`/dashboard/acercamientos/${id}`, acercamiento);
+    return response.data;
+  },
+  
+  eliminar: async (id) => {
+    const response = await api.delete(`/dashboard/acercamientos/${id}`);
+    return response.data;
+  },
+};
+
 // Servicios de dashboard
 export const dashboardService = {
   obtenerEstadisticas: async (filtros = {}) => {
