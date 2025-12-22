@@ -21,6 +21,7 @@ provider:
     USUARIOS_TABLE: NadroMentoria-Usuarios-${self:provider.stage}
     CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones-${self:provider.stage}
     ENTREVISTAS_TABLE: NadroMentoria-Entrevistas-${self:provider.stage}
+    ACERCAMIENTOS_TABLE: NadroMentoria-Acercamientos-${self:provider.stage}
   
   iam:
     role:
@@ -38,6 +39,7 @@ provider:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Usuarios-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Entrevistas-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Acercamientos-${self:provider.stage}"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -123,18 +125,15 @@ custom:
   awsProfile:
     qa: 'qa-mentoria'        # QA en tu cuenta
     dev: 'dev-mentoria'      # DEV en tu cuenta
-    'dev-jul': 'dev-mentoria' # DEV-JUL apuntando a tu cuenta (compatibilidad)
     prod: 'prod-mentoria'    # PROD en tu cuenta
   
   # Configuración específica por ambiente
   timeout:
     dev: 29        # 29 segundos para dejar margen con HTTP API (límite 30s)
-    'dev-jul': 29   # 29 segundos para dejar margen con HTTP API (límite 30s)
     prod: 29        # 29 segundos para dejar margen con HTTP API (límite 30s)
   
   memorySize:
     dev: 512       # QA (actual)
-    'dev-jul': 1024 # DEV-JUL (nuevo)
     prod: 2048     # PRODUCCIÓN (nuevo)
 
 # Configuración de seguridad adicional
@@ -285,6 +284,32 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Entrevistas-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatedAtIndex
+            KeySchema:
+              - AttributeName: createdAt
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
+
+    AcercamientosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NadroMentoria-Acercamientos-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id

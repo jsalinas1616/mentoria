@@ -236,6 +236,76 @@ const validateEntrevista = [
   handleValidationErrors
 ];
 
+// Validaciones para acercamientos
+const validateAcercamiento = [
+  body('mentores')
+    .isArray({ min: 1 })
+    .withMessage('Debe agregar al menos un mentor'),
+  body('mentores.*')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El nombre del mentor debe tener entre 2 y 100 caracteres')
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+    .withMessage('El nombre del mentor solo puede contener letras y espacios'),
+  body('fecha')
+    .isISO8601()
+    .withMessage('La fecha debe ser válida')
+    .custom((value) => {
+      const fecha = new Date(value);
+      const hoy = new Date();
+      hoy.setHours(23, 59, 59, 999);
+      if (fecha > hoy) {
+        throw new Error('La fecha no puede ser futura');
+      }
+      return true;
+    }),
+  body('rangoEdad')
+    .trim()
+    .notEmpty()
+    .withMessage('El rango de edad es requerido'),
+  body('sexo')
+    .trim()
+    .isIn(['Hombre', 'Mujer', 'Diversidad'])
+    .withMessage('El sexo debe ser Hombre, Mujer o Diversidad'),
+  body('numeroAcercamiento')
+    .isInt({ min: 1, max: 1000 })
+    .withMessage('El numero de acercamiento debe ser un numero valido'),
+  body('haMejorado')
+    .if((value, { req }) => Number(req.body.numeroAcercamiento) > 1)
+    .trim()
+    .isLength({ min: 1, max: 20 })
+    .withMessage('El campo haMejorado debe ser valido'),
+  body('lugarTrabajo')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El lugar de trabajo debe tener entre 2 y 100 caracteres'),
+  body('area')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El area debe tener entre 2 y 100 caracteres'),
+  body('lugarAcercamiento')
+    .trim()
+    .isLength({ min: 2, max: 200 })
+    .withMessage('El lugar de acercamiento debe tener entre 2 y 200 caracteres'),
+  body('seguimiento')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El seguimiento debe tener entre 2 y 100 caracteres'),
+  body('estadosAnimo')
+    .isArray({ min: 1 })
+    .withMessage('Debe seleccionar al menos un estado de animo'),
+  body('estadosAnimo.*')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Cada estado de animo debe tener entre 2 y 100 caracteres'),
+  body('observaciones')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Las observaciones no pueden exceder 1000 caracteres'),
+  handleValidationErrors
+];
+
 // Sanitización general para prevenir XSS
 const sanitizeInput = (req, res, next) => {
   const sanitizeString = (str) => {
@@ -282,6 +352,7 @@ module.exports = {
   validateConsulta,
   validateCapacitacion,
   validateEntrevista,
+  validateAcercamiento,
   sanitizeInput,
   handleValidationErrors
 };

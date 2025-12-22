@@ -12,6 +12,7 @@ const TABLES = {
   ENTREVISTAS: process.env.ENTREVISTAS_TABLE || 'NadroMentoria-Entrevistas',
   USUARIOS: process.env.USUARIOS_TABLE || 'NadroMentoria-Usuarios',
   CAPACITACIONES: process.env.CAPACITACIONES_TABLE || 'NadroMentoria-Capacitaciones',
+  ACERCAMIENTOS: process.env.ACERCAMIENTOS_TABLE || 'NadroMentoria-Acercamientos',
 };
 
 module.exports = {

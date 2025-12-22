@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboardController');
 const consultasController = require('../controllers/consultasController');
+const acercamientosController = require('../controllers/acercamientosController');
 const { authenticateCognito, requireMentorOrAdmin, requireAdmin } = require('../middleware/auth');
-const { validateConsulta, sanitizeInput } = require('../middleware/validation');
+const { validateConsulta, validateAcercamiento, sanitizeInput } = require('../middleware/validation');
 
 // ============= RUTAS DEL DASHBOARD (SOLO ADMIN) =============
 // Stats y métricas del dashboard - Solo administradores
@@ -21,8 +22,16 @@ router.put('/consultas/:id', authenticateCognito, requireMentorOrAdmin, sanitize
 // Solo admins pueden eliminar consultas
 router.delete('/consultas/:id', authenticateCognito, requireAdmin, consultasController.eliminar);
 
-module.exports = router;
+// ============= RUTAS DE ACERCAMIENTOS (MENTOR Y ADMIN) =============
+router.get('/acercamientos', authenticateCognito, requireMentorOrAdmin, acercamientosController.listar);
+router.get('/acercamientos/export', authenticateCognito, requireMentorOrAdmin, acercamientosController.exportar);
+router.get('/acercamientos/:id', authenticateCognito, requireMentorOrAdmin, acercamientosController.obtener);
+router.put('/acercamientos/:id', authenticateCognito, requireMentorOrAdmin, sanitizeInput, validateAcercamiento, acercamientosController.actualizar);
 
+// Solo admins pueden eliminar acercamientos
+router.delete('/acercamientos/:id', authenticateCognito, requireAdmin, acercamientosController.eliminar);
+
+module.exports = router;
 
 
 
