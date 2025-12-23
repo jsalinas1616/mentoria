@@ -138,6 +138,16 @@ custom:
 
 # Configuración de seguridad adicional
 resources:
+  Conditions:
+    IsProd:
+      Fn::Equals:
+        - ${self:provider.stage}
+        - prod
+    IsNotProd:
+      Fn::Not:
+        - Fn::Equals:
+            - ${self:provider.stage}
+            - prod
   Resources:
     # Cognito User Pool
     CognitoUserPool:
@@ -212,6 +222,7 @@ resources:
 
     # DynamoDB Tables
     ConsultasTable:
+      Condition: IsNotProd
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Consultas-${self:provider.stage}
@@ -238,6 +249,7 @@ resources:
             Value: NadroMentoria
 
     UsuariosTable:
+      Condition: IsNotProd
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Usuarios-${self:provider.stage}
@@ -255,6 +267,7 @@ resources:
             Value: NadroMentoria
 
     CapacitacionesTable:
+      Condition: IsNotProd
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Capacitaciones-${self:provider.stage}
@@ -281,6 +294,7 @@ resources:
             Value: NadroMentoria
 
     EntrevistasTable:
+      Condition: IsNotProd
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: NadroMentoria-Entrevistas-${self:provider.stage}
