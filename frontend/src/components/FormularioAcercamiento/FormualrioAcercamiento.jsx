@@ -22,7 +22,6 @@ import Outcome from "../FormSections/Outcome"
 import SuccessModal from "../Feedback/SuccessModal"
 import SuccessScreen from "../Feedback/SuccessScreen"
 
-// import { entrevistasService, consultasService } from "../services/api"
 import { validarRequerido, validarArray } from "../../utils/validation"
 
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
