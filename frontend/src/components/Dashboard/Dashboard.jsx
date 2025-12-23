@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Users } from 'lucide-react';
-import { dashboardService, consultasService, capacitacionesService, authService, entrevistasService } from '../../services/api';
+import { FileText, MessageSquare, Users } from 'lucide-react';
+import { dashboardService, consultasService, capacitacionesService, authService, entrevistasService, acercamientosService } from '../../services/api';
 import MentorEmptyState from './MentorEmptyState';
 import DashboardHeader from './DashboardHeader';
 import MentorHeader from './MentorHeader';
@@ -11,9 +11,11 @@ import DashboardTabs from './DashboardTabs';
 import ConsultasTab from './ConsultasTab';
 import CapacitacionesTab from './CapacitacionesTab';
 import EntrevistasTab from './EntrevistasTab';
+import AcercamientosTab from './AcercamientosTab';
 import ConsultaModal from './ConsultaModal';
 import CapacitacionModal from './CapacitacionModal';
 import EntrevistaModal from './EntrevistaModal';
+import AcercamientoModal from './AcercamientoModal';
 
 const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [stats, setStats] = useState({
@@ -26,6 +28,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [consultas, setConsultas] = useState([]);
   const [capacitaciones, setCapacitaciones] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
+  const [acercamientos, setAcercamientos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
@@ -41,15 +44,20 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [mostrarModalCapacitacion, setMostrarModalCapacitacion] = useState(false);
   const [entrevistaSeleccionada, setEntrevistaSeleccionada] = useState(null);
   const [mostrarModalEntrevista, setMostrarModalEntrevista] = useState(false);
+  const [acercamientoSeleccionado, setAcercamientoSeleccionado] = useState(null);
+  const [mostrarModalAcercamiento, setMostrarModalAcercamiento] = useState(false);
   const [busqueda, setBusqueda] = useState('');
   const [busquedaCapacitaciones, setBusquedaCapacitaciones] = useState('');
   const [busquedaEntrevistas, setBusquedaEntrevistas] = useState('');
+  const [busquedaAcercamientos, setBusquedaAcercamientos] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
   const [paginaActualCapacitaciones, setPaginaActualCapacitaciones] = useState(1);
   const [paginaActualEntrevistas, setPaginaActualEntrevistas] = useState(1);
+  const [paginaActualAcercamientos, setPaginaActualAcercamientos] = useState(1);
   const [consultasPorPagina] = useState(10);
   const [capacitacionesPorPagina] = useState(10);
   const [entrevistasPorPagina] = useState(10);
+  const [acercamientosPorPagina] = useState(10);
   const [tabActivo, setTabActivo] = useState('consultas');
   const user = authService.getCurrentUser();
 
@@ -59,20 +67,23 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = useCallback(async () => {
     setLoading(true);
     try {
-      const [statsData, consultasData, capacitacionesData, entrevistasData] = await Promise.all([
+      const [statsData, consultasData, capacitacionesData, entrevistasData, acercamientosData] = await Promise.all([
         dashboardService.obtenerEstadisticas(filtros),
         consultasService.listar(filtros),
         capacitacionesService.listar(filtros),
         entrevistasService.listar(filtros),
+        acercamientosService.listar(filtros),
       ]);
       setStats(statsData);
       setConsultas(consultasData);
       setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
       setEntrevistas(entrevistasData);
+      setAcercamientos(Array.isArray(acercamientosData) ? acercamientosData : []);
     } catch (error) {
       console.error('Error al cargar datos:', error);
       console.error('Error detallado capacitaciones:', error);
       setCapacitaciones([]);
+      setAcercamientos([]);
     } finally {
       setLoading(false);
     }
@@ -159,6 +170,16 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setEntrevistaSeleccionada(null);
   };
 
+  const abrirModalAcercamiento = (acercamiento) => {
+    setAcercamientoSeleccionado(acercamiento);
+    setMostrarModalAcercamiento(true);
+  };
+
+  const cerrarModalAcercamiento = () => {
+    setMostrarModalAcercamiento(false);
+    setAcercamientoSeleccionado(null);
+  };
+
   const consultasFiltradas = consultas.filter((consulta) => {
     if (!busqueda) return true;
 
@@ -232,9 +253,39 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setPaginaActualEntrevistas(numeroPagina);
   };
 
+  const acercamientosFiltrados = acercamientos.filter((acercamiento) => {
+    if (!busquedaAcercamientos) return true;
+
+    const terminoBusqueda = busquedaAcercamientos.toLowerCase();
+    return (
+      acercamiento.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
+      acercamiento.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.sexo?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.area?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.lugarAcercamiento?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.seguimiento?.toLowerCase().includes(terminoBusqueda) ||
+      acercamiento.estadosAnimo?.some((estado) => estado.toLowerCase().includes(terminoBusqueda)) ||
+      String(acercamiento.numeroAcercamiento || '').toLowerCase().includes(terminoBusqueda)
+    );
+  });
+
+  const indiceUltimoAcercamiento = paginaActualAcercamientos * acercamientosPorPagina;
+  const indicePrimeroAcercamiento = indiceUltimoAcercamiento - acercamientosPorPagina;
+  const acercamientosPaginaActual = acercamientosFiltrados.slice(indicePrimeroAcercamiento, indiceUltimoAcercamiento);
+  const totalPaginasAcercamientos = Math.ceil(acercamientosFiltrados.length / acercamientosPorPagina);
+
+  const cambiarPaginaAcercamientos = (numeroPagina) => {
+    setPaginaActualAcercamientos(numeroPagina);
+  };
+
   useEffect(() => {
     setPaginaActualEntrevistas(1);
   }, [busquedaEntrevistas]);
+
+  useEffect(() => {
+    setPaginaActualAcercamientos(1);
+  }, [busquedaAcercamientos]);
 
   useEffect(() => {
     setPaginaActualCapacitaciones(1);
@@ -326,6 +377,28 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         />
       ),
     },
+    {
+      id: 'acercamientos',
+      label: `Acercamientos (${acercamientos.length})`,
+      icon: MessageSquare,
+      activeClassName: 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg',
+      content: (
+        <AcercamientosTab
+          acercamientos={acercamientos}
+          acercamientosFiltrados={acercamientosFiltrados}
+          acercamientosPaginaActual={acercamientosPaginaActual}
+          busquedaAcercamientos={busquedaAcercamientos}
+          onBusquedaChange={setBusquedaAcercamientos}
+          onExportar={handleExportar}
+          onVerAcercamiento={abrirModalAcercamiento}
+          paginaActual={paginaActualAcercamientos}
+          totalPaginas={totalPaginasAcercamientos}
+          indicePrimeraAcercamiento={indicePrimeroAcercamiento}
+          indiceUltimaAcercamiento={indiceUltimoAcercamiento}
+          onCambiarPagina={cambiarPaginaAcercamientos}
+        />
+      ),
+    },
   ];
 
   return (
@@ -358,6 +431,11 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         isOpen={mostrarModalEntrevista}
         entrevista={entrevistaSeleccionada}
         onClose={cerrarModalEntrevista}
+      />
+      <AcercamientoModal
+        isOpen={mostrarModalAcercamiento}
+        acercamiento={acercamientoSeleccionado}
+        onClose={cerrarModalAcercamiento}
       />
     </div>
   );

@@ -205,24 +205,24 @@ export const acercamientosService = {
     return response.data;
   },
   
-  // acercamientos protegidas (requieren autenticación) - ahora en dashboard
+  // acercamientos protegidas (requieren autenticación)
   listar: async (filtros = {}) => {
-    const response = await api.get('/dashboard/acercamientos', { params: filtros });
+    const response = await api.get('/acercamientos', { params: filtros });
     return response.data;
   },
   
   obtener: async (id) => {
-    const response = await api.get(`/dashboard/acercamientos/${id}`);
+    const response = await api.get(`/acercamientos/${id}`);
     return response.data;
   },
   
   actualizar: async (id, acercamiento) => {
-    const response = await api.put(`/dashboard/acercamientos/${id}`, acercamiento);
+    const response = await api.put(`/acercamientos/${id}`, acercamiento);
     return response.data;
   },
   
   eliminar: async (id) => {
-    const response = await api.delete(`/dashboard/acercamientos/${id}`);
+    const response = await api.delete(`/acercamientos/${id}`);
     return response.data;
   },
 };
@@ -244,5 +244,4 @@ export const dashboardService = {
 };
 
 export default api;
-
 

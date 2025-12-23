@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import { authService } from './services/api';
 import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
 import FormularioSesion from './components/FormualrioSesion/FormularioSesion';
-import FormularioAcercamiento from './FormularioAcercamiento/FormualrioAcercamiento';
+import FormularioAcercamiento from './components/FormularioAcercamiento/FormualrioAcercamiento';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

@@ -14,7 +14,7 @@ const Outcome = ({ value, onChange, error }) => (
       <option value="">Selecciona una opción</option>
       <option value="mentoria">Mentoría</option>
       <option value="entrevista">Entrevista</option>
-      <option value="entrevista">No requiere seguimiento</option>
+      <option value="No requiere seguimiento">No requiere seguimiento</option>
     </select>
 
     {error && <p className="text-rose text-sm mt-1">{error}</p>}

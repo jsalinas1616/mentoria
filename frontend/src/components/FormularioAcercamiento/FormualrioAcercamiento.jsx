@@ -1,37 +1,37 @@
 import React, { useState } from "react"
 import { Save, RotateCcw } from "lucide-react"
-import FormShell from "../components/FormSections/FormShell"
+import FormShell from "../FormSections/FormShell"
 
-import FacilitatorsSection from "../components/FormSections/FacilitatorsSection"
-import SessionDateSection from "../components/FormSections/SessionDateSection"
+import FacilitatorsSection from "../FormSections/FacilitatorsSection"
+import SessionDateSection from "../FormSections/SessionDateSection"
 
-import AgeRangeField from "../components/FormSections/AgeRangeField"
-import GenderField from "../components/FormSections/GenderField"
-import SessionNumberField from "../components/FormSections/SessionNumberField"
-import ImprovementField from "../components/FormSections/ImprovementField"
+import AgeRangeField from "../FormSections/AgeRangeField"
+import GenderField from "../FormSections/GenderField"
+import SessionNumberField from "../FormSections/SessionNumberField"
+import ImprovementField from "../FormSections/ImprovementField"
 
-import WorkplaceField from "../components/FormSections/WorkplaceField"
-import AreaField from "../components/FormSections/AreaField"
-import SessionLocationField from "../components/FormSections/SessionLocationField"
-import ReasonsField from "../components/FormSections/ReasonsField"
-import NotesField from "../components/FormSections/NotesField"
+import WorkplaceField from "../FormSections/WorkplaceField"
+import AreaField from "../FormSections/AreaField"
+import SessionLocationField from "../FormSections/SessionLocationField"
+import ReasonsField from "../FormSections/ReasonsField"
+import NotesField from "../FormSections/NotesField"
 
-import DemographicSection from "../components/FormSections/DemographicSection"
-import DetailsSection from "../components/FormSections/DetailsSection"
-import Outcome from "../components/FormSections/Outcome"
-import SuccessModal from "../components/Feedback/SuccessModal"
-import SuccessScreen from "../components/Feedback/SuccessScreen"
+import DemographicSection from "../FormSections/DemographicSection"
+import DetailsSection from "../FormSections/DetailsSection"
+import Outcome from "../FormSections/Outcome"
+import SuccessModal from "../Feedback/SuccessModal"
+import SuccessScreen from "../Feedback/SuccessScreen"
 
 // import { entrevistasService, consultasService } from "../services/api"
-import { validarRequerido, validarArray } from "../utils/validation"
+import { validarRequerido, validarArray } from "../../utils/validation"
 
-import lugaresTrabajoData from "../data/lugaresTrabajo.json"
-import areasData from "../data/areas.json"
-import estadosAnimo from "../data/estadosAnimo.json"
+import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
+import areasData from "../../data/areas.json"
+import estadosAnimo from "../../data/estadosAnimo.json"
+import { acercamientosService } from "../../services/api"
 
 const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
-    // sessionType: "mentoria",
     mentores: [],
     fecha: new Date().toISOString().split("T")[0],
 
@@ -112,20 +112,19 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     e.preventDefault()
     if (!validateForm()) return
     
-    console.log("aqui viendo lo que retorna la chunche",buildAcercamientoPayload())
-    // setLoading(true)
-    // try {
-    //   //aqui va el servicio de los acercamientos
-    //     await entrevistasService.crear(buildAcercamientoPayload())
+    setLoading(true)
+    try {
+      //aqui va el servicio de los acercamientos
+        await acercamientosService.crear(buildAcercamientoPayload())
 
 
-    //   setShowSuccessScreen(true)
-    //   setShowSuccessToast(true)
-    // } catch (err) {
-    //   console.error(err)
-    // } finally {
-    //   setLoading(false)
-    // }
+      setShowSuccessScreen(true)
+      setShowSuccessToast(true)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSuccessDone = () => {
@@ -169,17 +168,17 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
       <form onSubmit={handleSubmit} className="space-y-10">
 
         <FacilitatorsSection
+          label="Mentores"
           value={formData.mentores}
           onChange={(list) => setFormData((p) => ({ ...p, mentores: list }))}
-          label="Mentores"
           error={errors.mentores}
         />
 
         <SessionDateSection
+          label="Datos del acercamiento"
           value={formData.fecha}
           onChange={(v) => setFormData((p) => ({ ...p, fecha: v }))}
           error={errors.fecha}
-          label="Datos del acercamiento"
         />
 
         <DemographicSection>
