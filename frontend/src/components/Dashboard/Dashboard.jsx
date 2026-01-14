@@ -74,6 +74,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         entrevistasService.listar(filtros),
         acercamientosService.listar(filtros),
       ]);
+
+      console.log("STATS DATA ",statsData)
       setStats(statsData);
       setConsultas(consultasData);
       setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);

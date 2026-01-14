@@ -17,7 +17,7 @@ const DashboardCharts = ({ stats }) => (
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900">Motivos Más Frecuentes</h2>
-          <p className="text-sm text-gray-600">Distribución de motivos de consulta</p>
+          <p className="text-sm text-gray-600">Distribución de motivos de sesión</p>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={400}>
@@ -55,7 +55,7 @@ const DashboardCharts = ({ stats }) => (
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900">Distribución por Lugar</h2>
-          <p className="text-sm text-gray-600">Consultas por lugar de trabajo</p>
+          <p className="text-sm text-gray-600">Sesiones por lugar de trabajo</p>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={400}>
@@ -106,8 +106,8 @@ const DashboardCharts = ({ stats }) => (
           <Activity className="text-success" size={24} />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Tendencia de Consultas</h2>
-          <p className="text-sm text-gray-600">Evolución de consultas en el tiempo</p>
+          <h2 className="text-xl font-bold text-gray-900">Tendencia de Sesiones</h2>
+          <p className="text-sm text-gray-600">Evolución de sesiones en el tiempo</p>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={300}>

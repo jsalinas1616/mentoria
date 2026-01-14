@@ -10,7 +10,7 @@ const DashboardKpis = ({ stats }) => (
         </div>
       </div>
       <h3 className="text-3xl font-bold text-gray-900 mb-2">{stats.totalConsultas}</h3>
-      <p className="text-gray-600 text-sm font-medium">Total de Consultas</p>
+      <p className="text-gray-600 text-sm font-medium">Total de Sesiones</p>
     </div>
 
     <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
@@ -20,7 +20,7 @@ const DashboardKpis = ({ stats }) => (
         </div>
       </div>
       <h3 className="text-3xl font-bold text-gray-900 mb-2">{stats.consultasMes}</h3>
-      <p className="text-gray-600 text-sm font-medium">Consultas Este Mes</p>
+      <p className="text-gray-600 text-sm font-medium">Sesiones Este Mes</p>
     </div>
 
     <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft hover:shadow-lg transition-all duration-300">
