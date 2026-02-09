@@ -541,20 +541,34 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                   )}
                 </div>
 
-                {/* Lugar */}
+                {/* Lugar (CDR) */}
                 <div className="md:col-span-2">
                   <label className="block text-gray-700 text-sm font-semibold mb-2">
-                    Lugar <span className="text-rose">*</span>
+                    Lugar (CDR) <span className="text-rose">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="lugar"
                     value={formData.lugar}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                    placeholder="Ej: Sala de juntas, Auditorio"
                     required
-                  />
+                  >
+                    <option value="">Selecciona un CDR</option>
+                    <option value="Bajío">Bajío</option>
+                    <option value="Chihuahua">Chihuahua</option>
+                    <option value="Culiacán">Culiacán</option>
+                    <option value="Guadalajara">Guadalajara</option>
+                    <option value="La Paz">La Paz</option>
+                    <option value="Mérida">Mérida</option>
+                    <option value="México Norte">México Norte</option>
+                    <option value="México Sur">México Sur</option>
+                    <option value="Monterrey">Monterrey</option>
+                    <option value="Morelia">Morelia</option>
+                    <option value="Puebla">Puebla</option>
+                    <option value="Tijuana">Tijuana</option>
+                    <option value="Tuxtla">Tuxtla</option>
+                    <option value="Veracruz">Veracruz</option>
+                  </select>
                 </div>
               </div>
             </div>
