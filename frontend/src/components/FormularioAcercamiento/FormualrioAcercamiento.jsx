@@ -43,6 +43,7 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     area: "",
     lugarAcercamiento: "",
 
+    motivosContacto: "",
     seguimiento:"",
 
     estadosAnimo: [],
@@ -102,6 +103,7 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     lugarTrabajo: formData.lugarTrabajo,
     area: formData.area,
     lugarAcercamiento: formData.lugarAcercamiento,
+    motivosContacto: formData.motivosContacto,
     seguimiento: formData.seguimiento,
     estadosAnimo: formData.estadosAnimo,
     observaciones: formData.observaciones,
@@ -174,7 +176,7 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
         />
 
         <SessionDateSection
-          label="Datos del acercamiento"
+          label="Datos del contacto de vida"
           value={formData.fecha}
           onChange={(v) => setFormData((p) => ({ ...p, fecha: v }))}
           error={errors.fecha}
@@ -228,9 +230,20 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
           </div>
         </DemographicSection>
 
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Motivos del contacto de vida</h3>
+          <textarea
+            value={formData.motivosContacto}
+            onChange={(e) => setFormData((p) => ({ ...p, motivosContacto: e.target.value }))}
+            placeholder="Describe los motivos del contacto de vida..."
+            rows={4}
+            className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none"
+          />
+        </div>
+
         <DetailsSection
-          title="Detalles del acercamiento"
-          subtitle="lugar del acercamiento"
+          title="Detalles del contacto de vida"
+          subtitle="lugar del contacto de vida"
         >
           <SessionLocationField
             label="Lugar del acercamiento"

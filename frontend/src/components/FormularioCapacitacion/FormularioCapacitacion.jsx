@@ -517,10 +517,10 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                   </div>
                 </div>
 
-                {/* Número de Personas Invitadas */}
+                {/* Número de Asistentes */}
                 <div>
                   <label className="block text-gray-700 text-sm font-semibold mb-2">
-                    Número de Personas Invitadas <span className="text-rose">*</span>
+                    Número de asistentes <span className="text-rose">*</span>
                   </label>
                   <input
                     type="number"
@@ -559,7 +559,8 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
               </div>
             </div>
 
-            {/* Sección 3: Asistentes */}
+            {/* Sección 3: Asistentes - OCULTA */}
+            {false && (
             <div className="space-y-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -697,8 +698,10 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                 </div>
               )}
             </div>
+            )}
 
-            {/* Sección 4: Número de Mentorías Agendadas */}
+            {/* Sección 4: Número de Mentorías Agendadas - OCULTA */}
+            {false && (
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
@@ -726,6 +729,7 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                 />
               </div>
             </div>
+            )}
 
             {/* Sección 5: Observaciones */}
             <div className="space-y-6">

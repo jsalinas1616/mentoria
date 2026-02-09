@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Save, RotateCcw } from "lucide-react"
 import FormShell from "../FormSections/FormShell"
 
-import SessionTypeField from "../FormSections/SessionTypeField"
 import FacilitatorsSection from "../FormSections/FacilitatorsSection"
 import SessionDateSection from "../FormSections/SessionDateSection"
 
@@ -13,7 +12,6 @@ import ImprovementField from "../FormSections/ImprovementField"
 
 import WorkplaceField from "../FormSections/WorkplaceField"
 import AreaField from "../FormSections/AreaField"
-import SessionLocationField from "../FormSections/SessionLocationField"
 import ReasonsField from "../FormSections/ReasonsField"
 import NotesField from "../FormSections/NotesField"
 
@@ -22,7 +20,7 @@ import DetailsSection from "../FormSections/DetailsSection"
 import SuccessModal from "../Feedback/SuccessModal"
 import SuccessScreen from "../Feedback/SuccessScreen"
 
-import { entrevistasService, consultasService } from "../../services/api"
+import { entrevistasService } from "../../services/api"
 import { validarRequerido, validarArray } from "../../utils/validation"
 
 import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
@@ -31,7 +29,6 @@ import motivosConsultaData from "../../data/motivosConsulta.json"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
-    sessionType: "mentoria",
     facilitators: [],
     fecha: new Date().toISOString().split("T")[0],
 
@@ -42,7 +39,6 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
 
     lugarTrabajo: "",
     area: "",
-    lugarSesion: "",
 
     motivos: [],
     observaciones: "",
@@ -54,13 +50,8 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const [showSuccessScreen, setShowSuccessScreen] = useState(false)
   const [showSuccessToast, setShowSuccessToast] = useState(false)
 
-  const isEntrevista = (formData.sessionType || "").toLowerCase() === "entrevista"
-
   const validateForm = () => {
     const newErrors = {}
-
-    if (!validarRequerido(formData.sessionType))
-      newErrors.sessionType = "Selecciona el tipo de sesión"
 
     if (!validarArray(formData.facilitators))
       newErrors.facilitators = "Agrega al menos una persona"
@@ -83,9 +74,6 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
     if (!validarRequerido(formData.area))
       newErrors.area = "El área es requerida"
 
-    if (!validarRequerido(formData.lugarSesion))
-      newErrors.lugarSesion = "El lugar de la sesión es requerido"
-
     if (!validarArray(formData.motivos))
       newErrors.motivos = "Selecciona al menos un motivo"
 
@@ -102,22 +90,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
     haMejorado: formData.haMejorado,
     lugarTrabajo: formData.lugarTrabajo,
     area: formData.area,
-    lugarEntrevista: formData.lugarSesion,
     motivosEntrevista: formData.motivos,
-    observaciones: formData.observaciones,
-  })
-
-  const buildConsultaPayload = () => ({
-    mentores: formData.facilitators,
-    fecha: formData.fecha,
-    rangoEdad: formData.rangoEdad,
-    sexo: formData.sexo,
-    numeroSesion: formData.numeroSesion,
-    haMejorado: formData.haMejorado,
-    lugarTrabajo: formData.lugarTrabajo,
-    area: formData.area,
-    lugarConsulta: formData.lugarSesion,
-    motivosConsulta: formData.motivos,
     observaciones: formData.observaciones,
   })
 
@@ -127,11 +100,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
 
     setLoading(true)
     try {
-      if (isEntrevista) {
-        await entrevistasService.crear(buildEntrevistaPayload())
-      } else {
-        await consultasService.crear(buildConsultaPayload())
-      }
+      await entrevistasService.crear(buildEntrevistaPayload())
       setShowSuccessScreen(true)
       setShowSuccessToast(true)
     } catch (err) {
@@ -159,12 +128,12 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       <>
         <SuccessModal
           open={showSuccessToast}
-          title={isEntrevista ? "¡Entrevista guardada!" : "¡Mentoría guardada!"}
+          title="¡Entrevista guardada!"
           message="La información se registró correctamente en el sistema."
           onClose={() => setShowSuccessToast(false)}
         />
         <SuccessScreen
-          title={isEntrevista ? "¡Entrevista Guardada!" : "¡Mentoría Guardada!"}
+          title="¡Entrevista Guardada!"
           message="La información se ha registrado correctamente en el sistema."
           onDone={handleSuccessDone}
         />
@@ -180,16 +149,10 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
       onCancel={onCancel}
     >
       <form onSubmit={handleSubmit} className="space-y-10">
-        <SessionTypeField
-          value={formData.sessionType}
-          onChange={(v) => setFormData((p) => ({ ...p, sessionType: v }))}
-          error={errors.sessionType}
-        />
-
         <FacilitatorsSection
           value={formData.facilitators}
           onChange={(list) => setFormData((p) => ({ ...p, facilitators: list }))}
-          label={isEntrevista ? "Entrevistadores" : "Mentores"}
+          label="Entrevistadores"
           error={errors.facilitators}
         />
 
@@ -197,7 +160,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
           value={formData.fecha}
           onChange={(v) => setFormData((p) => ({ ...p, fecha: v }))}
           error={errors.fecha}
-          label={formData.sessionType !== "" ? `Datos de la ${formData.sessionType}` : "Datos"}
+          label="Datos de la entrevista"
         />
 
         <DemographicSection>
@@ -249,22 +212,11 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
         </DemographicSection>
 
         <DetailsSection
-          title={`Detalles de la ${formData.sessionType}`}
-          subtitle={
-            isEntrevista
-              ? "Lugar y motivos de la entrevista (confidencial)"
-              : "Lugar y motivos de la mentoría (confidencial)"
-          }
+          title="Detalles de la entrevista"
+          subtitle="Motivos de la entrevista (confidencial)"
         >
-          <SessionLocationField
-            label={`Lugar de la ${formData.sessionType}`}
-            value={formData.lugarSesion}
-            onChange={(v) => setFormData((p) => ({ ...p, lugarSesion: v }))}
-            error={errors.lugarSesion}
-          />
-
           <ReasonsField
-            title={`Motivo(s) de la ${formData.sessionType}`}
+            title="Motivo(s) de la entrevista"
             value={formData.motivos}
             onChange={(list) => setFormData((p) => ({ ...p, motivos: list }))}
             error={errors.motivos}
@@ -294,7 +246,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
             className="flex-1 bg-primary text-white rounded-2xl py-4 font-bold flex items-center justify-center gap-2"
           >
             <Save size={20} />
-            {loading ? "GUARDANDO..." : `GUARDAR ${formData.sessionType.toUpperCase()}`}
+            {loading ? "GUARDANDO..." : "GUARDAR ENTREVISTA"}
           </button>
         </div>
       </form>

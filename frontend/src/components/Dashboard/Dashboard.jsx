@@ -58,7 +58,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [capacitacionesPorPagina] = useState(10);
   const [entrevistasPorPagina] = useState(10);
   const [acercamientosPorPagina] = useState(10);
-  const [tabActivo, setTabActivo] = useState('consultas');
+  const [tabActivo, setTabActivo] = useState('entrevistas');
   const user = authService.getCurrentUser();
 
   const isAdmin = user?.roles?.includes('admin') || user?.rol === 'admin' || false;
@@ -182,31 +182,27 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setAcercamientoSeleccionado(null);
   };
 
-  const consultasFiltradas = consultas.filter((consulta) => {
-    if (!busqueda) return true;
+  // Combinar consultas y entrevistas en un solo array
+  const todasEntrevistas = [...consultas, ...entrevistas];
 
-    const terminoBusqueda = busqueda.toLowerCase();
+  const entrevistasCombinadas = todasEntrevistas.filter((item) => {
+    if (!busquedaEntrevistas) return true;
+
+    const terminoBusqueda = busquedaEntrevistas.toLowerCase();
     return (
-      consulta.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
-      consulta.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.sexo?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
-      consulta.area?.toLowerCase().includes(terminoBusqueda)
+      item.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
+      item.entrevistadores?.some((entrevistador) => entrevistador.toLowerCase().includes(terminoBusqueda)) ||
+      item.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+      item.sexo?.toLowerCase().includes(terminoBusqueda) ||
+      item.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
+      item.area?.toLowerCase().includes(terminoBusqueda)
     );
   });
 
-  const indiceUltimaConsulta = paginaActual * consultasPorPagina;
-  const indicePrimeraConsulta = indiceUltimaConsulta - consultasPorPagina;
-  const consultasPaginaActual = consultasFiltradas.slice(indicePrimeraConsulta, indiceUltimaConsulta);
-  const totalPaginas = Math.ceil(consultasFiltradas.length / consultasPorPagina);
-
-  const cambiarPagina = (numeroPagina) => {
-    setPaginaActual(numeroPagina);
-  };
-
-  useEffect(() => {
-    setPaginaActual(1);
-  }, [busqueda]);
+  const indiceUltimaEntrevistaCombinada = paginaActualEntrevistas * entrevistasPorPagina;
+  const indicePrimeraEntrevistaCombinada = indiceUltimaEntrevistaCombinada - entrevistasPorPagina;
+  const entrevistasCombinadasPaginaActual = entrevistasCombinadas.slice(indicePrimeraEntrevistaCombinada, indiceUltimaEntrevistaCombinada);
+  const totalPaginasEntrevistasCombinadas = Math.ceil(entrevistasCombinadas.length / entrevistasPorPagina);
 
   const capacitacionesFiltradas = capacitaciones.filter((capacitacion) => {
     if (!busquedaCapacitaciones) return true;
@@ -232,24 +228,6 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cambiarPaginaCapacitaciones = (numeroPagina) => {
     setPaginaActualCapacitaciones(numeroPagina);
   };
-
-  const entrevistasFiltradas = entrevistas.filter((entrevista) => {
-    if (!busquedaEntrevistas) return true;
-
-    const terminoBusquedaEntrevista = busquedaEntrevistas.toLowerCase();
-    return (
-      entrevista.entrevistadores?.some((entrevistador) => entrevistador.toLowerCase().includes(terminoBusquedaEntrevista)) ||
-      entrevista.rangoEdad?.toLowerCase().includes(terminoBusquedaEntrevista) ||
-      entrevista.sexo?.toLowerCase().includes(terminoBusquedaEntrevista) ||
-      entrevista.lugarTrabajo?.toLowerCase().includes(terminoBusquedaEntrevista) ||
-      entrevista.area?.toLowerCase().includes(terminoBusquedaEntrevista)
-    );
-  });
-
-  const indiceUltimaEntrevista = paginaActualEntrevistas * entrevistasPorPagina;
-  const indicePrimeraEntrevista = indiceUltimaEntrevista - entrevistasPorPagina;
-  const entrevistasPaginaActual = entrevistasFiltradas.slice(indicePrimeraEntrevista, indiceUltimaEntrevista);
-  const totalPaginasEntrevistas = Math.ceil(entrevistasFiltradas.length / entrevistasPorPagina);
 
   const cambiarPaginaEntrevista = (numeroPagina) => {
     setPaginaActualEntrevistas(numeroPagina);
@@ -316,24 +294,24 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
 
   const tabs = [
     {
-      id: 'consultas',
-      label: `Mentorías (${consultas.length})`,
+      id: 'entrevistas',
+      label: `Entrevistas (${todasEntrevistas.length})`,
       icon: FileText,
       activeClassName: 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg',
       content: (
-        <ConsultasTab
-          consultas={consultas}
-          consultasFiltradas={consultasFiltradas}
-          consultasPaginaActual={consultasPaginaActual}
-          busqueda={busqueda}
-          onBusquedaChange={setBusqueda}
+        <EntrevistasTab
+          entrevistas={todasEntrevistas}
+          entrevistasFiltradas={entrevistasCombinadas}
+          entrevistasPaginaActual={entrevistasCombinadasPaginaActual}
+          busquedaEntrevistas={busquedaEntrevistas}
+          onBusquedaChange={setBusquedaEntrevistas}
           onExportar={handleExportar}
-          onVerConsulta={abrirModal}
-          paginaActual={paginaActual}
-          totalPaginas={totalPaginas}
-          indicePrimeraConsulta={indicePrimeraConsulta}
-          indiceUltimaConsulta={indiceUltimaConsulta}
-          onCambiarPagina={cambiarPagina}
+          onVerEntrevista={abrirModalEntrevista}
+          paginaActual={paginaActualEntrevistas}
+          totalPaginas={totalPaginasEntrevistasCombinadas}
+          indicePrimeraEntrevista={indicePrimeraEntrevistaCombinada}
+          indiceUltimaEntrevista={indiceUltimaEntrevistaCombinada}
+          onCambiarPagina={cambiarPaginaEntrevista}
         />
       ),
     },
@@ -358,30 +336,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
       ),
     },
     {
-      id: 'entrevistas',
-      label: `Entrevistas (${entrevistas.length})`,
-      icon: FileText,
-      activeClassName: 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg',
-      content: (
-        <EntrevistasTab
-          entrevistas={entrevistas}
-          entrevistasFiltradas={entrevistasFiltradas}
-          entrevistasPaginaActual={entrevistasPaginaActual}
-          busquedaEntrevistas={busquedaEntrevistas}
-          onBusquedaChange={setBusquedaEntrevistas}
-          onExportar={handleExportar}
-          onVerEntrevista={abrirModalEntrevista}
-          paginaActual={paginaActualEntrevistas}
-          totalPaginas={totalPaginasEntrevistas}
-          indicePrimeraEntrevista={indicePrimeraEntrevista}
-          indiceUltimaEntrevista={indiceUltimaEntrevista}
-          onCambiarPagina={cambiarPaginaEntrevista}
-        />
-      ),
-    },
-    {
       id: 'acercamientos',
-      label: `Acercamientos (${acercamientos.length})`,
+      label: `Contacto de vida (${acercamientos.length})`,
       icon: MessageSquare,
       activeClassName: 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg',
       content: (

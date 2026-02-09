@@ -34,12 +34,12 @@ const DropdownActions = () => {
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
             onClick={() => window.location.href = "/#/dashboard/sesiones/nueva"}>
-            <NotebookText size={16} /> Mentoría/Entrevista
+            <NotebookText size={16} /> Entrevista
           </button>
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
             onClick={() => window.location.href = "/#/dashboard/acercamientos/nueva"}>
-            <Users size={16} /> Acercamiento
+            <Users size={16} /> Contacto de vida
           </button>
           <button 
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
