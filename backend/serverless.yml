@@ -230,6 +230,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Consultas-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -258,6 +261,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Usuarios-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: email
             AttributeType: S
@@ -277,6 +283,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Capacitaciones-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -306,6 +315,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Entrevistas-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -334,6 +346,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Acercamientos-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -362,6 +377,9 @@ resources:
       Properties:
         TableName: NadroMentoria-Visitas-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
+        DeletionProtectionEnabled: true
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
