@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { FileText, MessageSquare, Users } from 'lucide-react';
-import { dashboardService, consultasService, capacitacionesService, authService, entrevistasService, acercamientosService } from '../../services/api';
+import { consultasService, capacitacionesService, authService, entrevistasService, acercamientosService } from '../../services/api';
+import { calcularStatsEntrevistas, calcularStatsCapacitaciones, calcularStatsAcercamientos } from '../../utils/dashboardStats';
 import MentorEmptyState from './MentorEmptyState';
 import DashboardHeader from './DashboardHeader';
 import MentorHeader from './MentorHeader';
@@ -18,13 +19,6 @@ import EntrevistaModal from './EntrevistaModal';
 import AcercamientoModal from './AcercamientoModal';
 
 const Dashboard = ({ onNuevaConsulta, onLogout }) => {
-  const [stats, setStats] = useState({
-    totalConsultas: 0,
-    consultasMes: 0,
-    motivosMasFrecuentes: [],
-    lugaresTrabajo: [],
-    consultasPorFecha: [],
-  });
   const [consultas, setConsultas] = useState([]);
   const [capacitaciones, setCapacitaciones] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
@@ -67,23 +61,19 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = useCallback(async () => {
     setLoading(true);
     try {
-      const [statsData, consultasData, capacitacionesData, entrevistasData, acercamientosData] = await Promise.all([
-        dashboardService.obtenerEstadisticas(filtros),
+      const [consultasData, capacitacionesData, entrevistasData, acercamientosData] = await Promise.all([
         consultasService.listar(filtros),
         capacitacionesService.listar(filtros),
         entrevistasService.listar(filtros),
         acercamientosService.listar(filtros),
       ]);
 
-      console.log("STATS DATA ",statsData)
-      setStats(statsData);
       setConsultas(consultasData);
       setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
       setEntrevistas(entrevistasData);
       setAcercamientos(Array.isArray(acercamientosData) ? acercamientosData : []);
     } catch (error) {
       console.error('Error al cargar datos:', error);
-      console.error('Error detallado capacitaciones:', error);
       setCapacitaciones([]);
       setAcercamientos([]);
     } finally {
@@ -94,6 +84,22 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   useEffect(() => {
     cargarDatos();
   }, [cargarDatos]);
+
+  // Calcular estadísticas dinámicamente según el tab activo
+  const statsActuales = useMemo(() => {
+    const todasEntrevistas = [...consultas, ...entrevistas];
+    
+    switch (tabActivo) {
+      case 'entrevistas':
+        return calcularStatsEntrevistas(todasEntrevistas);
+      case 'capacitaciones':
+        return calcularStatsCapacitaciones(capacitaciones);
+      case 'acercamientos':
+        return calcularStatsAcercamientos(acercamientos);
+      default:
+        return calcularStatsEntrevistas(todasEntrevistas);
+    }
+  }, [tabActivo, consultas, entrevistas, capacitaciones, acercamientos]);
 
   const handleExportar = async (formato) => {
     try {
@@ -374,8 +380,8 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
           onFechaFinChange={handleFechaFinChange}
         />
 
-        <DashboardKpis stats={stats} />
-        <DashboardCharts stats={stats} />
+        <DashboardKpis stats={statsActuales} tabActivo={tabActivo} />
+        <DashboardCharts stats={statsActuales} tabActivo={tabActivo} />
         <DashboardTabs tabs={tabs} activeTab={tabActivo} onTabChange={setTabActivo} />
       </div>
 

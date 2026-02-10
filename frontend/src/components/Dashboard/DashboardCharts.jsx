@@ -3,138 +3,280 @@ import {
   BarChart, Bar, PieChart, Pie, LineChart, Line, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { BarChart3, PieChart as PieChartIcon, Activity } from 'lucide-react';
+import { BarChart3, PieChart as PieChartIcon, Activity, Heart, BookOpen, TrendingUp } from 'lucide-react';
 
-const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399'];
+const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5'];
 
-const DashboardCharts = ({ stats }) => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    {/* Gráfico de Barras: Motivos más frecuentes */}
-    <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
-          <BarChart3 className="text-primary" size={24} />
+const DashboardCharts = ({ stats, tabActivo }) => {
+  // Configuración de gráficas por tab
+  const getChartsConfig = () => {
+    switch (tabActivo) {
+      case 'entrevistas':
+        return {
+          chart1: {
+            icon: Heart,
+            iconColor: 'text-rose',
+            bgColor: 'from-rose/10 to-rose-light/10',
+            title: 'Motivos de Entrevista',
+            subtitle: 'Motivos más frecuentes',
+            data: stats.motivosMasFrecuentes || [],
+            dataKey: 'motivo',
+            valueKey: 'count',
+            type: 'bar'
+          },
+          chart2: {
+            icon: PieChartIcon,
+            iconColor: 'text-accent',
+            bgColor: 'from-accent/10 to-accent-light/10',
+            title: 'Lugares de Trabajo',
+            subtitle: 'Distribución por ubicación',
+            data: stats.lugaresTrabajo || [],
+            dataKey: 'lugar',
+            valueKey: 'count',
+            type: 'pie'
+          },
+          chart3: {
+            icon: Activity,
+            iconColor: 'text-success',
+            bgColor: 'from-success/10 to-success-light/10',
+            title: 'Tendencia Mensual',
+            subtitle: 'Entrevistas en el tiempo',
+            data: stats.tendenciaMensual || [],
+            dataKey: 'mes',
+            valueKey: 'count',
+            type: 'line'
+          }
+        };
+
+      case 'capacitaciones':
+        return {
+          chart1: {
+            icon: BookOpen,
+            iconColor: 'text-blue-600',
+            bgColor: 'from-blue-500/10 to-blue-600/10',
+            title: 'Temas Impartidos',
+            subtitle: 'Temas más frecuentes',
+            data: stats.temasMasImpartidos || [],
+            dataKey: 'tema',
+            valueKey: 'count',
+            type: 'bar'
+          },
+          chart2: {
+            icon: PieChartIcon,
+            iconColor: 'text-purple-600',
+            bgColor: 'from-purple-500/10 to-purple-600/10',
+            title: 'Distribución por CDR',
+            subtitle: 'Capacitaciones por región',
+            data: stats.distribucionCDR || [],
+            dataKey: 'cdr',
+            valueKey: 'count',
+            type: 'pie'
+          },
+          chart3: {
+            icon: Activity,
+            iconColor: 'text-success',
+            bgColor: 'from-success/10 to-success-light/10',
+            title: 'Tendencia Mensual',
+            subtitle: 'Capacitaciones en el tiempo',
+            data: stats.tendenciaMensual || [],
+            dataKey: 'mes',
+            valueKey: 'count',
+            type: 'line'
+          }
+        };
+
+      case 'acercamientos':
+        return {
+          chart1: {
+            icon: Heart,
+            iconColor: 'text-rose',
+            bgColor: 'from-rose/10 to-rose-light/10',
+            title: 'Estados de Ánimo',
+            subtitle: 'Estados más frecuentes',
+            data: stats.estadosMasFrecuentes || [],
+            dataKey: 'estado',
+            valueKey: 'count',
+            type: 'bar'
+          },
+          chart2: {
+            icon: TrendingUp,
+            iconColor: 'text-emerald-600',
+            bgColor: 'from-emerald-500/10 to-emerald-600/10',
+            title: 'Tipo de Seguimiento',
+            subtitle: 'Distribución de seguimientos',
+            data: stats.distribucionSeguimiento || [],
+            dataKey: 'seguimiento',
+            valueKey: 'count',
+            type: 'pie'
+          },
+          chart3: {
+            icon: Activity,
+            iconColor: 'text-success',
+            bgColor: 'from-success/10 to-success-light/10',
+            title: 'Tendencia Mensual',
+            subtitle: 'Contactos en el tiempo',
+            data: stats.tendenciaMensual || [],
+            dataKey: 'mes',
+            valueKey: 'count',
+            type: 'line'
+          }
+        };
+
+      default:
+        return null;
+    }
+  };
+
+  const config = getChartsConfig();
+  if (!config) return null;
+
+  const renderChart = (chartConfig) => {
+    const Icon = chartConfig.icon;
+
+    if (chartConfig.type === 'bar') {
+      return (
+        <div key={chartConfig.title} className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`p-3 bg-gradient-to-br ${chartConfig.bgColor} rounded-xl`}>
+              <Icon className={chartConfig.iconColor} size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{chartConfig.title}</h2>
+              <p className="text-sm text-gray-600">{chartConfig.subtitle}</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={chartConfig.data.slice(0, 8)} margin={{ bottom: 80 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis 
+                dataKey={chartConfig.dataKey}
+                stroke="#6B7280" 
+                angle={-45} 
+                textAnchor="end" 
+                height={100}
+                interval={0}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis stroke="#6B7280" domain={[0, 'dataMax + 2']} />
+              <Tooltip
+                contentStyle={{ 
+                  backgroundColor: '#FFFFFF', 
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                }}
+                labelStyle={{ color: '#374151', fontWeight: '600' }}
+              />
+              <Bar dataKey={chartConfig.valueKey} fill="#059669" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">Motivos Más Frecuentes</h2>
-          <p className="text-sm text-gray-600">Distribución de motivos de sesión</p>
+      );
+    }
+
+    if (chartConfig.type === 'pie') {
+      return (
+        <div key={chartConfig.title} className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`p-3 bg-gradient-to-br ${chartConfig.bgColor} rounded-xl`}>
+              <Icon className={chartConfig.iconColor} size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{chartConfig.title}</h2>
+              <p className="text-sm text-gray-600">{chartConfig.subtitle}</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={350}>
+            <PieChart>
+              <Pie
+                data={chartConfig.data.slice(0, 6)}
+                dataKey={chartConfig.valueKey}
+                nameKey={chartConfig.dataKey}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label={false}
+              >
+                {chartConfig.data.slice(0, 6).map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{ 
+                  backgroundColor: '#FFFFFF', 
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                }}
+              />
+              <Legend 
+                wrapperStyle={{ 
+                  paddingTop: '20px',
+                  fontSize: '11px',
+                  lineHeight: '1.4'
+                }}
+                formatter={(value) => {
+                  if (value.length > 15) {
+                    return value.substring(0, 15) + '...';
+                  }
+                  return value;
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
-      </div>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={stats.motivosMasFrecuentes.slice(0, 5)} margin={{ bottom: 80 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis 
-            dataKey="motivo" 
-            stroke="#6B7280" 
-            angle={-45} 
-            textAnchor="end" 
-            height={100}
-            interval={0}
-            tick={{ fontSize: 13 }}
-          />
-          <YAxis stroke="#6B7280" domain={[0, 'dataMax + 2']} />
-          <Tooltip
-            contentStyle={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '1px solid #E5E7EB',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
-            }}
-            labelStyle={{ color: '#374151', fontWeight: '600' }}
-          />
-          <Bar dataKey="count" fill="#059669" radius={[8, 8, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      );
+    }
+
+    if (chartConfig.type === 'line') {
+      return (
+        <div key={chartConfig.title} className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft lg:col-span-2">
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`p-3 bg-gradient-to-br ${chartConfig.bgColor} rounded-xl`}>
+              <Icon className={chartConfig.iconColor} size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{chartConfig.title}</h2>
+              <p className="text-sm text-gray-600">{chartConfig.subtitle}</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartConfig.data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey={chartConfig.dataKey} stroke="#6B7280" />
+              <YAxis stroke="#6B7280" domain={[0, 'dataMax + 2']} />
+              <Tooltip
+                contentStyle={{ 
+                  backgroundColor: '#FFFFFF', 
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+                }}
+                labelStyle={{ color: '#374151', fontWeight: '600' }}
+              />
+              <Line
+                type="monotone"
+                dataKey={chartConfig.valueKey}
+                stroke="#059669"
+                strokeWidth={3}
+                dot={{ fill: '#059669', r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {renderChart(config.chart1)}
+      {renderChart(config.chart2)}
+      {renderChart(config.chart3)}
     </div>
-
-    {/* Gráfico de Pastel: Lugares de trabajo */}
-    <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-accent/10 to-accent-light/10 rounded-xl">
-          <PieChartIcon className="text-accent" size={24} />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">Distribución por Lugar</h2>
-          <p className="text-sm text-gray-600">Sesiones por lugar de trabajo</p>
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={400}>
-        <PieChart>
-          <Pie
-            data={stats.lugaresTrabajo.slice(0, 6)}
-            dataKey="count"
-            nameKey="lugar"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            label={false}
-          >
-            {stats.lugaresTrabajo.slice(0, 6).map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip
-            contentStyle={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '1px solid #E5E7EB',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
-            }}
-            formatter={(value, name) => [`${value} consultas`, name]}
-          />
-          <Legend 
-            wrapperStyle={{ 
-              paddingTop: '20px',
-              fontSize: '11px',
-              lineHeight: '1.4'
-            }}
-            formatter={(value) => {
-              if (value.length > 15) {
-                return value.substring(0, 15) + '...';
-              }
-              return value;
-            }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-
-    {/* Gráfico de Línea: Consultas por fecha */}
-    <div className="bg-white rounded-3xl p-6 border border-gray-200/50 shadow-soft lg:col-span-2">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-success/10 to-success-light/10 rounded-xl">
-          <Activity className="text-success" size={24} />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">Tendencia de Sesiones</h2>
-          <p className="text-sm text-gray-600">Evolución de sesiones en el tiempo</p>
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={stats.consultasPorFecha}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis dataKey="fecha" stroke="#6B7280" />
-          <YAxis stroke="#6B7280" />
-          <Tooltip
-            contentStyle={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '1px solid #E5E7EB',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
-            }}
-            labelStyle={{ color: '#374151', fontWeight: '600' }}
-          />
-          <Line
-            type="monotone"
-            dataKey="count"
-            stroke="#059669"
-            strokeWidth={3}
-            dot={{ fill: '#059669', r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  </div>
-);
+  );
+};
 
 export default DashboardCharts;
