@@ -21,7 +21,7 @@ const FormShell = ({
               className="h-12 w-auto"
             />
             <div>
-              <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
             </div>
           </div>
 

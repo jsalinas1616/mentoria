@@ -144,7 +144,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
 
   return (
     <FormShell
-      title="Registro de Entrevista Personal"
+      title="Entrevista"
       logoAlt="Nadro Sesión"
       userMode={userMode}
       onCancel={onCancel}
