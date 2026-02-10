@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { FileText, MessageSquare, Users } from 'lucide-react';
-import { consultasService, capacitacionesService, authService, entrevistasService, acercamientosService, dashboardService } from '../../services/api';
-import { calcularStatsEntrevistas, calcularStatsCapacitaciones, calcularStatsAcercamientos } from '../../utils/dashboardStats';
+import { FileText, MessageSquare, Users, Home } from 'lucide-react';
+import { consultasService, capacitacionesService, authService, entrevistasService, acercamientosService, visitasService, dashboardService } from '../../services/api';
+import { calcularStatsEntrevistas, calcularStatsCapacitaciones, calcularStatsAcercamientos, calcularStatsVisitas } from '../../utils/dashboardStats';
 import MentorEmptyState from './MentorEmptyState';
 import DashboardHeader from './DashboardHeader';
 import MentorHeader from './MentorHeader';
@@ -22,6 +22,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [capacitaciones, setCapacitaciones] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
   const [acercamientos, setAcercamientos] = useState([]);
+  const [visitas, setVisitas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
@@ -57,21 +58,24 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = useCallback(async () => {
     setLoading(true);
     try {
-      const [consultasData, capacitacionesData, entrevistasData, acercamientosData] = await Promise.all([
+      const [consultasData, capacitacionesData, entrevistasData, acercamientosData, visitasData] = await Promise.all([
         consultasService.listar(filtros),
         capacitacionesService.listar(filtros),
         entrevistasService.listar(filtros),
         acercamientosService.listar(filtros),
+        visitasService.listar(filtros),
       ]);
 
       setConsultas(consultasData);
       setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
       setEntrevistas(entrevistasData);
       setAcercamientos(Array.isArray(acercamientosData) ? acercamientosData : []);
+      setVisitas(Array.isArray(visitasData) ? visitasData : []);
     } catch (error) {
       console.error('Error al cargar datos:', error);
       setCapacitaciones([]);
       setAcercamientos([]);
+      setVisitas([]);
     } finally {
       setLoading(false);
     }
@@ -92,10 +96,12 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         return calcularStatsCapacitaciones(capacitaciones);
       case 'acercamientos':
         return calcularStatsAcercamientos(acercamientos);
+      case 'visitas':
+        return calcularStatsVisitas(visitas);
       default:
         return calcularStatsEntrevistas(todasEntrevistas);
     }
-  }, [tabActivo, consultas, entrevistas, capacitaciones, acercamientos]);
+  }, [tabActivo, consultas, entrevistas, capacitaciones, acercamientos, visitas]);
 
   const handleExportar = async (formato) => {
     try {
