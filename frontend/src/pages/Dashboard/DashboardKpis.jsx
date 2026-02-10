@@ -93,11 +93,11 @@ const DashboardKpis = ({ stats, tabActivo }) => {
             label: stats.estadoPrincipal || 'Estado Principal'
           },
           {
-            icon: TrendingUp,
+            icon: MapPin,
             iconColor: 'text-primary-light',
             bgColor: 'from-primary/10 to-primary-light/10',
-            value: stats.seguimientosActivos || 0,
-            label: 'Seguimientos Activos'
+            value: (stats.lugaresAcercamiento || []).length,
+            label: 'Lugares de Contacto'
           }
         ];
 

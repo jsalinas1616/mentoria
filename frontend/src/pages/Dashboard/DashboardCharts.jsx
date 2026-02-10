@@ -99,13 +99,13 @@ const DashboardCharts = ({ stats, tabActivo }) => {
             type: 'bar'
           },
           chart2: {
-            icon: TrendingUp,
-            iconColor: 'text-emerald-600',
-            bgColor: 'from-emerald-500/10 to-emerald-600/10',
-            title: 'Tipo de Seguimiento',
-            subtitle: 'Distribución de seguimientos',
-            data: stats.distribucionSeguimiento || [],
-            dataKey: 'seguimiento',
+            icon: PieChartIcon,
+            iconColor: 'text-accent',
+            bgColor: 'from-accent/10 to-accent-light/10',
+            title: 'Lugares de Contacto',
+            subtitle: 'Distribución por ubicación',
+            data: stats.lugaresAcercamiento || [],
+            dataKey: 'lugar',
             valueKey: 'count',
             type: 'pie'
           },

@@ -236,11 +236,11 @@ export const calcularStatsAcercamientos = (acercamientos) => {
       esteMes: 0,
       estadoPrincipal: '',
       estadoCount: 0,
-      seguimientosActivos: 0,
       estadosMasFrecuentes: [],
-      distribucionSeguimiento: [],
       tendenciaMensual: [],
-      evolucionCasos: []
+      distribucionSexo: [],
+      distribucionEdad: [],
+      lugaresAcercamiento: []
     };
   }
 
@@ -272,22 +272,6 @@ export const calcularStatsAcercamientos = (acercamientos) => {
   const estadoPrincipal = estadosMasFrecuentes[0]?.estado || 'N/A';
   const estadoCount = estadosMasFrecuentes[0]?.count || 0;
 
-  // Distribución por tipo de seguimiento
-  const seguimientoMap = {};
-  acercamientos.forEach(a => {
-    if (a.seguimiento) {
-      seguimientoMap[a.seguimiento] = (seguimientoMap[a.seguimiento] || 0) + 1;
-    }
-  });
-  
-  const distribucionSeguimiento = Object.entries(seguimientoMap)
-    .map(([seguimiento, count]) => ({ seguimiento, count }))
-    .sort((a, b) => b.count - a.count);
-
-  const seguimientosActivos = acercamientos.filter(a => 
-    a.seguimiento !== 'Alta'
-  ).length;
-
   // Tendencia mensual (últimos 6 meses)
   const hace6Meses = new Date();
   hace6Meses.setMonth(hace6Meses.getMonth() - 6);
@@ -313,34 +297,53 @@ export const calcularStatsAcercamientos = (acercamientos) => {
       return new Date(`20${añoA}-${mesA}`) - new Date(`20${añoB}-${mesB}`);
     });
 
-  // Evolución de casos (por número de acercamiento)
-  const evolucionMap = {};
+  // Distribución por sexo
+  const sexoMap = {};
   acercamientos.forEach(a => {
-    const num = a.numeroAcercamiento || 1;
-    const label = num === 1 ? 'Sesión 1' : 
-                  num === 2 ? 'Sesión 2' :
-                  num === 3 ? 'Sesión 3' :
-                  num === 4 ? 'Sesión 4' :
-                  'Sesión 5+';
-    evolucionMap[label] = (evolucionMap[label] || 0) + 1;
+    if (a.sexo) {
+      sexoMap[a.sexo] = (sexoMap[a.sexo] || 0) + 1;
+    }
   });
+  
+  const distribucionSexo = Object.entries(sexoMap)
+    .map(([sexo, count]) => ({ sexo, count }));
 
-  const evolucionCasos = Object.entries(evolucionMap)
-    .map(([sesion, count]) => ({ sesion, count }))
+  // Distribución por edad
+  const edadMap = {};
+  acercamientos.forEach(a => {
+    if (a.rangoEdad) {
+      edadMap[a.rangoEdad] = (edadMap[a.rangoEdad] || 0) + 1;
+    }
+  });
+  
+  const distribucionEdad = Object.entries(edadMap)
+    .map(([rango, count]) => ({ rango, count }))
     .sort((a, b) => {
-      const orden = { 'Sesión 1': 1, 'Sesión 2': 2, 'Sesión 3': 3, 'Sesión 4': 4, 'Sesión 5+': 5 };
-      return (orden[a.sesion] || 999) - (orden[b.sesion] || 999);
+      const orden = { '18-25': 1, '26-35': 2, '36-45': 3, '46-55': 4, '56+': 5 };
+      return (orden[a.rango] || 999) - (orden[b.rango] || 999);
     });
+
+  // Distribución por lugares de acercamiento
+  const lugaresMap = {};
+  acercamientos.forEach(a => {
+    if (a.lugarAcercamiento) {
+      lugaresMap[a.lugarAcercamiento] = (lugaresMap[a.lugarAcercamiento] || 0) + 1;
+    }
+  });
+  
+  const lugaresAcercamiento = Object.entries(lugaresMap)
+    .map(([lugar, count]) => ({ lugar, count }))
+    .sort((a, b) => b.count - a.count);
 
   return {
     total,
     esteMes,
     estadoPrincipal,
     estadoCount,
-    seguimientosActivos,
     estadosMasFrecuentes: estadosMasFrecuentes.slice(0, 10),
-    distribucionSeguimiento,
     tendenciaMensual,
-    evolucionCasos
+    distribucionSexo,
+    distribucionEdad,
+    lugaresAcercamiento: lugaresAcercamiento.slice(0, 8)
   };
 };

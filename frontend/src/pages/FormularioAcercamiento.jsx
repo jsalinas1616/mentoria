@@ -7,9 +7,6 @@ import SessionDateSection from "../components/FormSections/SessionDateSection"
 
 import AgeRangeField from "../components/FormSections/AgeRangeField"
 import GenderField from "../components/FormSections/GenderField"
-import SessionNumberField from "../components/FormSections/SessionNumberField"
-import ImprovementField from "../components/FormSections/ImprovementField"
-
 import WorkplaceField from "../components/FormSections/WorkplaceField"
 import AreaField from "../components/FormSections/AreaField"
 import SessionLocationField from "../components/FormSections/SessionLocationField"
@@ -18,7 +15,6 @@ import NotesField from "../components/FormSections/NotesField"
 
 import DemographicSection from "../components/FormSections/DemographicSection"
 import DetailsSection from "../components/FormSections/DetailsSection"
-import Outcome from "../components/FormSections/Outcome"
 import SuccessModal from "../components/Feedback/SuccessModal"
 import SuccessScreen from "../components/Feedback/SuccessScreen"
 
@@ -36,15 +32,15 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
 
     rangoEdad: "",
     sexo: "",
-    numeroAcercamiento: "",
-    haMejorado: "",
+    numeroAcercamiento: 1, // Valor por defecto - campo oculto
+    haMejorado: "", // Valor por defecto - campo oculto
 
     lugarTrabajo: "",
     area: "",
     lugarAcercamiento: "",
 
-    motivosContacto: "",
-    seguimiento:"",
+    motivosContacto: "", // Valor por defecto - campo oculto
+    seguimiento: "Seguimiento", // Valor por defecto - campo oculto
 
     estadosAnimo: [],
     observaciones: "",
@@ -71,9 +67,6 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
     if (!validarRequerido(formData.sexo))
       newErrors.sexo = "El sexo es requerido"
 
-    if (!validarRequerido(formData.numeroAcercamiento))
-      newErrors.numeroAcercamiento = "El número de acercamiento es requerido"
-
     if (!validarRequerido(formData.lugarTrabajo))
       newErrors.lugarTrabajo = "El lugar de trabajo es requerido"
 
@@ -82,9 +75,6 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
 
     if (!validarRequerido(formData.lugarAcercamiento))
       newErrors.lugarAcercamiento = "El lugar del acercamiento es requerido"
-
-    if (!validarRequerido(formData.seguimiento))
-      newErrors.seguimiento = "El seguimiento es requerido"
 
     if (!validarArray(formData.estadosAnimo))
       newErrors.estadosAnimo = "Selecciona al menos un estado de ánimo"
@@ -195,22 +185,6 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
             error={errors.sexo}
           />
 
-          <SessionNumberField
-            label="Número de acercamietos"
-            value={formData.numeroAcercamiento}
-            onChange={(v) => setFormData((p) => ({ ...p, numeroAcercamiento: v }))}
-            error={errors.numeroAcercamiento}
-          />
-
-          {Number(formData.numeroAcercamiento) > 1 && (
-            <div className="md:col-span-1">
-              <ImprovementField
-                value={formData.haMejorado}
-                onChange={(v) => setFormData((p) => ({ ...p, haMejorado: v }))}
-              />
-            </div>
-          )}
-
           <div className="md:col-span-1">
             <WorkplaceField
               value={formData.lugarTrabajo}
@@ -230,17 +204,6 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
           </div>
         </DemographicSection>
 
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Motivos del contacto de vida</h3>
-          <textarea
-            value={formData.motivosContacto}
-            onChange={(e) => setFormData((p) => ({ ...p, motivosContacto: e.target.value }))}
-            placeholder="Describe los motivos del contacto de vida..."
-            rows={4}
-            className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary resize-none"
-          />
-        </div>
-
         <DetailsSection
           title="Detalles del contacto de vida"
           subtitle="lugar del contacto de vida"
@@ -259,13 +222,6 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
             error={errors.estadosAnimo}
             options={estadosAnimo}
           />
-
-          <Outcome
-            value={formData.seguimiento}
-            onChange={(v) => setFormData((p) => ({ ...p, seguimiento: v }))}
-            error={errors.seguimiento}
-          />
-          
         </DetailsSection>
 
         <NotesField
