@@ -59,13 +59,18 @@ async function seedCapacitaciones(count = 100) {
       });
     }
     
+    // Simular que se invitaron más personas de las que asistieron
+    const numInvitados = numAsistentes + Math.floor(Math.random() * 5); // 0-4 personas más invitadas
+    
     const data = {
       id: uuidv4(),
       capacitadores: randomItems(mentores, 1, 2),
       fecha: fecha.split('T')[0],
       tema: randomItem(temas),
-      lugar: randomItem(lugares), // Campo correcto que espera el frontend
+      lugar: randomItem(lugares),
+      numeroPersonasInvitadas: numInvitados, // Campo que faltaba
       asistentes: asistentes,
+      numeroMentoriasAgendadas: 0, // Campo opcional
       observaciones: `Capacitación exitosa con ${numAsistentes} participantes. ${randomItem(['Excelente participación', 'Buena retroalimentación', 'Grupo muy receptivo', 'Interés demostrado', 'Sesión productiva'])}`,
       createdAt: fecha,
       updatedAt: fecha

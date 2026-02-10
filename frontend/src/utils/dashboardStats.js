@@ -155,7 +155,7 @@ export const calcularStatsCapacitaciones = (capacitaciones) => {
 
   // Total de asistentes
   const totalAsistentes = capacitaciones.reduce((sum, c) => 
-    sum + (c.numeroPersonasInvitadas || 0), 0
+    sum + (Array.isArray(c.asistentes) ? c.asistentes.length : 0), 0
   );
 
   const promedioAsistentes = total > 0 ? Math.round(totalAsistentes / total) : 0;
