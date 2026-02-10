@@ -1,6 +1,7 @@
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Calendar, AlertCircle } from "lucide-react"
+import { parseFechaLocal } from "../../utils/validation"
 
 const SessionDateSection = ({
   value,
@@ -32,10 +33,17 @@ const SessionDateSection = ({
         </div>
 
         <DatePicker
-          selected={value ? new Date(value) : null}
+          selected={value ? parseFechaLocal(value) : null}
           onChange={(date) => {
-            const isoDate = date ? date.toISOString().split("T")[0] : ""
-            onChange(isoDate)
+            if (!date) {
+              onChange("")
+              return
+            }
+            // Formatear la fecha seleccionada a YYYY-MM-DD en zona local
+            const año = date.getFullYear()
+            const mes = String(date.getMonth() + 1).padStart(2, '0')
+            const dia = String(date.getDate()).padStart(2, '0')
+            onChange(`${año}-${mes}-${dia}`)
           }}
           dateFormat="dd/MM/yyyy"
           placeholderText="DD/MM/AAAA"

@@ -2,6 +2,7 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import { Filter } from 'lucide-react';
 import 'react-datepicker/dist/react-datepicker.css';
+import { parseFechaLocal } from '../../utils/validation';
 
 const DashboardFilters = ({
   filtros,
@@ -27,7 +28,7 @@ const DashboardFilters = ({
           <div>
             <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Inicio</label>
             <DatePicker
-              selected={filtros.fechaInicio ? new Date(filtros.fechaInicio) : null}
+              selected={filtros.fechaInicio ? parseFechaLocal(filtros.fechaInicio) : null}
               onChange={onFechaInicioChange}
               dateFormat="dd/MM/yyyy"
               placeholderText="DD/MM/AAAA"
@@ -39,7 +40,7 @@ const DashboardFilters = ({
           <div>
             <label className="block text-gray-700 text-sm font-semibold mb-2">Fecha Fin</label>
             <DatePicker
-              selected={filtros.fechaFin ? new Date(filtros.fechaFin) : null}
+              selected={filtros.fechaFin ? parseFechaLocal(filtros.fechaFin) : null}
               onChange={onFechaFinChange}
               dateFormat="dd/MM/yyyy"
               placeholderText="DD/MM/AAAA"

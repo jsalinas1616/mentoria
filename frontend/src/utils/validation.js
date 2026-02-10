@@ -52,4 +52,16 @@ export const formatearFechaISO = (fecha) => {
   return date.toISOString().split('T')[0];
 };
 
+/**
+ * Obtiene la fecha actual en formato YYYY-MM-DD en zona horaria local
+ * @returns {string} - Fecha actual en formato YYYY-MM-DD
+ */
+export const obtenerFechaHoyLocal = () => {
+  const hoy = new Date();
+  const año = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoy.getDate()).padStart(2, '0');
+  return `${año}-${mes}-${dia}`;
+};
+
 

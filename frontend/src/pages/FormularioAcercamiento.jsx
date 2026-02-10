@@ -22,7 +22,7 @@ import Outcome from "../components/FormSections/Outcome"
 import SuccessModal from "../components/Feedback/SuccessModal"
 import SuccessScreen from "../components/Feedback/SuccessScreen"
 
-import { validarRequerido, validarArray } from "../utils/validation"
+import { validarRequerido, validarArray, obtenerFechaHoyLocal } from "../utils/validation"
 
 import lugaresTrabajoData from "../data/lugaresTrabajo.json"
 import areasData from "../data/areas.json"
@@ -32,7 +32,7 @@ import { acercamientosService } from "../services/api"
 const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({
     mentores: [],
-    fecha: new Date().toISOString().split("T")[0],
+    fecha: obtenerFechaHoyLocal(),
 
     rangoEdad: "",
     sexo: "",

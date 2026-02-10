@@ -3,6 +3,7 @@ import { Save, Check, AlertCircle, LogOut, Calendar, Users, BookOpen, ArrowLeft,
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { capacitacionesService, authService } from '../services/api';
+import { obtenerFechaHoyLocal, parseFechaLocal } from '../utils/validation';
 import lugaresTrabajoData from '../data/lugaresTrabajo.json';
 import areasData from '../data/areas.json';
 import rangosEdadData from '../data/rangosEdad.json';
@@ -10,7 +11,7 @@ import rangosEdadData from '../data/rangosEdad.json';
 const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = null, userMode = 'admin' }) => {
   const [formData, setFormData] = useState(capacitacionInicial || {
     tema: '',
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: obtenerFechaHoyLocal(),
     hora: '',
     duracionHoras: '',
     duracionMinutos: '',
@@ -256,7 +257,7 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
     if (window.confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderán todos los datos ingresados.')) {
       setFormData({
         tema: '',
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: obtenerFechaHoyLocal(),
         hora: '',
         duracionHoras: '',
         duracionMinutos: '',
@@ -453,10 +454,16 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
                     Fecha <span className="text-rose">*</span>
                   </label>
                   <DatePicker
-                    selected={formData.fecha ? new Date(formData.fecha + 'T00:00:00') : null}
+                    selected={formData.fecha ? parseFechaLocal(formData.fecha) : null}
                     onChange={(date) => {
-                      const fechaISO = date ? date.toISOString().split('T')[0] : '';
-                      setFormData(prev => ({ ...prev, fecha: fechaISO }));
+                      if (!date) {
+                        setFormData(prev => ({ ...prev, fecha: '' }));
+                        return;
+                      }
+                      const año = date.getFullYear();
+                      const mes = String(date.getMonth() + 1).padStart(2, '0');
+                      const dia = String(date.getDate()).padStart(2, '0');
+                      setFormData(prev => ({ ...prev, fecha: `${año}-${mes}-${dia}` }));
                     }}
                     dateFormat="dd/MM/yyyy"
                     placeholderText="DD/MM/AAAA"

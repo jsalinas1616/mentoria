@@ -131,13 +131,25 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   };
 
   const handleFechaInicioChange = (date) => {
-    const fechaISO = date ? date.toISOString().split('T')[0] : '';
-    setFiltros((prev) => ({ ...prev, fechaInicio: fechaISO }));
+    if (!date) {
+      setFiltros((prev) => ({ ...prev, fechaInicio: '' }));
+      return;
+    }
+    const año = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const dia = String(date.getDate()).padStart(2, '0');
+    setFiltros((prev) => ({ ...prev, fechaInicio: `${año}-${mes}-${dia}` }));
   };
 
   const handleFechaFinChange = (date) => {
-    const fechaISO = date ? date.toISOString().split('T')[0] : '';
-    setFiltros((prev) => ({ ...prev, fechaFin: fechaISO }));
+    if (!date) {
+      setFiltros((prev) => ({ ...prev, fechaFin: '' }));
+      return;
+    }
+    const año = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const dia = String(date.getDate()).padStart(2, '0');
+    setFiltros((prev) => ({ ...prev, fechaFin: `${año}-${mes}-${dia}` }));
   };
 
   const toggleFiltros = () => {
