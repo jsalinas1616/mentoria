@@ -12,10 +12,12 @@ import DashboardTabs from './DashboardTabs';
 import CapacitacionesTab from './CapacitacionesTab';
 import EntrevistasTab from './EntrevistasTab';
 import AcercamientosTab from './AcercamientosTab';
+import VisitasTab from './VisitasTab';
 import ConsultaModal from './ConsultaModal';
 import CapacitacionModal from './CapacitacionModal';
 import EntrevistaModal from './EntrevistaModal';
 import AcercamientoModal from './AcercamientoModal';
+import VisitaModal from './VisitaModal';
 
 const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [consultas, setConsultas] = useState([]);
@@ -40,15 +42,20 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [mostrarModalEntrevista, setMostrarModalEntrevista] = useState(false);
   const [acercamientoSeleccionado, setAcercamientoSeleccionado] = useState(null);
   const [mostrarModalAcercamiento, setMostrarModalAcercamiento] = useState(false);
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState(null);
+  const [mostrarModalVisita, setMostrarModalVisita] = useState(false);
   const [busquedaCapacitaciones, setBusquedaCapacitaciones] = useState('');
   const [busquedaEntrevistas, setBusquedaEntrevistas] = useState('');
   const [busquedaAcercamientos, setBusquedaAcercamientos] = useState('');
+  const [busquedaVisitas, setBusquedaVisitas] = useState('');
   const [paginaActualCapacitaciones, setPaginaActualCapacitaciones] = useState(1);
   const [paginaActualEntrevistas, setPaginaActualEntrevistas] = useState(1);
   const [paginaActualAcercamientos, setPaginaActualAcercamientos] = useState(1);
+  const [paginaActualVisitas, setPaginaActualVisitas] = useState(1);
   const [capacitacionesPorPagina] = useState(10);
   const [entrevistasPorPagina] = useState(10);
   const [acercamientosPorPagina] = useState(10);
+  const [visitasPorPagina] = useState(10);
   const [tabActivo, setTabActivo] = useState('entrevistas');
   const user = authService.getCurrentUser();
 
@@ -274,6 +281,29 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setPaginaActualAcercamientos(numeroPagina);
   };
 
+  const visitasFiltradas = visitas.filter((visita) => {
+    if (!busquedaVisitas) return true;
+
+    const terminoBusqueda = busquedaVisitas.toLowerCase();
+    return (
+      visita.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
+      visita.lugarVisita?.toLowerCase().includes(terminoBusqueda) ||
+      visita.parentesco?.toLowerCase().includes(terminoBusqueda) ||
+      visita.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+      visita.sexo?.toLowerCase().includes(terminoBusqueda) ||
+      visita.areaPersonal?.toLowerCase().includes(terminoBusqueda)
+    );
+  });
+
+  const indiceUltimaVisita = paginaActualVisitas * visitasPorPagina;
+  const indicePrimeraVisita = indiceUltimaVisita - visitasPorPagina;
+  const visitasPaginaActual = visitasFiltradas.slice(indicePrimeraVisita, indiceUltimaVisita);
+  const totalPaginasVisitas = Math.ceil(visitasFiltradas.length / visitasPorPagina);
+
+  const cambiarPaginaVisitas = (numeroPagina) => {
+    setPaginaActualVisitas(numeroPagina);
+  };
+
   useEffect(() => {
     setPaginaActualEntrevistas(1);
   }, [busquedaEntrevistas]);
@@ -285,6 +315,10 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   useEffect(() => {
     setPaginaActualCapacitaciones(1);
   }, [busquedaCapacitaciones]);
+
+  useEffect(() => {
+    setPaginaActualVisitas(1);
+  }, [busquedaVisitas]);
 
   if (loading && consultas.length === 0) {
     return (
@@ -372,6 +406,31 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         />
       ),
     },
+    {
+      id: 'visitas',
+      label: `Visitas (${visitas.length})`,
+      icon: Home,
+      activeClassName: 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg',
+      content: (
+        <VisitasTab
+          visitas={visitas}
+          visitasFiltradas={visitasFiltradas}
+          visitasPaginaActual={visitasPaginaActual}
+          busquedaVisitas={busquedaVisitas}
+          onBusquedaChange={setBusquedaVisitas}
+          onExportar={handleExportar}
+          onVerVisita={(visita) => {
+            setVisitaSeleccionada(visita);
+            setMostrarModalVisita(true);
+          }}
+          paginaActual={paginaActualVisitas}
+          totalPaginas={totalPaginasVisitas}
+          indicePrimeraVisita={indicePrimeraVisita}
+          indiceUltimaVisita={indiceUltimaVisita}
+          onCambiarPagina={cambiarPaginaVisitas}
+        />
+      ),
+    },
   ];
 
   return (
@@ -409,6 +468,14 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         isOpen={mostrarModalAcercamiento}
         acercamiento={acercamientoSeleccionado}
         onClose={cerrarModalAcercamiento}
+      />
+      <VisitaModal
+        open={mostrarModalVisita}
+        visita={visitaSeleccionada}
+        onClose={() => {
+          setMostrarModalVisita(false);
+          setVisitaSeleccionada(null);
+        }}
       />
     </div>
   );

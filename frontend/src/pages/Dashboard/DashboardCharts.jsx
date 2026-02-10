@@ -122,6 +122,43 @@ const DashboardCharts = ({ stats, tabActivo }) => {
           }
         };
 
+      case 'visitas':
+        return {
+          chart1: {
+            icon: PieChartIcon,
+            iconColor: 'text-blue-600',
+            bgColor: 'from-blue-500/10 to-blue-600/10',
+            title: 'Lugares de Visita',
+            subtitle: 'Distribución por tipo de lugar',
+            data: stats.lugaresMasFrecuentes || [],
+            dataKey: 'lugar',
+            valueKey: 'count',
+            type: 'pie'
+          },
+          chart2: {
+            icon: Heart,
+            iconColor: 'text-purple-600',
+            bgColor: 'from-purple-500/10 to-purple-600/10',
+            title: 'Parentesco',
+            subtitle: 'Relación con colaborador',
+            data: stats.parentescosMasFrecuentes || [],
+            dataKey: 'parentesco',
+            valueKey: 'count',
+            type: 'bar'
+          },
+          chart3: {
+            icon: Activity,
+            iconColor: 'text-success',
+            bgColor: 'from-success/10 to-success-light/10',
+            title: 'Tendencia Mensual',
+            subtitle: 'Visitas en el tiempo',
+            data: stats.tendenciaMensual || [],
+            dataKey: 'mes',
+            valueKey: 'count',
+            type: 'line'
+          }
+        };
+
       default:
         return null;
     }

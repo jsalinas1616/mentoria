@@ -1,5 +1,4 @@
-import React from 'react';
-import { Users, FileText, Calendar, TrendingUp, Heart, BookOpen, MapPin } from 'lucide-react';
+import { Users, FileText, Calendar, TrendingUp, Heart, BookOpen, MapPin, Home } from 'lucide-react';
 
 const DashboardKpis = ({ stats, tabActivo }) => {
   // KPIs dinámicos según el tab activo
@@ -98,6 +97,38 @@ const DashboardKpis = ({ stats, tabActivo }) => {
             bgColor: 'from-primary/10 to-primary-light/10',
             value: (stats.lugaresAcercamiento || []).length,
             label: 'Lugares de Contacto'
+          }
+        ];
+
+      case 'visitas':
+        return [
+          {
+            icon: Home,
+            iconColor: 'text-blue-600',
+            bgColor: 'from-blue-500/10 to-blue-600/10',
+            value: stats.total || 0,
+            label: 'Total de Visitas'
+          },
+          {
+            icon: Calendar,
+            iconColor: 'text-success',
+            bgColor: 'from-success/10 to-success-light/10',
+            value: stats.esteMes || 0,
+            label: 'Visitas Este Mes'
+          },
+          {
+            icon: MapPin,
+            iconColor: 'text-purple-600',
+            bgColor: 'from-purple-500/10 to-purple-600/10',
+            value: stats.lugarCount || 0,
+            label: stats.lugarPrincipal || 'Lugar Principal'
+          },
+          {
+            icon: Users,
+            iconColor: 'text-primary-light',
+            bgColor: 'from-primary/10 to-primary-light/10',
+            value: stats.parentescoCount || 0,
+            label: stats.parentescoPrincipal || 'Parentesco Principal'
           }
         ];
 
