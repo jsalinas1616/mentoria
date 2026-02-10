@@ -191,18 +191,19 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
       newErrors.numeroPersonasInvitadas = 'Debe ingresar un número válido';
     }
     
-    if (formData.asistentes.length === 0) {
-      newErrors.asistentes = 'Debe agregar al menos un asistente';
-    }
+    // Validaciones de asistentes deshabilitadas porque la sección está oculta
+    // if (formData.asistentes.length === 0) {
+    //   newErrors.asistentes = 'Debe agregar al menos un asistente';
+    // }
 
-    // Validar que todos los asistentes tengan datos completos
-    const asistenteIncompleto = formData.asistentes.some(a => 
-      !a.rangoEdad || !a.sexo || !a.lugarTrabajo || !a.area
-    );
+    // // Validar que todos los asistentes tengan datos completos
+    // const asistenteIncompleto = formData.asistentes.some(a => 
+    //   !a.rangoEdad || !a.sexo || !a.lugarTrabajo || !a.area
+    // );
 
-    if (asistenteIncompleto) {
-      newErrors.asistentes = 'Todos los asistentes deben tener datos completos';
-    }
+    // if (asistenteIncompleto) {
+    //   newErrors.asistentes = 'Todos los asistentes deben tener datos completos';
+    // }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -224,7 +225,7 @@ const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = nul
         ...formData,
         duracion,
         numeroPersonasInvitadas: parseInt(formData.numeroPersonasInvitadas, 10),
-        numeroMentoriasAgendadas: parseInt(formData.numeroMentoriasAgendadas, 10)
+        numeroMentoriasAgendadas: parseInt(formData.numeroMentoriasAgendadas, 10) || 0
       };
       
       // Eliminar campos temporales

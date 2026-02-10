@@ -90,6 +90,7 @@ const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
     haMejorado: formData.haMejorado,
     lugarTrabajo: formData.lugarTrabajo,
     area: formData.area,
+    lugarEntrevista: "Otro",
     motivosEntrevista: formData.motivos,
     observaciones: formData.observaciones,
   })
