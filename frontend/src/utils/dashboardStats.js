@@ -1,4 +1,6 @@
 // Calcular estadísticas para Entrevistas (Consultas + Entrevistas combinadas)
+import { parseFechaLocal } from './validation';
+
 export const calcularStatsEntrevistas = (entrevistas) => {
   if (!entrevistas || entrevistas.length === 0) {
     return {
@@ -23,8 +25,8 @@ export const calcularStatsEntrevistas = (entrevistas) => {
   const mesActual = hoy.getMonth();
   const añoActual = hoy.getFullYear();
   const esteMes = entrevistas.filter(e => {
-    const fecha = new Date(e.fecha);
-    return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+    const fecha = parseFechaLocal(e.fecha);
+    return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
   }).length;
 
   // Motivos más frecuentes
@@ -63,9 +65,13 @@ export const calcularStatsEntrevistas = (entrevistas) => {
   
   const mesesMap = {};
   entrevistas
-    .filter(e => new Date(e.fecha) >= hace6Meses)
+    .filter(e => {
+      const fecha = parseFechaLocal(e.fecha);
+      return fecha && fecha >= hace6Meses;
+    })
     .forEach(e => {
-      const fecha = new Date(e.fecha);
+      const fecha = parseFechaLocal(e.fecha);
+      if (!fecha) return;
       const mesAño = `${fecha.getMonth() + 1}/${fecha.getFullYear().toString().slice(2)}`;
       mesesMap[mesAño] = (mesesMap[mesAño] || 0) + 1;
     });
@@ -143,8 +149,8 @@ export const calcularStatsCapacitaciones = (capacitaciones) => {
   const mesActual = hoy.getMonth();
   const añoActual = hoy.getFullYear();
   const esteMes = capacitaciones.filter(c => {
-    const fecha = new Date(c.fecha);
-    return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+    const fecha = parseFechaLocal(c.fecha);
+    return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
   }).length;
 
   // Total de asistentes
@@ -189,9 +195,13 @@ export const calcularStatsCapacitaciones = (capacitaciones) => {
   
   const mesesMap = {};
   capacitaciones
-    .filter(c => new Date(c.fecha) >= hace6Meses)
+    .filter(c => {
+      const fecha = parseFechaLocal(c.fecha);
+      return fecha && fecha >= hace6Meses;
+    })
     .forEach(c => {
-      const fecha = new Date(c.fecha);
+      const fecha = parseFechaLocal(c.fecha);
+      if (!fecha) return;
       const mesAño = `${fecha.getMonth() + 1}/${fecha.getFullYear().toString().slice(2)}`;
       mesesMap[mesAño] = (mesesMap[mesAño] || 0) + 1;
     });
@@ -242,8 +252,8 @@ export const calcularStatsAcercamientos = (acercamientos) => {
   const mesActual = hoy.getMonth();
   const añoActual = hoy.getFullYear();
   const esteMes = acercamientos.filter(a => {
-    const fecha = new Date(a.fecha);
-    return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+    const fecha = parseFechaLocal(a.fecha);
+    return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
   }).length;
 
   // Estados de ánimo más frecuentes
@@ -284,9 +294,13 @@ export const calcularStatsAcercamientos = (acercamientos) => {
   
   const mesesMap = {};
   acercamientos
-    .filter(a => new Date(a.fecha) >= hace6Meses)
+    .filter(a => {
+      const fecha = parseFechaLocal(a.fecha);
+      return fecha && fecha >= hace6Meses;
+    })
     .forEach(a => {
-      const fecha = new Date(a.fecha);
+      const fecha = parseFechaLocal(a.fecha);
+      if (!fecha) return;
       const mesAño = `${fecha.getMonth() + 1}/${fecha.getFullYear().toString().slice(2)}`;
       mesesMap[mesAño] = (mesesMap[mesAño] || 0) + 1;
     });
