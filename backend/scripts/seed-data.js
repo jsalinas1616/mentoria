@@ -49,19 +49,22 @@ function randomItems(array, min = 1, max = 3) {
 // Generar Entrevistas/Consultas
 async function seedEntrevistas(count = 100) {
   console.log(`\n📝 Generando ${count} entrevistas/consultas...`);
+  const motivosEntrevistaOpciones = ['Personal', 'Laboral', 'Familiar', 'Salud', 'Económico', 'Otro'];
+  
   for (let i = 0; i < count; i++) {
     const fecha = randomDate();
     const data = {
       id: uuidv4(),
-      mentores: randomItems(mentores, 1, 2),
+      entrevistadores: randomItems(mentores, 1, 2), // CORREGIDO: era 'mentores'
       fecha: fecha.split('T')[0],
       rangoEdad: randomItem(rangosEdad),
       sexo: randomItem(sexos),
+      numeroSesion: Math.floor(Math.random() * 10) + 1, // AGREGADO: 1-10 sesiones
+      haMejorado: Math.random() > 0.5 ? 'Sí' : 'No', // AGREGADO
       lugarTrabajo: randomItem(lugares),
       area: randomItem(areas),
-      tipoSesion: Math.random() > 0.5 ? 'mentoría' : 'entrevista',
-      lugar: randomItem(['Consultorio', 'Oficina', 'Virtual']),
-      motivoConsulta: Math.random() > 0.5 ? 'Personal' : 'Laboral',
+      lugarEntrevista: randomItem(['Consultorio', 'Oficina', 'Virtual']), // CORREGIDO
+      motivosEntrevista: randomItems(motivosEntrevistaOpciones, 1, 3), // CORREGIDO: ahora es array
       observaciones: `Observaciones de la sesión ${i + 1}`,
       createdAt: fecha,
       updatedAt: fecha
