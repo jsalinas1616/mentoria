@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, Users, MapPin, Heart, User, Briefcase, FileText, Home } from 'lucide-react';
+import { X, Calendar, Users, FileText, Home } from 'lucide-react';
 import { formatearFecha } from '../../utils/validation';
 
 const VisitaModal = ({ open, onClose, visita }) => {
