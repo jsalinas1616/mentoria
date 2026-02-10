@@ -22,6 +22,7 @@ provider:
     CAPACITACIONES_TABLE: NadroMentoria-Capacitaciones-${self:provider.stage}
     ENTREVISTAS_TABLE: NadroMentoria-Entrevistas-${self:provider.stage}
     ACERCAMIENTOS_TABLE: NadroMentoria-Acercamientos-${self:provider.stage}
+    VISITAS_TABLE: NadroMentoria-Visitas-${self:provider.stage}
   
   iam:
     role:
@@ -40,6 +41,7 @@ provider:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Capacitaciones-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Entrevistas-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Acercamientos-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/NadroMentoria-Visitas-${self:provider.stage}"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -331,6 +333,34 @@ resources:
       UpdateReplacePolicy: Retain
       Properties:
         TableName: NadroMentoria-Acercamientos-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatedAtIndex
+            KeySchema:
+              - AttributeName: createdAt
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Project
+            Value: NadroMentoria
+
+    VisitasTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        TableName: NadroMentoria-Visitas-${self:provider.stage}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id

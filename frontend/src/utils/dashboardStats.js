@@ -347,3 +347,143 @@ export const calcularStatsAcercamientos = (acercamientos) => {
     lugaresAcercamiento: lugaresAcercamiento.slice(0, 8)
   };
 };
+
+// Calcular estadísticas para Visitas
+export const calcularStatsVisitas = (visitas) => {
+  if (!visitas || visitas.length === 0) {
+    return {
+      total: 0,
+      esteMes: 0,
+      lugarPrincipal: '',
+      lugarCount: 0,
+      parentescoPrincipal: '',
+      parentescoCount: 0,
+      lugaresMasFrecuentes: [],
+      parentescosMasFrecuentes: [],
+      tendenciaMensual: [],
+      distribucionSexo: [],
+      distribucionEdad: [],
+      areasMasFrecuentes: []
+    };
+  }
+
+  // Total
+  const total = visitas.length;
+
+  // Este mes
+  const hoy = new Date();
+  const mesActual = hoy.getMonth();
+  const añoActual = hoy.getFullYear();
+  const esteMes = visitas.filter(v => {
+    const fecha = parseFechaLocal(v.fecha);
+    return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+  }).length;
+
+  // Lugares más visitados
+  const lugaresMap = {};
+  visitas.forEach(v => {
+    if (v.lugarVisita) {
+      lugaresMap[v.lugarVisita] = (lugaresMap[v.lugarVisita] || 0) + 1;
+    }
+  });
+  
+  const lugaresMasFrecuentes = Object.entries(lugaresMap)
+    .map(([lugar, count]) => ({ lugar, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const lugarPrincipal = lugaresMasFrecuentes[0]?.lugar || 'N/A';
+  const lugarCount = lugaresMasFrecuentes[0]?.count || 0;
+
+  // Parentesco más frecuente
+  const parentescoMap = {};
+  visitas.forEach(v => {
+    if (v.parentesco) {
+      parentescoMap[v.parentesco] = (parentescoMap[v.parentesco] || 0) + 1;
+    }
+  });
+  
+  const parentescosMasFrecuentes = Object.entries(parentescoMap)
+    .map(([parentesco, count]) => ({ parentesco, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const parentescoPrincipal = parentescosMasFrecuentes[0]?.parentesco || 'N/A';
+  const parentescoCount = parentescosMasFrecuentes[0]?.count || 0;
+
+  // Tendencia mensual (últimos 6 meses)
+  const hace6Meses = new Date();
+  hace6Meses.setMonth(hace6Meses.getMonth() - 6);
+  
+  const mesesMap = {};
+  visitas
+    .filter(v => {
+      const fecha = parseFechaLocal(v.fecha);
+      return fecha && fecha >= hace6Meses;
+    })
+    .forEach(v => {
+      const fecha = parseFechaLocal(v.fecha);
+      if (!fecha) return;
+      const mesAño = `${fecha.getMonth() + 1}/${fecha.getFullYear().toString().slice(2)}`;
+      mesesMap[mesAño] = (mesesMap[mesAño] || 0) + 1;
+    });
+
+  const tendenciaMensual = Object.entries(mesesMap)
+    .map(([mes, count]) => ({ mes, count }))
+    .sort((a, b) => {
+      const [mesA, añoA] = a.mes.split('/');
+      const [mesB, añoB] = b.mes.split('/');
+      return new Date(`20${añoA}-${mesA}`) - new Date(`20${añoB}-${mesB}`);
+    });
+
+  // Distribución por sexo
+  const sexoMap = {};
+  visitas.forEach(v => {
+    if (v.sexo) {
+      sexoMap[v.sexo] = (sexoMap[v.sexo] || 0) + 1;
+    }
+  });
+  
+  const distribucionSexo = Object.entries(sexoMap)
+    .map(([sexo, count]) => ({ sexo, count }));
+
+  // Distribución por edad
+  const edadMap = {};
+  visitas.forEach(v => {
+    if (v.rangoEdad) {
+      edadMap[v.rangoEdad] = (edadMap[v.rangoEdad] || 0) + 1;
+    }
+  });
+  
+  const distribucionEdad = Object.entries(edadMap)
+    .map(([rango, count]) => ({ rango, count }))
+    .sort((a, b) => {
+      const orden = { '18-25': 1, '26-35': 2, '36-45': 3, '46-55': 4, '56+': 5 };
+      return (orden[a.rango] || 999) - (orden[b.rango] || 999);
+    });
+
+  // Áreas más frecuentes
+  const areasMap = {};
+  visitas.forEach(v => {
+    if (v.areaPersonal) {
+      areasMap[v.areaPersonal] = (areasMap[v.areaPersonal] || 0) + 1;
+    }
+  });
+  
+  const areasMasFrecuentes = Object.entries(areasMap)
+    .map(([area, count]) => ({ area, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    total,
+    esteMes,
+    lugarPrincipal,
+    lugarCount,
+    parentescoPrincipal,
+    parentescoCount,
+    lugaresMasFrecuentes: lugaresMasFrecuentes.slice(0, 8),
+    parentescosMasFrecuentes: parentescosMasFrecuentes.slice(0, 8),
+    tendenciaMensual,
+    distribucionSexo,
+    distribucionEdad,
+    areasMasFrecuentes: areasMasFrecuentes.slice(0, 8)
+  };
+};

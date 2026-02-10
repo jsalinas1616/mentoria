@@ -306,6 +306,57 @@ const validateAcercamiento = [
   handleValidationErrors
 ];
 
+// Validaciones para visitas
+const validateVisita = [
+  body('mentores')
+    .isArray({ min: 1 })
+    .withMessage('Debe agregar al menos un mentor'),
+  body('mentores.*')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El nombre del mentor debe tener entre 2 y 100 caracteres')
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+    .withMessage('El nombre del mentor solo puede contener letras y espacios'),
+  body('fecha')
+    .isISO8601()
+    .withMessage('La fecha debe ser válida')
+    .custom((value) => {
+      const fecha = new Date(value);
+      const hoy = new Date();
+      hoy.setHours(23, 59, 59, 999);
+      if (fecha > hoy) {
+        throw new Error('La fecha no puede ser futura');
+      }
+      return true;
+    }),
+  body('lugarVisita')
+    .trim()
+    .isIn(['Domicilio', 'Hospital', 'Reclusorio', 'Funeral'])
+    .withMessage('El lugar de visita debe ser Domicilio, Hospital, Reclusorio o Funeral'),
+  body('rangoEdad')
+    .trim()
+    .notEmpty()
+    .withMessage('El rango de edad es requerido'),
+  body('sexo')
+    .trim()
+    .isIn(['Hombre', 'Mujer', 'Diversidad'])
+    .withMessage('El sexo debe ser Hombre, Mujer o Diversidad'),
+  body('parentesco')
+    .trim()
+    .isIn(['Madre', 'Padre', 'Hijos', 'Pareja', 'Otro'])
+    .withMessage('El parentesco debe ser Madre, Padre, Hijos, Pareja u Otro'),
+  body('areaPersonal')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('El área de personal debe tener entre 2 y 100 caracteres'),
+  body('observaciones')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Las observaciones no pueden exceder 1000 caracteres'),
+  handleValidationErrors
+];
+
 // Sanitización general para prevenir XSS
 const sanitizeInput = (req, res, next) => {
   const sanitizeString = (str) => {
@@ -353,6 +404,7 @@ module.exports = {
   validateCapacitacion,
   validateEntrevista,
   validateAcercamiento,
+  validateVisita,
   sanitizeInput,
   handleValidationErrors
 };

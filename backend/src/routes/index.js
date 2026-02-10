@@ -7,6 +7,7 @@ const dashboardRoutes = require('./dashboardRoutes');
 const capacitacionesRoutes = require('./capacitacionesRoutes');
 const entrevistasRoutes = require('./entrevistasRoutes');
 const acercamientosRoutes = require('./acercamientosRoutes');
+const visitasRoutes = require('./visitasRoutes');
 
 // Health check público (para monitoreo y verificación del API)
 router.get('/health', (req, res) => {
@@ -35,6 +36,9 @@ router.use('/entrevistas', entrevistasRoutes);
 
 // Rutas de acercamientos (PROTEGIDAS - requieren autenticación)
 router.use('/acercamientos', acercamientosRoutes);
+
+// Rutas de visitas (PROTEGIDAS - requieren autenticación)
+router.use('/visitas', visitasRoutes);
 
 module.exports = router;
 

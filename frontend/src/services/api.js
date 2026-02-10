@@ -227,6 +227,34 @@ export const acercamientosService = {
   },
 };
 
+//servicios de Visitas
+export const visitasService = {
+  crear: async (visita) => {
+    const response = await api.post('/visitas', visita);
+    return response.data;
+  },
+  
+  listar: async (filtros = {}) => {
+    const response = await api.get('/visitas', { params: filtros });
+    return response.data;
+  },
+  
+  obtener: async (id) => {
+    const response = await api.get(`/visitas/${id}`);
+    return response.data;
+  },
+  
+  actualizar: async (id, visita) => {
+    const response = await api.put(`/visitas/${id}`, visita);
+    return response.data;
+  },
+  
+  eliminar: async (id) => {
+    const response = await api.delete(`/visitas/${id}`);
+    return response.data;
+  },
+};
+
 // Servicios de dashboard
 export const dashboardService = {
   obtenerEstadisticas: async (filtros = {}) => {

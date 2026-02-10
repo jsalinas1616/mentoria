@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Users, Plus, ChevronDown, User, NotebookText } from "lucide-react";
+import { Users, Plus, ChevronDown, User, NotebookText, Home } from "lucide-react";
 
 const DropdownActions = () => {
   const [open, setOpen] = useState(false);
@@ -45,6 +45,11 @@ const DropdownActions = () => {
             className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
             onClick={() => window.location.href = "/#/dashboard/capacitaciones/nueva"}>
             <User size={16} /> Capacitación
+          </button>
+          <button 
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex gap-2 items-center"
+            onClick={() => window.location.href = "/#/dashboard/visitas/nueva"}>
+            <Home size={16} /> Visita
           </button>
         </div>
       )}

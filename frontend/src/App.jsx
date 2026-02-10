@@ -6,6 +6,7 @@ import { authService } from './services/api';
 import FormularioCapacitacion from './pages/FormularioCapacitacion';
 import FormularioSesion from './pages/FormularioSesion';
 import FormularioAcercamiento from './pages/FormularioAcercamiento';
+import FormularioVisita from './pages/FormularioVisita';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -120,6 +121,21 @@ function App() {
           element={
             isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
               <FormularioAcercamiento
+                onSuccess={() => window.location.href = '/#/dashboard'}
+                onCancel={() => window.location.href = '/#/dashboard'}
+                userMode={user?.rol}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/dashboard/visitas/nueva" 
+          element={
+            isAuthenticated && (user?.rol === 'admin' || user?.rol === 'mentor') ? (
+              <FormularioVisita
                 onSuccess={() => window.location.href = '/#/dashboard'}
                 onCancel={() => window.location.href = '/#/dashboard'}
                 userMode={user?.rol}
