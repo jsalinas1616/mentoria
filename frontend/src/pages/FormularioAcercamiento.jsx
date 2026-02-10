@@ -161,7 +161,7 @@ const FormularioAcercamiento = ({ onSuccess, onCancel, userMode = "publico" }) =
 
   return (
     <FormShell
-      title="Mentoría Integral"
+      title="Contacto de Vida - Seguimiento y Acompañamiento"
       logoAlt="Nadro Sesión"
       userMode={userMode}
       onCancel={onCancel}
