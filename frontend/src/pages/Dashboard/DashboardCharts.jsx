@@ -3,7 +3,7 @@ import {
   BarChart, Bar, PieChart, Pie, LineChart, Line, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { PieChart as PieChartIcon, Activity, Heart, BookOpen, TrendingUp } from 'lucide-react';
+import { PieChart as PieChartIcon, Activity, Heart, BookOpen } from 'lucide-react';
 
 const COLORS = ['#059669', '#10B981', '#16A34A', '#22C55E', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5'];
 
