@@ -105,7 +105,7 @@ async function seedCapacitaciones(count = 100) {
       capacitadores: randomItems(mentores, 1, 2),
       fecha: fecha.split('T')[0],
       tema: randomItem(temas),
-      cdr: randomItem(cdrLocations),
+      lugar: randomItem(lugares), // Campo correcto que espera el frontend
       asistentes: asistentes,
       observaciones: `Capacitación exitosa con ${numAsistentes} participantes`,
       createdAt: fecha,
