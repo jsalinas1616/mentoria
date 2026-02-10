@@ -154,6 +154,8 @@ resources:
     # Cognito User Pool
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         UserPoolName: NadroMentoria-UserPool-${self:provider.stage}
         UsernameAttributes:
@@ -188,6 +190,8 @@ resources:
     # Cognito User Pool Client
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         ClientName: NadroMentoria-Client-${self:provider.stage}
         UserPoolId: !Ref CognitoUserPool
@@ -208,6 +212,8 @@ resources:
     # Cognito User Groups (Roles)
     CognitoUserPoolGroupAdmin:
       Type: AWS::Cognito::UserPoolGroup
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         GroupName: admin
         Description: Administradores - Acceso completo al dashboard y consultas
@@ -216,6 +222,8 @@ resources:
 
     CognitoUserPoolGroupMentor:
       Type: AWS::Cognito::UserPoolGroup
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         GroupName: mentor
         Description: Mentores - Solo acceso a consultas
