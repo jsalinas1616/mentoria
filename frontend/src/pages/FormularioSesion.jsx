@@ -1,31 +1,31 @@
 import React, { useState } from "react"
 import { Save, RotateCcw } from "lucide-react"
-import FormShell from "../FormSections/FormShell"
+import FormShell from "../components/FormSections/FormShell"
 
-import FacilitatorsSection from "../FormSections/FacilitatorsSection"
-import SessionDateSection from "../FormSections/SessionDateSection"
+import FacilitatorsSection from "../components/FormSections/FacilitatorsSection"
+import SessionDateSection from "../components/FormSections/SessionDateSection"
 
-import AgeRangeField from "../FormSections/AgeRangeField"
-import GenderField from "../FormSections/GenderField"
-import SessionNumberField from "../FormSections/SessionNumberField"
-import ImprovementField from "../FormSections/ImprovementField"
+import AgeRangeField from "../components/FormSections/AgeRangeField"
+import GenderField from "../components/FormSections/GenderField"
+import SessionNumberField from "../components/FormSections/SessionNumberField"
+import ImprovementField from "../components/FormSections/ImprovementField"
 
-import WorkplaceField from "../FormSections/WorkplaceField"
-import AreaField from "../FormSections/AreaField"
-import ReasonsField from "../FormSections/ReasonsField"
-import NotesField from "../FormSections/NotesField"
+import WorkplaceField from "../components/FormSections/WorkplaceField"
+import AreaField from "../components/FormSections/AreaField"
+import ReasonsField from "../components/FormSections/ReasonsField"
+import NotesField from "../components/FormSections/NotesField"
 
-import DemographicSection from "../FormSections/DemographicSection"
-import DetailsSection from "../FormSections/DetailsSection"
-import SuccessModal from "../Feedback/SuccessModal"
-import SuccessScreen from "../Feedback/SuccessScreen"
+import DemographicSection from "../components/FormSections/DemographicSection"
+import DetailsSection from "../components/FormSections/DetailsSection"
+import SuccessModal from "../components/Feedback/SuccessModal"
+import SuccessScreen from "../components/Feedback/SuccessScreen"
 
-import { entrevistasService } from "../../services/api"
-import { validarRequerido, validarArray } from "../../utils/validation"
+import { entrevistasService } from "../services/api"
+import { validarRequerido, validarArray } from "../utils/validation"
 
-import lugaresTrabajoData from "../../data/lugaresTrabajo.json"
-import areasData from "../../data/areas.json"
-import motivosConsultaData from "../../data/motivosConsulta.json"
+import lugaresTrabajoData from "../data/lugaresTrabajo.json"
+import areasData from "../data/areas.json"
+import motivosConsultaData from "../data/motivosConsulta.json"
 
 const FormularioSesion = ({ onSuccess, onCancel, userMode = "publico" }) => {
   const initialFormData = () => ({

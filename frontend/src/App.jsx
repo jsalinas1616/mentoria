@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard';
 import { authService } from './services/api';
-import FormularioCapacitacion from './components/FormularioCapacitacion/FormularioCapacitacion';
-import FormularioSesion from './components/FormualrioSesion/FormularioSesion';
-import FormularioAcercamiento from './components/FormularioAcercamiento/FormualrioAcercamiento';
+import FormularioCapacitacion from './pages/FormularioCapacitacion';
+import FormularioSesion from './pages/FormularioSesion';
+import FormularioAcercamiento from './pages/FormularioAcercamiento';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

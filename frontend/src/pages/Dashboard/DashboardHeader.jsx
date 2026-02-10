@@ -1,6 +1,6 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import DropdownActions from '../Dropdown/Dropdown';
+import DropdownActions from '../../components/Dropdown/Dropdown';
 
 const DashboardHeader = ({ user, onLogout }) => (
   <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-50 shadow-soft">

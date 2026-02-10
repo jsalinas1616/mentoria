@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 import { authService } from '../../services/api';
 import { validarEmail, validarRequerido } from '../../utils/validation';
 

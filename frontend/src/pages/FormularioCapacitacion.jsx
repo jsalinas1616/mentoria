@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Save, Check, AlertCircle, LogOut, Calendar, Users, BookOpen, ArrowLeft, RotateCcw, Plus, X, UserPlus } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { capacitacionesService, authService } from '../../services/api';
-import lugaresTrabajoData from '../../data/lugaresTrabajo.json';
-import areasData from '../../data/areas.json';
-import rangosEdadData from '../../data/rangosEdad.json';
+import { capacitacionesService, authService } from '../services/api';
+import lugaresTrabajoData from '../data/lugaresTrabajo.json';
+import areasData from '../data/areas.json';
+import rangosEdadData from '../data/rangosEdad.json';
 
 const FormularioCapacitacion = ({ onSuccess, onCancel, capacitacionInicial = null, userMode = 'admin' }) => {
   const [formData, setFormData] = useState(capacitacionInicial || {

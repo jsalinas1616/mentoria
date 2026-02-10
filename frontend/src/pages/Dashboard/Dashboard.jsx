@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { FileText, MessageSquare, Users } from 'lucide-react';
-import { consultasService, capacitacionesService, authService, entrevistasService, acercamientosService } from '../../services/api';
+import { consultasService, capacitacionesService, authService, entrevistasService, acercamientosService, dashboardService } from '../../services/api';
 import { calcularStatsEntrevistas, calcularStatsCapacitaciones, calcularStatsAcercamientos } from '../../utils/dashboardStats';
 import MentorEmptyState from './MentorEmptyState';
 import DashboardHeader from './DashboardHeader';
@@ -9,7 +9,6 @@ import DashboardFilters from './DashboardFilters';
 import DashboardKpis from './DashboardKpis';
 import DashboardCharts from './DashboardCharts';
 import DashboardTabs from './DashboardTabs';
-import ConsultasTab from './ConsultasTab';
 import CapacitacionesTab from './CapacitacionesTab';
 import EntrevistasTab from './EntrevistasTab';
 import AcercamientosTab from './AcercamientosTab';
@@ -40,15 +39,12 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const [mostrarModalEntrevista, setMostrarModalEntrevista] = useState(false);
   const [acercamientoSeleccionado, setAcercamientoSeleccionado] = useState(null);
   const [mostrarModalAcercamiento, setMostrarModalAcercamiento] = useState(false);
-  const [busqueda, setBusqueda] = useState('');
   const [busquedaCapacitaciones, setBusquedaCapacitaciones] = useState('');
   const [busquedaEntrevistas, setBusquedaEntrevistas] = useState('');
   const [busquedaAcercamientos, setBusquedaAcercamientos] = useState('');
-  const [paginaActual, setPaginaActual] = useState(1);
   const [paginaActualCapacitaciones, setPaginaActualCapacitaciones] = useState(1);
   const [paginaActualEntrevistas, setPaginaActualEntrevistas] = useState(1);
   const [paginaActualAcercamientos, setPaginaActualAcercamientos] = useState(1);
-  const [consultasPorPagina] = useState(10);
   const [capacitacionesPorPagina] = useState(10);
   const [entrevistasPorPagina] = useState(10);
   const [acercamientosPorPagina] = useState(10);
@@ -146,11 +142,6 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
 
   const toggleFiltros = () => {
     setMostrarFiltros((prev) => !prev);
-  };
-
-  const abrirModal = (consulta) => {
-    setConsultaSeleccionada(consulta);
-    setMostrarModal(true);
   };
 
   const cerrarModal = () => {
