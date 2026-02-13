@@ -70,7 +70,12 @@ const EntrevistasTab = ({
           </tr>
         </thead>
         <tbody>
-          {entrevistasPaginaActual.map((entrevista) => (
+          {entrevistasPaginaActual.map((entrevista) => {
+            // Compatibilidad prod/dev: consultas usan mentores/motivosConsulta, entrevistas usan entrevistadores/motivosEntrevista
+            const entrevistadores = entrevista.entrevistadores || entrevista.mentores || [];
+            const motivos = entrevista.motivosEntrevista || entrevista.motivosConsulta || [];
+            
+            return (
             <tr
               key={entrevista.id}
               className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
@@ -79,13 +84,13 @@ const EntrevistasTab = ({
                 {formatearFecha(entrevista.fecha)}
               </td>
               <td className="py-4 px-4">
-                {entrevista.entrevistadores && entrevista.entrevistadores.length > 0 ? (
-                  entrevista.entrevistadores.length === 1 ? (
-                    <p className="text-gray-900 text-sm font-semibold">{entrevista.entrevistadores[0]}</p>
+                {entrevistadores.length > 0 ? (
+                  entrevistadores.length === 1 ? (
+                    <p className="text-gray-900 text-sm font-semibold">{entrevistadores[0]}</p>
                   ) : (
                     <div className="space-y-1">
-                      <p className="text-gray-900 text-sm font-semibold">{entrevista.entrevistadores[0]}</p>
-                      <p className="text-gray-500 text-xs">+{entrevista.entrevistadores.length - 1} más</p>
+                      <p className="text-gray-900 text-sm font-semibold">{entrevistadores[0]}</p>
+                      <p className="text-gray-500 text-xs">+{entrevistadores.length - 1} más</p>
                     </div>
                   )
                 ) : (
@@ -94,7 +99,7 @@ const EntrevistasTab = ({
               </td>
               <td className="py-4 px-4">
                 <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-primary/10 to-accent/10 text-primary font-bold rounded-full">
-                  {entrevista.numeroSesion || '-'}
+                  {entrevista.numeroSesion ?? '-'}
                 </span>
               </td>
               <td className="py-4 px-4 text-gray-700 text-sm">{entrevista.rangoEdad || 'N/A'}</td>
@@ -105,7 +110,7 @@ const EntrevistasTab = ({
               </td>
               <td className="py-4 px-4">
                 <div className="flex flex-wrap gap-1">
-                  {entrevista.motivosEntrevista?.slice(0, 2).map((motivo, idx) => (
+                  {motivos.slice(0, 2).map((motivo, idx) => (
                     <span
                       key={idx}
                       className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20"
@@ -113,9 +118,9 @@ const EntrevistasTab = ({
                       {motivo}
                     </span>
                   ))}
-                  {entrevista.motivosEntrevista?.length > 2 && (
+                  {motivos.length > 2 && (
                     <span className="text-gray-500 text-xs px-3 py-1">
-                      +{entrevista.motivosEntrevista.length - 2}
+                      +{motivos.length - 2}
                     </span>
                   )}
                 </div>
@@ -130,7 +135,8 @@ const EntrevistasTab = ({
                 </button>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

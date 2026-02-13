@@ -207,40 +207,54 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   // Combinar consultas y entrevistas en un solo array
   const todasEntrevistas = [...consultas, ...entrevistas];
 
-  const entrevistasCombinadas = todasEntrevistas.filter((item) => {
-    if (!busquedaEntrevistas) return true;
+  const entrevistasCombinadas = todasEntrevistas
+    .filter((item) => {
+      if (!busquedaEntrevistas) return true;
 
-    const terminoBusqueda = busquedaEntrevistas.toLowerCase();
-    return (
-      item.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
-      item.entrevistadores?.some((entrevistador) => entrevistador.toLowerCase().includes(terminoBusqueda)) ||
-      item.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
-      item.sexo?.toLowerCase().includes(terminoBusqueda) ||
-      item.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
-      item.area?.toLowerCase().includes(terminoBusqueda)
-    );
-  });
+      const terminoBusqueda = busquedaEntrevistas.toLowerCase();
+      return (
+        item.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
+        item.entrevistadores?.some((entrevistador) => entrevistador.toLowerCase().includes(terminoBusqueda)) ||
+        item.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+        item.sexo?.toLowerCase().includes(terminoBusqueda) ||
+        item.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
+        item.area?.toLowerCase().includes(terminoBusqueda)
+      );
+    })
+    .sort((a, b) => {
+      // Ordenar por fecha descendente (más reciente primero)
+      const fechaA = new Date(a.fecha || a.createdAt);
+      const fechaB = new Date(b.fecha || b.createdAt);
+      return fechaB - fechaA;
+    });
 
   const indiceUltimaEntrevistaCombinada = paginaActualEntrevistas * entrevistasPorPagina;
   const indicePrimeraEntrevistaCombinada = indiceUltimaEntrevistaCombinada - entrevistasPorPagina;
   const entrevistasCombinadasPaginaActual = entrevistasCombinadas.slice(indicePrimeraEntrevistaCombinada, indiceUltimaEntrevistaCombinada);
   const totalPaginasEntrevistasCombinadas = Math.ceil(entrevistasCombinadas.length / entrevistasPorPagina);
 
-  const capacitacionesFiltradas = capacitaciones.filter((capacitacion) => {
-    if (!busquedaCapacitaciones) return true;
+  const capacitacionesFiltradas = capacitaciones
+    .filter((capacitacion) => {
+      if (!busquedaCapacitaciones) return true;
 
-    const terminoBusqueda = busquedaCapacitaciones.toLowerCase();
-    return (
-      capacitacion.tema?.toLowerCase().includes(terminoBusqueda) ||
-      capacitacion.lugar?.toLowerCase().includes(terminoBusqueda) ||
-      capacitacion.capacitadores?.some((cap) => cap.toLowerCase().includes(terminoBusqueda)) ||
-      capacitacion.asistentes?.some(
-        (asistente) =>
-          asistente.area?.toLowerCase().includes(terminoBusqueda) ||
-          asistente.lugarTrabajo?.toLowerCase().includes(terminoBusqueda)
-      )
-    );
-  });
+      const terminoBusqueda = busquedaCapacitaciones.toLowerCase();
+      return (
+        capacitacion.tema?.toLowerCase().includes(terminoBusqueda) ||
+        capacitacion.lugar?.toLowerCase().includes(terminoBusqueda) ||
+        capacitacion.capacitadores?.some((cap) => cap.toLowerCase().includes(terminoBusqueda)) ||
+        capacitacion.asistentes?.some(
+          (asistente) =>
+            asistente.area?.toLowerCase().includes(terminoBusqueda) ||
+            asistente.lugarTrabajo?.toLowerCase().includes(terminoBusqueda)
+        )
+      );
+    })
+    .sort((a, b) => {
+      // Ordenar por fecha descendente (más reciente primero)
+      const fechaA = new Date(a.fecha || a.createdAt);
+      const fechaB = new Date(b.fecha || b.createdAt);
+      return fechaB - fechaA;
+    });
 
   const indiceUltimaCapacitacion = paginaActualCapacitaciones * capacitacionesPorPagina;
   const indicePrimeraCapacitacion = indiceUltimaCapacitacion - capacitacionesPorPagina;
@@ -255,22 +269,29 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
     setPaginaActualEntrevistas(numeroPagina);
   };
 
-  const acercamientosFiltrados = acercamientos.filter((acercamiento) => {
-    if (!busquedaAcercamientos) return true;
+  const acercamientosFiltrados = acercamientos
+    .filter((acercamiento) => {
+      if (!busquedaAcercamientos) return true;
 
-    const terminoBusqueda = busquedaAcercamientos.toLowerCase();
-    return (
-      acercamiento.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
-      acercamiento.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.sexo?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.area?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.lugarAcercamiento?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.seguimiento?.toLowerCase().includes(terminoBusqueda) ||
-      acercamiento.estadosAnimo?.some((estado) => estado.toLowerCase().includes(terminoBusqueda)) ||
-      String(acercamiento.numeroAcercamiento || '').toLowerCase().includes(terminoBusqueda)
-    );
-  });
+      const terminoBusqueda = busquedaAcercamientos.toLowerCase();
+      return (
+        acercamiento.mentores?.some((mentor) => mentor.toLowerCase().includes(terminoBusqueda)) ||
+        acercamiento.rangoEdad?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.sexo?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.lugarTrabajo?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.area?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.lugarAcercamiento?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.seguimiento?.toLowerCase().includes(terminoBusqueda) ||
+        acercamiento.estadosAnimo?.some((estado) => estado.toLowerCase().includes(terminoBusqueda)) ||
+        String(acercamiento.numeroAcercamiento || '').toLowerCase().includes(terminoBusqueda)
+      );
+    })
+    .sort((a, b) => {
+      // Ordenar por fecha descendente (más reciente primero)
+      const fechaA = new Date(a.fecha || a.createdAt);
+      const fechaB = new Date(b.fecha || b.createdAt);
+      return fechaB - fechaA;
+    });
 
   const indiceUltimoAcercamiento = paginaActualAcercamientos * acercamientosPorPagina;
   const indicePrimeroAcercamiento = indiceUltimoAcercamiento - acercamientosPorPagina;
