@@ -7,6 +7,11 @@ const EntrevistaModal = ({ isOpen, entrevista, onClose }) => {
     return null;
   }
 
+  // Compatibilidad prod/dev: consultas usan mentores/motivosConsulta, entrevistas usan entrevistadores/motivosEntrevista
+  const entrevistadores = entrevista.entrevistadores || entrevista.mentores || [];
+  const motivosEntrevista = entrevista.motivosEntrevista || entrevista.motivosConsulta || [];
+  const lugarEntrevista = entrevista.lugarEntrevista || entrevista.lugarConsulta || '';
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -37,11 +42,11 @@ const EntrevistaModal = ({ isOpen, entrevista, onClose }) => {
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Users className="text-primary" size={20} />
               </div>
-              Entrevistadores ({entrevista.entrevistadores?.length || 0})
+              Entrevistadores ({entrevistadores.length})
             </h3>
             <div className="space-y-2">
-              {entrevista.entrevistadores && entrevista.entrevistadores.length > 0 ? (
-                entrevista.entrevistadores.map((entrevistador, index) => (
+              {entrevistadores.length > 0 ? (
+                entrevistadores.map((entrevistador, index) => (
                   <div 
                     key={index}
                     className="flex items-center gap-3 bg-white/80 rounded-lg px-4 py-3 border border-primary/10"
@@ -113,7 +118,7 @@ const EntrevistaModal = ({ isOpen, entrevista, onClose }) => {
               </div>
               <div>
                 <label className="text-sm font-semibold text-gray-600">Lugar de Entrevista</label>
-                <p className="text-gray-900 font-medium">{entrevista.lugarConsulta || 'N/A'}</p>
+                <p className="text-gray-900 font-medium">{lugarEntrevista || 'N/A'}</p>
               </div>
             </div>
           </div>
@@ -127,7 +132,7 @@ const EntrevistaModal = ({ isOpen, entrevista, onClose }) => {
               Motivos de Entrevista
             </h3>
             <div className="flex flex-wrap gap-2">
-              {entrevista.motivosEntrevista?.map((motivo, idx) => (
+              {motivosEntrevista.map((motivo, idx) => (
                 <span
                   key={idx}
                   className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-4 py-2 rounded-full text-sm font-medium border border-primary/20"
