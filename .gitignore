@@ -45,6 +45,11 @@ Thumbs.db
 # AWS
 .aws-sam/
 
+# Backups
+backups/
+backups_dynamodb/
+*.zip
+
 # Misc
 *.pem
 *.key

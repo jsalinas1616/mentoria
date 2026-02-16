@@ -65,7 +65,7 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
   const cargarDatos = useCallback(async () => {
     setLoading(true);
     try {
-      const [consultasData, capacitacionesData, entrevistasData, acercamientosData, visitasData] = await Promise.all([
+      const resultados = await Promise.allSettled([
         consultasService.listar(filtros),
         capacitacionesService.listar(filtros),
         entrevistasService.listar(filtros),
@@ -73,16 +73,57 @@ const Dashboard = ({ onNuevaConsulta, onLogout }) => {
         visitasService.listar(filtros),
       ]);
 
-      setConsultas(consultasData);
-      setCapacitaciones(Array.isArray(capacitacionesData) ? capacitacionesData : []);
-      setEntrevistas(entrevistasData);
-      setAcercamientos(Array.isArray(acercamientosData) ? acercamientosData : []);
-      setVisitas(Array.isArray(visitasData) ? visitasData : []);
+      // Procesar cada resultado individualmente
+      const [consultasRes, capacitacionesRes, entrevistasRes, acercamientosRes, visitasRes] = resultados;
+
+      // Consultas
+      if (consultasRes.status === 'fulfilled') {
+        setConsultas(consultasRes.value);
+      } else {
+        console.error('Error al cargar consultas:', consultasRes.reason);
+        setConsultas([]);
+      }
+
+      // Capacitaciones
+      if (capacitacionesRes.status === 'fulfilled') {
+        setCapacitaciones(Array.isArray(capacitacionesRes.value) ? capacitacionesRes.value : []);
+      } else {
+        console.error('Error al cargar capacitaciones:', capacitacionesRes.reason);
+        setCapacitaciones([]);
+      }
+
+      // Entrevistas
+      if (entrevistasRes.status === 'fulfilled') {
+        setEntrevistas(entrevistasRes.value);
+      } else {
+        console.error('Error al cargar entrevistas:', entrevistasRes.reason);
+        setEntrevistas([]);
+      }
+
+      // Acercamientos
+      if (acercamientosRes.status === 'fulfilled') {
+        setAcercamientos(Array.isArray(acercamientosRes.value) ? acercamientosRes.value : []);
+      } else {
+        console.error('Error al cargar acercamientos:', acercamientosRes.reason);
+        setAcercamientos([]);
+      }
+
+      // Visitas
+      if (visitasRes.status === 'fulfilled') {
+        setVisitas(Array.isArray(visitasRes.value) ? visitasRes.value : []);
+      } else {
+        console.error('Error al cargar visitas:', visitasRes.reason);
+        setVisitas([]);
+      }
+
+      // Mostrar advertencia si alguna petición falló
+      const algunaFallo = resultados.some(r => r.status === 'rejected');
+      if (algunaFallo) {
+        console.warn('⚠️ Algunas peticiones fallaron, mostrando datos parciales');
+      }
+
     } catch (error) {
-      console.error('Error al cargar datos:', error);
-      setCapacitaciones([]);
-      setAcercamientos([]);
-      setVisitas([]);
+      console.error('Error inesperado al cargar datos:', error);
     } finally {
       setLoading(false);
     }

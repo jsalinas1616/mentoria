@@ -68,16 +68,7 @@ const validateConsulta = [
     .withMessage('El nombre del mentor solo puede contener letras y espacios'),
   body('fecha')
     .isISO8601()
-    .withMessage('La fecha debe ser válida')
-    .custom((value) => {
-      const fecha = new Date(value);
-      const hoy = new Date();
-      hoy.setHours(23, 59, 59, 999);
-      if (fecha > hoy) {
-        throw new Error('La fecha no puede ser futura');
-      }
-      return true;
-    }),
+    .withMessage('La fecha debe ser válida'),
   body('sexo')
     .trim()
     .isIn(['Hombre', 'Mujer', 'Diversidad'])
@@ -126,16 +117,7 @@ const validateCapacitacion = [
     .withMessage('El tema debe tener entre 2 y 200 caracteres'),
   body('fecha')
     .isISO8601()
-    .withMessage('La fecha debe ser válida')
-    .custom((value) => {
-      const fecha = new Date(value);
-      const hoy = new Date();
-      hoy.setHours(23, 59, 59, 999);
-      if (fecha > hoy) {
-        throw new Error('La fecha no puede ser futura');
-      }
-      return true;
-    }),
+    .withMessage('La fecha debe ser válida'),
   body('hora')
     .trim()
     .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
@@ -195,16 +177,7 @@ const validateEntrevista = [
     .withMessage('El nombre del entrevistador solo puede contener letras y espacios'),
   body('fecha')
     .isISO8601()
-    .withMessage('La fecha debe ser válida')
-    .custom((value) => {
-      const fecha = new Date(value);
-      const hoy = new Date();
-      hoy.setHours(23, 59, 59, 999);
-      if (fecha > hoy) {
-        throw new Error('La fecha no puede ser futura');
-      }
-      return true;
-    }),
+    .withMessage('La fecha debe ser válida'),
   body('sexo')
     .trim()
     .isIn(['Hombre', 'Mujer', 'Diversidad'])
@@ -249,16 +222,7 @@ const validateAcercamiento = [
     .withMessage('El nombre del mentor solo puede contener letras y espacios'),
   body('fecha')
     .isISO8601()
-    .withMessage('La fecha debe ser válida')
-    .custom((value) => {
-      const fecha = new Date(value);
-      const hoy = new Date();
-      hoy.setHours(23, 59, 59, 999);
-      if (fecha > hoy) {
-        throw new Error('La fecha no puede ser futura');
-      }
-      return true;
-    }),
+    .withMessage('La fecha debe ser válida'),
   body('rangoEdad')
     .trim()
     .notEmpty()
@@ -319,16 +283,7 @@ const validateVisita = [
     .withMessage('El nombre del mentor solo puede contener letras y espacios'),
   body('fecha')
     .isISO8601()
-    .withMessage('La fecha debe ser válida')
-    .custom((value) => {
-      const fecha = new Date(value);
-      const hoy = new Date();
-      hoy.setHours(23, 59, 59, 999);
-      if (fecha > hoy) {
-        throw new Error('La fecha no puede ser futura');
-      }
-      return true;
-    }),
+    .withMessage('La fecha debe ser válida'),
   body('lugarVisita')
     .trim()
     .isIn(['Domicilio', 'Hospital', 'Reclusorio', 'Funeral'])
