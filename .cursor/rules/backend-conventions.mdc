@@ -1,0 +1,56 @@
+---
+description: Convenciones y patrones a seguir en el backend
+globs: backend/**/*.js
+alwaysApply: false
+---
+
+# Backend — Convenciones
+
+## DynamoDB `scan` DEBE paginar
+
+`scan` devuelve máximo 1 MB por llamada. **Siempre** iterar con `LastEvaluatedKey`.
+
+```javascript
+// ❌ MAL — solo trae los primeros ~154 items (o menos según tamaño)
+const result = await dynamodb.scan(params).promise();
+const items = result.Items || [];
+
+// ✅ BIEN — trae TODOS los registros
+let items = [];
+let lastEvaluatedKey;
+do {
+  const scanParams = { ...params };
+  if (lastEvaluatedKey) scanParams.ExclusiveStartKey = lastEvaluatedKey;
+  const result = await dynamodb.scan(scanParams).promise();
+  items = items.concat(result.Items || []);
+  lastEvaluatedKey = result.LastEvaluatedKey;
+} while (lastEvaluatedKey);
+```
+
+Este bug ya causó que el export de Excel bajara solo 154 filas. Ya está arreglado en los 4 services locales; **si aparece un servicio nuevo o `visitasService.js`, aplica el mismo patrón**.
+
+## Fechas — validación
+
+`fecha` se valida solo con `isISO8601()`. **No** rechazar fechas futuras: las visitas/entrevistas se registran también como agendadas a futuro. Ver `src/middleware/validation.js`.
+
+## Handler de Lambda — binarios
+
+`src/lambda.js` **debe** mantener el bloque `binary` en `serverless-http` para que los exports de Excel no se corrompan (API Gateway HTTP API v2 no maneja binarios por default):
+
+```javascript
+module.exports.handler = serverless(app, {
+  binary: [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
+    'application/octet-stream',
+    'application/pdf',
+    'application/zip',
+    'image/*',
+  ],
+  // ...
+});
+```
+
+## Conversión de tipos DynamoDB
+
+Los services convierten manualmente los tipos AWS (`.S`, `.N`, `.SS`, `.L`, `.NS`, `.BOOL`) porque usan el cliente low-level. Mantener ese patrón al agregar nuevos campos.

@@ -50,6 +50,14 @@ Thumbs.db
 *.key
 .cache
 
+# Deployment artifacts
+*.zip
+backups/
+backups_dynamodb/
+
+# Otros IDEs / herramientas
+.qoder/
+
 
 
 

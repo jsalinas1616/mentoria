@@ -1,0 +1,36 @@
+---
+description: Convenciones del frontend NadroMentoria
+globs: frontend/**/*.{js,jsx}
+alwaysApply: false
+---
+
+# Frontend — Convenciones
+
+## Dashboard — resiliencia con `Promise.allSettled`
+
+`Dashboard.jsx` carga varias entidades en paralelo. **NUNCA** usar `Promise.all` porque un fallo (ej. `/visitas` con 400) tiraría todo a cero. Usar `Promise.allSettled` y setear `[]` en las que fallen.
+
+```javascript
+const resultados = await Promise.allSettled([
+  consultasService.listar(filtros),
+  capacitacionesService.listar(filtros),
+  entrevistasService.listar(filtros),
+  acercamientosService.listar(filtros),
+  visitasService.listar(filtros),
+]);
+
+if (visitasRes.status === 'fulfilled') {
+  setVisitas(Array.isArray(visitasRes.value) ? visitasRes.value : []);
+} else {
+  console.error('Error al cargar visitas:', visitasRes.reason);
+  setVisitas([]);
+}
+```
+
+## Fechas — timezone local
+
+Usar `parseFechaLocal` y `obtenerFechaHoyLocal` de `src/utils/validation.js`. **No** hacer `new Date('2026-02-15')` directo — eso parsea como UTC y en México se corre al día anterior.
+
+## Fallbacks en modales/tabs de dev vs prod
+
+Los catálogos (mentores, motivos, entrevistadores) pueden venir vacíos si la API del catálogo falla. `EntrevistasTab.jsx` y `EntrevistaModal.jsx` ya tienen fallbacks locales; replicar el patrón al agregar nuevos catálogos dinámicos.

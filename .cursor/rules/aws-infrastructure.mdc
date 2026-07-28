@@ -1,0 +1,63 @@
+---
+description: Infraestructura AWS del proyecto NadroMentoria (cuentas, roles, URLs)
+alwaysApply: true
+---
+
+# AWS — NadroMentoria
+
+## Cuentas y ambientes
+
+| Ambiente | Account ID | Frontend URL |
+|---|---|---|
+| Producción | `975130647458` | https://d2y013h5yg35nu.cloudfront.net |
+| Dev / QA | `975130647458` (mismo account, distinto stage) | — |
+
+Región: `us-east-1` en todos los ambientes. **Ambos ambientes viven en la misma cuenta AWS**, separados por stage (`dev-jul`, `prod`, `nadro-qa`).
+
+## AWS Profiles disponibles en la máquina del usuario
+
+| Profile | Estado | Cuenta | Uso |
+|---|---|---|---|
+| `mentoria` | ✅ Válido | `975130647458` | Lectura básica, sin permisos de deploy |
+| `default`, `dev-mentoria`, `julian` | ✅ Válidos | `975130647458` | Mismo user que `mentoria` (comparten UserId) |
+| `jsalinas-admin` | ✅ Válido | `975130647458` | **Admin — puede hacer deploys directos a Lambda** |
+| `prod-nadro*` (todos) | ❌ Revocados | `767398004339` | Cuenta DISTINTA, no es la de este proyecto |
+| `qa-nadro*`, `invenadro-*` | ❌/parcial | varios | Otros proyectos |
+
+**⚠️ NO confundir** con la cuenta `767398004339` (aparece en errores viejos de otro proyecto/contexto).
+
+## Recursos clave (prod)
+
+- **Lambda**: `nadro-mentoria-api-prod-api` (en cuenta `975130647458`)
+- **API Gateway**: HTTP API v2 (NO REST API — importante para binarios).
+- **CloudFront distribution**: `d2y013h5yg35nu.cloudfront.net`
+- **S3 bucket frontend**: `nadro-mentoria-frontend-1760378806`
+- **Cognito User Pool prod**: `NadroMentoria-UserPool-prod`
+- **CloudFormation stack**: `nadro-mentoria-api-prod`
+
+## Permisos IAM requeridos
+
+La Lambda necesita `dynamodb:GetItem`, `PutItem`, `UpdateItem`, `DeleteItem`, `Scan`, `Query` sobre **todas** las tablas `NadroMentoria-*-prod`. Si aparece un error tipo `is not authorized to perform: dynamodb:PutItem`, hay que agregar policy al `lambdaRole` en el `serverless.yml` (revisar la sección `iam:` del provider).
+
+## Cómo deployar a prod SIN CloudFormation
+
+Cuando el cambio es **solo código** (no infra), evita `serverless deploy` (que además tiene un problema: `serverless.yml` hardcodea `profile: prod-mentoria` que no existe en el CLI) y usa directamente:
+
+```bash
+aws lambda update-function-code \
+  --function-name nadro-mentoria-api-prod-api \
+  --zip-file fileb://<zip-path> \
+  --profile jsalinas-admin \
+  --region us-east-1
+```
+
+`jsalinas-admin` es el único profile con permisos suficientes para `lambda:UpdateFunctionCode` en la Lambda de prod. Este approach es **rápido, seguro y no toca infra** — es exactamente el método usado en Jul 2026 para el deploy del fix de paginación.
+
+Después verifica con:
+```bash
+aws lambda get-function-configuration \
+  --function-name nadro-mentoria-api-prod-api \
+  --profile jsalinas-admin --region us-east-1 \
+  --query '{LastUpdateStatus:LastUpdateStatus,LastModified:LastModified}'
+```
+Esperar hasta `LastUpdateStatus: Successful`.

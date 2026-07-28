@@ -1,0 +1,63 @@
+---
+description: Bugs recurrentes y sus soluciones en NadroMentoria
+alwaysApply: true
+---
+
+# Bugs conocidos y sus fixes
+
+## 1. Export de Excel descarga solo ~154 filas
+
+**Causa**: DynamoDB `scan` sin paginar. Devuelve máximo 1 MB.
+
+**Fix**: Iterar con `LastEvaluatedKey` en los 4 services (`consultas`, `entrevistas`, `capacitaciones`, `acercamientos`). Ver `backend-conventions.mdc`. Si aparece un service nuevo (ej. visitas) aplicar el mismo patrón.
+
+## 2. Excel descargado sale corrupto / no abre
+
+**Causa**: API Gateway HTTP API v2 trata la respuesta como texto y rompe bytes binarios (aparecen bytes `EF BF BD`).
+
+**Fix**: Bloque `binary: [...]` en `serverless-http` dentro de `backend/src/lambda.js`.
+
+## 3. Dashboard muestra todo en 0
+
+**Causa**: `Promise.all` en `Dashboard.jsx` — si UNA petición falla, tira todo.
+
+**Fix**: `Promise.allSettled` + defaults `[]` por servicio. Ver `frontend-conventions.mdc`.
+
+## 4. `400 Bad Request` en POST (crear consulta/visita/etc.)
+
+**No siempre es validación**. Suele ser IAM: la Lambda no tiene permiso `dynamodb:PutItem`. El body de error del backend lo dice literal:
+```
+User: arn:aws:sts::767398004339:assumed-role/... is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:.../table/NadroMentoria-<X>-prod
+```
+
+**Fix**: Agregar policy al rol `nadro-mentoria-api-prod-us-east-1-lambdaRole` con permisos CRUD sobre las tablas.
+
+## 5. AWS CLI: `InvalidClientTokenId` en profiles `prod-nadro*`
+
+Todos los profiles `prod-nadro*` están **revocados** — apuntan a la cuenta `767398004339` que **NO es la cuenta de este proyecto**. Ignora esos profiles.
+
+**Para deploys a prod usa `jsalinas-admin`** (cuenta `975130647458`, misma donde vive la Lambda). Ver `aws-infrastructure.mdc` → sección "Cómo deployar a prod SIN CloudFormation".
+
+**Regla:** Antes de asumir que un profile funciona, `aws sts get-caller-identity --profile X` y verificar que `Account` sea `975130647458`.
+
+## 6. Fechas se corren un día
+
+`new Date('YYYY-MM-DD')` parsea como UTC y en México (`GMT-6`) se muestra el día anterior. Usar helpers `parseFechaLocal` / `obtenerFechaHoyLocal` de `frontend/src/utils/validation.js`.
+
+## 7. `visitasService.js` no está en el repo
+
+El endpoint `/visitas` funciona en prod pero el archivo no existe localmente en `backend/src/services/`. Si tocas visitas: descargar el fuente actual desde la Lambda antes de modificar, o vas a sobrescribirlo con nada al subir un ZIP.
+
+## 8. `serverless deploy --stage prod` FALLA con el setup actual
+
+El `serverless.yml` define `custom.awsProfile.prod: 'prod-mentoria'` pero ese profile **no existe** en `~/.aws/credentials`. Serverless v4 tampoco acepta `--profile` en línea (lo lee del yaml). Resultado: `AWS credentials missing or invalid`.
+
+**Workaround para cambios de solo código**: usar `aws lambda update-function-code` directamente con `--profile jsalinas-admin`. Ver `deployment-process.mdc`.
+
+## 9. Lambda de prod puede quedarse SIN actualizarse durante meses
+
+En Jul 2026 descubrí que la Lambda tenía `LastModified: 2025-10-25` — 9 meses sin actualizar, aunque el usuario creyó haber subido ZIPs antes. Si algo "no cambia" en producción, **primero** revisa `LastModified` de la Lambda:
+```bash
+aws lambda get-function-configuration --function-name nadro-mentoria-api-prod-api \
+  --profile jsalinas-admin --region us-east-1 --query 'LastModified'
+```

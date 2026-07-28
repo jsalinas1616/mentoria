@@ -27,8 +27,17 @@ class ConsultasService {
       TableName: TABLES.CONSULTAS,
     };
 
-    const result = await dynamodb.scan(params).promise();
-    let items = result.Items || [];
+    // DynamoDB scan tiene un límite de 1MB por respuesta. Iteramos con
+    // LastEvaluatedKey hasta traer TODOS los registros.
+    let items = [];
+    let lastEvaluatedKey;
+    do {
+      const scanParams = { ...params };
+      if (lastEvaluatedKey) scanParams.ExclusiveStartKey = lastEvaluatedKey;
+      const result = await dynamodb.scan(scanParams).promise();
+      items = items.concat(result.Items || []);
+      lastEvaluatedKey = result.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
 
     // Convertir datos de DynamoDB a formato normal
     items = items.map(item => {

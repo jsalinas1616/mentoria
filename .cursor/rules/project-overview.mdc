@@ -1,0 +1,38 @@
+---
+description: Contexto general del proyecto NadroMentoria
+alwaysApply: true
+---
+
+# Proyecto: NadroMentoria
+
+Sistema de Mentoría Integral para Nadro. App interna para registrar consultas, capacitaciones, entrevistas, acercamientos y visitas realizadas por mentores/psicólogos.
+
+## Stack
+
+- **Frontend**: React (Create React App) en `frontend/`, deployado en CloudFront + S3.
+- **Backend**: Node.js + Express empaquetado como Lambda monolítica con `serverless-http`, en `backend/`.
+- **DB**: DynamoDB (una tabla por entidad).
+- **Auth**: AWS Cognito (grupos `admin`, etc.).
+- **API Gateway**: HTTP API v2 (importante para binarios, ver `known-issues`).
+
+## Entidades principales
+
+| Entidad | Endpoint | Tabla DynamoDB (prod) |
+|---|---|---|
+| Consultas | `/api/consultas` | `NadroMentoria-Consultas-prod` |
+| Capacitaciones | `/api/capacitaciones` | `NadroMentoria-Capacitaciones-prod` |
+| Entrevistas | `/api/entrevistas` | `NadroMentoria-Entrevistas-prod` |
+| Acercamientos | `/api/acercamientos` | `NadroMentoria-Acercamientos-prod` |
+| Visitas | `/api/visitas` | `NadroMentoria-Visitas-prod` |
+
+## Estructura backend
+
+- `src/controllers/*Controller.js` — lógica HTTP y generación de Excel con `xlsx`.
+- `src/services/*Service.js` — acceso a DynamoDB. **Importante**: `visitasService.js` NO está en el repo local, solo vive en la Lambda desplegada (revisar y sincronizar si se toca).
+- `src/middleware/validation.js` — validaciones con `express-validator`.
+- `src/lambda.js` — handler de Lambda con config `binary` para exports.
+- `serverless.yml` — configuración de despliegue.
+
+## Idioma
+
+Todo el UI/UX y comunicación con el usuario dueño del proyecto está en **español**.

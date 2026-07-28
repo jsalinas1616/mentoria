@@ -1,0 +1,70 @@
+---
+description: Cómo generar ZIP/build y desplegar NadroMentoria en AWS
+alwaysApply: false
+---
+
+# Deploy — NadroMentoria
+
+## Backend — ZIP para subir a Lambda manualmente
+
+El deploy con `serverless deploy` requiere credenciales AWS válidas. Cuando fallan, el usuario prefiere subir el ZIP a mano desde la consola.
+
+```bash
+# 1. Preparar carpeta temporal (limpia)
+rm -rf /tmp/mentorias-lambda-build
+mkdir -p /tmp/mentorias-lambda-build
+cp -R backend/src backend/package.json backend/package-lock.json /tmp/mentorias-lambda-build/
+
+# 2. Instalar SOLO deps de producción
+cd /tmp/mentorias-lambda-build && npm ci --omit=dev --no-audit --no-fund
+
+# 3. Comprimir con timestamp descriptivo
+TS=$(date +%Y%m%d-%H%M%S)
+ZIP="backend-api-prod-fix-<que-arregla>-${TS}.zip"
+zip -rq /Users/juliansalinas/Proyectos-desarrollo/Mentorias/backend/${ZIP} \
+  src node_modules package.json package-lock.json -x "*.DS_Store"
+```
+
+### Opción A (Recomendada — cambio de código solamente): CLI directa
+
+```bash
+aws lambda update-function-code \
+  --function-name nadro-mentoria-api-prod-api \
+  --zip-file fileb://backend/backend-api-prod-fix-<slug>-<ts>.zip \
+  --profile jsalinas-admin \
+  --region us-east-1
+```
+
+Después esperar `LastUpdateStatus: Successful`:
+```bash
+aws lambda get-function-configuration \
+  --function-name nadro-mentoria-api-prod-api \
+  --profile jsalinas-admin --region us-east-1 \
+  --query 'LastUpdateStatus'
+```
+
+### Opción B (fallback): Consola AWS
+
+AWS Console → Lambda `nadro-mentoria-api-prod-api` → **Upload from .zip** → subir → **Deploy**.
+
+### Notas importantes
+
+- Nombra el ZIP con un slug del fix (ej. `backend-api-prod-fix-scan-paginacion-20260728-115644.zip`) para trazabilidad.
+- **NO uses `serverless deploy --stage prod`**: el `serverless.yml` hardcodea `profile: prod-mentoria` (custom.awsProfile.prod) que no está configurado en el CLI. Además haría cambios de infra innecesarios.
+- Si necesitas cambios de infra (nuevas tablas, cambios de IAM, etc.), pedir al usuario que configure el profile `prod-mentoria` o coordinar de otra manera.
+
+## Frontend — build para S3/CloudFront
+
+```bash
+cd frontend && npm run build
+# Sube el contenido de build/ al bucket de S3 correspondiente y hace invalidación de CloudFront
+```
+
+## `.gitignore` importante
+
+Ya ignorados: `backups/`, `backups_dynamodb/`, `*.zip`. **No** eliminar esas líneas — se generan artefactos pesados con estos nombres.
+
+## Scripts de utilidad locales
+
+- `scripts/export-prod-data.js` — descarga toda la data desde la API prod (usa Bearer token del usuario). Útil cuando el export in-app falla.
+- `scripts/generar-excel-consolidado.js` — consolida los JSON exportados en un solo `.xlsx` multi-hoja.
