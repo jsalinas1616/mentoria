@@ -197,21 +197,54 @@ error. Las mutaciones informan su resultado con toasts.
 
 ## Identidad visual
 
-La dirección se decide antes de escribir código de interfaz. Primero un canvas con tres
-direcciones en baja fidelidad, todas ancladas en los verdes de Nadro (`#059669` y su
-familia) y divergentes en tipografía, densidad, forma y tratamiento de superficie. Elegida
-una, se fijan los tokens —color, escala tipográfica, espaciado, radios, sombras— en las
-variables CSS de shadcn. Después se dibujan tres pantallas en alta fidelidad —inicio de
-sesión, dashboard y un formulario— que sirven de referencia al port.
+**Decidida.** Se exploraron tres direcciones —editorial serena, panel denso, cercana y
+táctil— y se eligió la tercera. Las maquetas viven en el canvas de diseño: acceso, inicio
+del mentor y formulario de consulta en móvil, panel de administración en escritorio, más
+una hoja de tokens.
 
-Restricciones:
+La dirección es táctil y mobile-first: Plus Jakarta Sans en pesos altos, verde en bloques
+sólidos, tarjetas de radio 16-20 px, sombras mínimas, y ningún objeto tocable por debajo de
+44 px. Responde al uso que muestra la captura del repositorio, un mentor cargando una sesión
+desde el teléfono.
 
-- Los verdes corporativos de Nadro se conservan como ancla de la paleta.
-- Inter se descarta salvo que la marca la exija.
-- Los formularios se diseñan mobile-first; el dashboard aprovecha la pantalla grande sin
-  romperse en el teléfono. No hay datos de uso que justifiquen priorizar una plataforma.
-- Los blancos y negros llevan matiz; los acentos se definen en oklch compartiendo croma y
-  luminosidad.
+### Tokens
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--primary` | `#047857` | botones, enlaces, texto verde, marcas de gráfico |
+| `--primary-hover` | `#065F46` | hover y activo |
+| `--brand` | `#059669` | solo decorativo; nunca texto pequeño encima |
+| `--primary-tint-strong` | `#D1FAE5` | iniciales, texto secundario sobre verde oscuro |
+| `--primary-tint` | `#ECFDF5` | fondos de icono, etiquetas, relleno de área |
+| `--bg` | `#F1F7F3` | fondo de página |
+| `--surface` | `#FFFFFF` | tarjetas |
+| `--surface-muted` | `#F7FBF9` | campos y filas dentro de una tarjeta |
+| `--border` | `#DCEAE3` | bordes y separadores |
+| `--ink` | `#0F1F19` | texto principal |
+| `--ink-muted` | `#3D554B` | etiquetas |
+| `--ink-subtle` | `#667C73` | texto secundario, ejes |
+| `--danger` | `#B4322A` | errores de validación, sobre `#FEF2F2` |
+| `--warning` | `#B45309` | avisos, sobre `#FFF7ED` |
+
+Tipografía Plus Jakarta Sans: display 44/1.0/700, h1 24/1.2/700, h3 16/1.3/700, cuerpo
+15/1.5/400, etiqueta 13/1.4/600, pie 12/1.4/500. Radios 12/14/16/20/999. Espaciado en escala
+de 4. Alturas: 52 px campo y botón primario, 44 px mínimo tocable. Sombra de tarjeta
+`0 1px 2px rgba(15,31,25,.06)`, sin sombras grandes.
+
+**El verde de acción es `#047857`, no `#059669`.** Texto blanco sobre `#059669` da 3.77:1 de
+contraste, por debajo del 4.5:1 que exige WCAG AA; sobre `#047857` da 5.55:1. Ambos ya
+estaban en el `tailwind.config.js` actual como `primary` y `primary.dark`, así que la paleta
+corporativa no cambia: solo cambia cuál de los dos carga texto.
+
+Restricciones que se mantienen:
+
+- Los verdes corporativos de Nadro son el ancla de la paleta.
+- Inter queda descartada.
+- Los formularios son mobile-first; el panel de administración aprovecha la pantalla grande
+  sin romperse en el teléfono. No hay datos de uso que justifiquen priorizar una plataforma.
+- Los gráficos llevan una sola serie en `--primary`, sin paleta categórica ni leyenda: el
+  título nombra la serie. Grilla y ejes en gris, nunca en el color del dato. Etiquetas de
+  valor selectivas, no en cada punto. Al portarlos a Recharts hay que añadirles tooltip.
 
 ## Pruebas
 
