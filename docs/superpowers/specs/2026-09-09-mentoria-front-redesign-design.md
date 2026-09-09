@@ -268,9 +268,29 @@ ocurre hoy. `.env.local` queda en `.gitignore` para sobreescrituras personales.
 
 ## Cambio fuera del frontend
 
-CloudFront necesita una *custom error response* que mapee 403 y 404 a `/index.html` con
-código 200, para que `BrowserRouter` resuelva las rutas profundas. Es la única modificación
-de infraestructura que exige este trabajo, y se aplica antes del primer despliegue a QA.
+`BrowserRouter` necesita que el servidor devuelva `index.html` ante cualquier ruta profunda.
+Los buckets ya lo hacen: los scripts de despliegue configuran el hosting estático con
+`--error-document index.html`. Queda por verificar la distribución CloudFront
+`E26HPGOKVFK2W3`, que sirve `d2y013h5yg35nu.cloudfront.net`. Si no tiene una *custom error
+response* que mapee 403 y 404 a `/index.html` con código 200, hay que agregarla antes del
+primer despliegue.
+
+## Entornos existentes
+
+Los scripts actuales revelan tres destinos, y conviene aclarar cuál usa el frontend nuevo
+antes de desplegar:
+
+| Entorno | Perfil AWS | Bucket | Notas |
+|---|---|---|---|
+| QA | `qa-nadro` | `nadro-mentoria-frontend-qa` | hosting S3, sin CloudFront |
+| Producción | `prod-nadro` | `nadro-mentoria-frontend-prod` | hosting S3, sin CloudFront |
+| CloudFront | sin definir | `nadro-mentoria-frontend-1760378806` | distribución `E26HPGOKVFK2W3` |
+
+Los valores de `VITE_API_URL`, `VITE_COGNITO_USER_POOL_ID` y `VITE_COGNITO_CLIENT_ID` no
+están en el repositorio: los `.env` del frontend actual están ignorados por git. Hay que
+obtenerlos antes de ejecutar la aplicación. La documentación menciona tres API Gateway
+distintos —`ecdumohel3`, `pmgxt2ff5c` y `6qdwpptw76`—, así que el valor correcto por
+entorno se confirma con el responsable del despliegue.
 
 ## Riesgos
 
